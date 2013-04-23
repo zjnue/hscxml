@@ -2,6 +2,7 @@ package hsm;
 
 import hsm.scxml.Interp;
 import hsm.scxml.Types;
+import hsm.scxml.tools.DrawTools;
 
 class Scxml {
 	var interp : Interp;
@@ -22,6 +23,10 @@ class Scxml {
 		if (_onInit != null) onInit = _onInit;
 		var scxml = Xml.parse(_data).firstElement();
 		interp.interpret(scxml);
+	}
+	
+	inline public function getDot() {
+		return DrawTools.getDot(interp.topNode);
 	}
 	
 	inline public function start() {

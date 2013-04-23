@@ -123,6 +123,9 @@ class Interp {
 		log = function(msg:String) trace(msg);
 	}
 	
+	public var topNode( get_topNode, never) : Node;
+	function get_topNode() return d
+	
 /**
 
 Global variables
