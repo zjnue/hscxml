@@ -959,6 +959,35 @@ function findLCA(stateList):
 				internalQueue.enqueue(new Event(c.get("event")));
 			case "assign":
 				datamodel.set(c.get("location"), eval(c.get("expr")));
+			case "if":
+				if( eval(c.get("cond")) ) {
+					for( child in c ) {
+						if( child.name == "elseif" || child.name == "else" )
+							break;
+						else
+							executeContent( child );
+					}
+				} else {
+					var matched = false;
+					for( child in c ) {
+						if( !matched && child.name == "elseif" )
+							if( eval(child.get("cond")) ) {
+								matched = true;
+								continue;
+							}
+						
+						if( !matched && child.name == "else" ) {
+							matched = true;
+							continue;
+						}
+						
+						if( matched && (child.name == "elseif" || child.name == "else") )
+							break;
+							
+						if( matched )
+							executeContent( child );
+					}
+				}
 		}
 	}
 	

@@ -28,7 +28,7 @@ class Compiler {
 			case "invoke":		n = new Invoke(parent);
 			case "finalize":	n = new Finalize(parent);
 			case "content":		n = new Content(parent);
-			case "log", "raise", "assign":	
+			case "log", "raise", "assign", "if", "elseif", "else":
 				n = new Exec(parent);
 			default:
 				throw "node type not yet implemented: " + x.nodeName;
