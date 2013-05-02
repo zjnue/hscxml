@@ -66,10 +66,6 @@ class Final extends Node {
 	public function new(p:Node) { super(p); }
 }
 
-class Script extends Node {
-	public function new(p:Node) { super(p); }
-}
-
 class OnEntry extends Node {
 	public function new(p:Node) { super(p); }
 }
@@ -112,4 +108,9 @@ class Finalize extends Node {
 
 class Exec extends Node {
 	public function new(p:Node) { super(p); }
+}
+
+class Script extends Exec {
+	public var content:String;
+	public function new(p:Node) { super(p); content = ""; }
 }

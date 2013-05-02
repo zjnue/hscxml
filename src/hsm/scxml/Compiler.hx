@@ -30,6 +30,7 @@ class Compiler {
 			case "content":		n = new Content(parent);
 			case "log", "raise", "assign", "if", "elseif", "else":
 				n = new Exec(parent);
+			case "script":		n = new Script(parent); if( !x.exists("src") ) for( child in x ) cast(n, Script).content += child.toString();
 			default:
 				throw "node type not yet implemented: " + x.nodeName;
 		}

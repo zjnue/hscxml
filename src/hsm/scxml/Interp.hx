@@ -262,6 +262,7 @@ procedure interpret(doc):
 	function initHInterp() {
 		//hinterp.variables.set("log", log);
 		//hinterp.variables.set("Std", Std);
+		hinterp.variables.set("trace", log);
 		hinterp.variables.set("datamodel", datamodel);
 	}
 	
@@ -988,6 +989,9 @@ function findLCA(stateList):
 							executeContent( child );
 					}
 				}
+			case "script":
+				eval( cast(c, Script).content );
+				
 		}
 	}
 	
