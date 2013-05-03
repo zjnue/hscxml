@@ -164,7 +164,7 @@ class Interp {
 	
 	public var onInit : Void -> Void;
 	public var log : String -> Void;
-	public var topNode( get_topNode, never) : Node;
+	public var topNode( get_topNode, never ) : Node;
 	
 	function get_topNode() return d
 	
@@ -235,6 +235,10 @@ class Interp {
 		if( s0.isDescendant(s1) ) return -1;
 		if( s1.isDescendant(s0) ) return 1;
 		return documentOrder(s1, s0);
+	}
+	
+	inline function documentOrder( s0 : Node, s1 : Node ) {
+		return ( s0.pos > s1.pos ) ? -1 : 1;
 	}
 	
 	// FIXME report: both initializeDatamodel and initializeDataModel used in the spec
@@ -317,22 +321,17 @@ class Interp {
 		var s = new List<Node>().add2(transition);
 		enterStates(s);
 		//mainEventLoop();
-		if (onInit != null) onInit();
-		
-		/*
-		var transition = d.initial().next().transition().next();
-		var s = new List<Node>().add2(transition);
-		enterStates(s);
-		//startEventLoop();
-		if (onInit != null) onInit();*/
+		if( onInit != null )
+			onInit();
 	}
 	
-	function valid( doc : Xml ) { // FIXME
+	function valid( doc : Xml ) {
+		// FIXME
 		return true;
 	}
 	
 	inline function failWithError() {
-		// TODO
+		// FIXME
 		throw "failWithError";
 	}
 	
@@ -361,7 +360,7 @@ class Interp {
 	}
 	
 	function executeGlobalScriptElements( doc : Node ) {
-		// TODO
+		// FIXME
 	}
 	
 	function initHInterp() {
@@ -385,7 +384,7 @@ class Interp {
 	}*/
 	
 	function initializeDatamodel( datamodel : DModel, doc : Node ) {
-		// TODO
+		// FIXME
 	}
 
 	/**
@@ -838,12 +837,12 @@ first transition (in document order) and preempt the second.
 		for( t in enabledTransitions ) {
 			if( t.exists("target") ) {
 				var ancestor = null;
-				var tstates = getTargetStates(t);
-				var source = getSourceState(t);
-				if( t.get("type") == "internal" && source.isCompound() && tstates.every(function(s) return s.isDescendant(source)) )
-					ancestor = source;
+				var targetStates = getTargetStates(t);
+				var sourceState = getSourceState(t);
+				if( t.get("type") == "internal" && sourceState.isCompound() && targetStates.every(function(s) return s.isDescendant(sourceState)) )
+					ancestor = sourceState;
 				else
-					ancestor = findLCCA( new List<Node>().add2(source).append(getTargetStates(t)) );
+					ancestor = findLCCA( new List<Node>().add2(sourceState).append(getTargetStates(t)) );
 				for( s in configuration )
 					if( s.isDescendant(ancestor) )
 						statesToExit.add(s);
@@ -966,25 +965,25 @@ first transition (in document order) and preempt the second.
 	**/
 	function enterStates( enabledTransitions : List<Node> ) {
 		var statesToEnter = new Set<Node>();
-		var statesForDefaultEntry  = new Set<Node>();
+		var statesForDefaultEntry = new Set<Node>();
 		for ( t in enabledTransitions ) {
 			if( t.exists("target") ) {
 				var ancestor = null;
-				var tstates = getTargetStates(t);
+				var targetStates = getTargetStates(t);
 				var source = getSourceState(t);
-				if( t.get("type") == "internal" && source.isCompound() && tstates.every(function(s) return s.isDescendant(source)) )
+				if( t.get("type") == "internal" && source.isCompound() && targetStates.every(function(s) return s.isDescendant(source)) )
 					ancestor = source;
 				else
-					ancestor = findLCCA( new List<Node>().add2(source).append(tstates) );
-	            for( s in tstates )
-	                addStatesToEnter(s,statesToEnter,statesForDefaultEntry);
-	            for( s in tstates )
+					ancestor = findLCCA( new List<Node>().add2(source).append(targetStates) );
+	            for( s in targetStates )
+	                addStatesToEnter( s, statesToEnter, statesForDefaultEntry );
+	            for( s in targetStates )
 					for( anc in getProperAncestors(s,ancestor) ) {
 						statesToEnter.add(anc);
 						if( anc.isTParallel() )
 							for( child in anc.childStates() )
 								if( !statesToEnter.toList().some(function(s) return s.isDescendant(child)) )
-									addStatesToEnter(child,statesToEnter,statesForDefaultEntry);
+									addStatesToEnter( child, statesToEnter, statesForDefaultEntry );
 					}
 			}
 		}
@@ -1132,7 +1131,7 @@ first transition (in document order) and preempt the second.
 			if( stateList.filter( // cpp fix
 				function(s:Node) {
 					var head = stateList.head();
-					if (s == head) return false;
+					if( s == head ) return false;
 					return true;
 				}
 			).every(function(s) return s.isDescendant(ancestor)) )
@@ -1154,17 +1153,12 @@ first transition (in document order) and preempt the second.
 		return l;
 	}
 	
-	function documentOrder( s0 : Node, s1 : Node ) {
-		if( s0.pos > s1.pos )
-			return -1;
-		return 1;
+	function sendDoneEvent( id : String ) {
+		// FIXME
 	}
 	
-	function sendDoneEvent( id : String ) { // FIXME
-	}
-	
-	function cancelInvoke( inv : Node ) { // FIXME
-		
+	function cancelInvoke( inv : Node ) {
+		// FIXME
 	}
 	
 	function nameMatch( str1 : String, str2 : String ) {
@@ -1180,7 +1174,7 @@ first transition (in document order) and preempt the second.
 	
 	function conditionMatch( transition : Node ) : Bool {
 		if( transition.exists("cond") )
-			return eval(transition.get("cond"));
+			return eval( transition.get("cond") );
 		return true;
 	}
 	
@@ -1194,23 +1188,20 @@ first transition (in document order) and preempt the second.
 			return childStates.iterator().next();
 	}
 	
-	function applyFinalize(inv:Node, evt:Event) {
-		
-	}
-	
-	function send(invokeid:String, evt:Event) {
-	}
-	
-	function returnDoneEvent(doneData : Dynamic) : Void {
+	function applyFinalize( inv : Node, evt : Event ) {
 		// FIXME
 	}
 	
-	//function sendDoneEventToParent() {
-		//hmm
-	//}
+	function send( invokeid : String, evt : Event ) {
+		// FIXME
+	}
 	
-	function executeContent( c : Node ) { // FIXME
-		switch (c.name) {
+	function returnDoneEvent( doneData : Dynamic ) : Void {
+		// FIXME
+	}
+	
+	function executeContent( c : Node ) {
+		switch( c.name ) {
 			case "log":
 				log("<log> :: label = " + c.get("label") + " :: expr = " + Std.string(c.get("expr")) + 
 					" :: value = " + Std.string(eval(c.get("expr"))) );
@@ -1249,15 +1240,15 @@ first transition (in document order) and preempt the second.
 				}
 			case "script":
 				eval( cast(c, Script).content );
-				
+			default:
 		}
 	}
 	
 	function executeInvoke( i : Node ) {
-		return "id??"; // FIXME
+		return "??"; // FIXME
 	}
 	
-	function invoke(inv:Node) {
+	function invoke( inv : Node ) {
 		return "??"; // FIXME
 	}
 	
@@ -1267,16 +1258,15 @@ first transition (in document order) and preempt the second.
 		var top = node;
 		while( !(top.parent == null) && !(top.isTScxml()) )
 			top = top.parent;
-		for( id in ids ) {
+		for( id in ids )
 			l.add( getTargetState(top, id) );
-		}
 		return l;
 	}
 	
 	function getTargetState( s : Node, id : String ) : Node {
-		if( s.get("id") == id ) {
+		if( s.get("id") == id )
 			return s;
-		} else {
+		else {
 			for( child in s.childStates() ) {
 				var ss = getTargetState(child, id);
 				if( ss != null )
