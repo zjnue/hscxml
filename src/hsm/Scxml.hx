@@ -38,7 +38,7 @@ class Scxml {
 	}
 	
 	inline public function postEvent( str : String ) {
-		interp.externalQueue.enqueue( new Event(str) );
+		interp.postEvent(str);
 	}
 	
 	inline function set_data( value : String ) {

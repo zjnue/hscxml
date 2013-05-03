@@ -11,6 +11,9 @@ import hscript.Interp;
 using hsm.scxml.tools.ListTools;
 using hsm.scxml.tools.NodeTools;
 
+// similar issues with new spec mentioned here:
+// http://lists.w3.org/Archives/Public/www-voice/2013JanMar/0024.html
+
 /**
 	<h2>A Algorithm for SCXML Interpretation</h2>
 	
@@ -147,12 +150,7 @@ using hsm.scxml.tools.NodeTools;
 	   function dequeue()   // Removes and returns first element in queue, blocks if queue is empty
 	]</p>
 **/
-
-
 class Interp {
-	
-	public var onInit : Void -> Void;
-	public var log : String -> Void;
 	
 	var d : Node;
 	var hparse : hscript.Parser;
@@ -164,8 +162,19 @@ class Interp {
 		log = function(msg:String) trace(msg);
 	}
 	
+	public var onInit : Void -> Void;
+	public var log : String -> Void;
 	public var topNode( get_topNode, never) : Node;
+	
 	function get_topNode() return d
+	
+	public function postEvent( str : String ) {
+		externalQueue.enqueue( new Event(str) );
+	}
+	
+	public function start() {
+		mainEventLoop();
+	}
 	
 /**
 	<h3>Global variables</h3>
@@ -196,15 +205,17 @@ class Interp {
 	    (Note: since descendants follow ancestors, this is equivalent to reverse document order.)
 	]</p>
 **/
+	
+	// FIXME report: spec above mentions entryOrder, whereas enterOrder is used in the code
 
-	var datamodel : DModel;
 	var configuration : Set<Node>;
-	var previousConfiguration : Set<Node>;
 	var statesToInvoke : Set<Node>;
+	var datamodel : DModel;
 	var internalQueue : Queue<Event>;
-	public var externalQueue : BlockingQueue<Event>;
+	var externalQueue : BlockingQueue<Event>;
 	var historyValue : Hash<List<Node>>;
-	private var cont : Bool; // continue
+	var running : Bool;
+	var binding : String;
 
 /**
 	<h3>Procedures and Functions</h3>
@@ -212,34 +223,21 @@ class Interp {
 	<p>This section defines the procedures and functions that make up the core of the SCXML interpreter.</p>
 **/
 
-	// perform inplace expansions of states by including SCXML source referenced 
-	// by urls (see 3.13 Referencing External Files) and change initial attributes 
-	// to initial container children with empty transitions to the state from the attribute
-	// TODO: XInclude
-	function expandScxmlSource( x : Xml ) { 
-		if( x.nodeType == Xml.Element && x.exists("initial") ) {
-			var tval = x.get("initial");
-			var ins = Xml.createElement("initial");
-			var trans = Xml.createElement("transition");
-			trans.set("target", tval);
-			ins.insertChild(trans, 0);
-			x.insertChild(ins, 0);
-			x.remove("initial");
-		}
-		for( el in x.elements() )
-			expandScxmlSource(el);
-	}
-	function valid( doc : Xml ) { // FIXME
-		return true;
-	}
-	function executeGlobalScriptElements( doc : Node ) { // FIXME
+	// FIXME - see definition
+	function enterOrder( s0 : Node, s1 : Node ) {
+		if( s0.isDescendant(s1) ) return 1;
+		if( s1.isDescendant(s0) ) return -1;
+		return documentOrder(s0, s1);
 	}
 	
-	// some datamodel funcs
-	static var sessionId:Int = 0;
-	function getSessionId() {
-		return Std.string(sessionId++);
+	// FIXME - see definition
+	function exitOrder( s0 : Node, s1 : Node ) {
+		if( s0.isDescendant(s1) ) return -1;
+		if( s1.isDescendant(s0) ) return 1;
+		return documentOrder(s1, s0);
 	}
+	
+	// FIXME report: both initializeDatamodel and initializeDataModel used in the spec
 
 	/**
 		<h5>procedure interpret(scxml,id)</h5>
@@ -277,8 +275,8 @@ class Interp {
 	**/
 	public function interpret(doc:Xml) {
 		
+		if( !valid(doc) ) failWithError();
 		expandScxmlSource(doc);
-		if( !valid(doc) ) throw "doc invalid";
 		
 		var compiler = new Compiler();
 		var result = compiler.compile(doc, null);
@@ -287,30 +285,83 @@ class Interp {
 		log("d = \n" + d.toString());
 		
 		configuration = new Set();
-		previousConfiguration = new Set();
 		statesToInvoke = new Set();
 		
 		datamodel = new DModel(d);
+		
+		// check
 		var _sessionId = getSessionId();
 		var _name = doc.exists("name") ? doc.get("name") : _sessionId;
 		datamodel.set("_sessionId", _sessionId);
 		datamodel.set("_name", _name);
-		initDatamodel(result.data);
+		//initDatamodel(result.data);
 		
 		executeGlobalScriptElements(d);
+		
 		internalQueue = new Queue();
 		externalQueue = new BlockingQueue();
 		externalQueue.onNewContent = checkBlockingQueue;
+		
+		//check
 		historyValue = new Hash();
-		cont = true;
+		
+		running = true;
+		binding = d.exists("binding") ? d.get("binding") : "early";
+		
+		if( binding == "early" )
+			initializeDatamodel(datamodel, d);
 		
 		initHInterp();
 		
 		var transition = d.initial().next().transition().next();
 		var s = new List<Node>().add2(transition);
 		enterStates(s);
-		//startEventLoop();
+		//mainEventLoop();
 		if (onInit != null) onInit();
+		
+		/*
+		var transition = d.initial().next().transition().next();
+		var s = new List<Node>().add2(transition);
+		enterStates(s);
+		//startEventLoop();
+		if (onInit != null) onInit();*/
+	}
+	
+	function valid( doc : Xml ) { // FIXME
+		return true;
+	}
+	
+	inline function failWithError() {
+		// TODO
+		throw "failWithError";
+	}
+	
+	// perform inplace expansions of states by including SCXML source referenced 
+	// by urls (see 3.13 Referencing External Files) and change initial attributes 
+	// to initial container children with empty transitions to the state from the attribute
+	// TODO: XInclude
+	function expandScxmlSource( x : Xml ) { 
+		if( x.nodeType == Xml.Element && x.exists("initial") ) {
+			var tval = x.get("initial");
+			var ins = Xml.createElement("initial");
+			var trans = Xml.createElement("transition");
+			trans.set("target", tval);
+			ins.insertChild(trans, 0);
+			x.insertChild(ins, 0);
+			x.remove("initial");
+		}
+		for( el in x.elements() )
+			expandScxmlSource(el);
+	}
+	
+	// some datamodel funcs
+	static var sessionId:Int = 0;
+	function getSessionId() {
+		return Std.string(sessionId++);
+	}
+	
+	function executeGlobalScriptElements( doc : Node ) {
+		// TODO
 	}
 	
 	function initHInterp() {
@@ -320,14 +371,7 @@ class Interp {
 		hinterp.variables.set("datamodel", datamodel);
 	}
 	
-	public function start() {
-		startEventLoop();
-	}
-	
-	public function destroy() {
-		// TODO
-	}
-	
+	/*
 	function initDatamodel( dms : List<DataModel> ) {
 		for( dm in dms ) {
 			for( data in dm ) {
@@ -338,46 +382,10 @@ class Interp {
 				datamodel.set(id, eval(expr));
 			}
 		}
-	}
-
-/**
-
-procedure startEventLoop()
-
-Upon entering the state machine, we take all internally enabled transitions, namely those that either don't require an event or that are triggered by internal events. (Internal events can only be generated by the state machine itself.) When all such transitions have been taken, we move to the main event loop, which is driven by external events.
-
-procedure procedure startEventLoop():
-    initialStepComplete = false ;
-    until initialStepComplete:
-        enabledTransitions = selectEventlessTransitions()
-        if enabledTransitions.isEmpty():
-            if internalQueue.isEmpty(): 
-                initialStepComplete = true 
-            else:
-                internalEvent = internalQueue.dequeue()
-                datamodel["event"] = internalEvent
-                enabledTransitions = selectTransitions(internalEvent)
-        if not enabledTransitions.isEmpty():
-             microstep(enabledTransitions.toList())
-    mainEventLoop()
-
-   */
-	function startEventLoop() {
-		var initialStepComplete = false;
-		while( !initialStepComplete ) {
-			var enabledTransitions : Set<Node> = selectEventlessTransitions();
-			if( enabledTransitions.isEmpty() )
-				if( internalQueue.isEmpty() )
-					initialStepComplete = true;
-				else {
-					var internalEvent : Event = internalQueue.dequeue();
-					datamodel.set("_event", internalEvent);
-					enabledTransitions = selectTransitions(internalEvent);
-				}
-			if( !enabledTransitions.isEmpty() )
-				microstep( enabledTransitions.toList() );
-		}
-		mainEventLoop();
+	}*/
+	
+	function initializeDatamodel( datamodel : DModel, doc : Node ) {
+		// TODO
 	}
 
 	/**
@@ -460,61 +468,82 @@ procedure procedure startEventLoop():
 		]</p>
 	**/
 	function mainEventLoop() {
-		log("mainEventLoop: cont = " + Std.string(cont));
-		if( cont ) {
+		log("mainEventLoop: running = " + Std.string(running));
+		if( running ) {
+			var enabledTransitions = null;
+			var stable = false;
+			// Here we handle eventless transitions and transitions 
+			// triggered by internal events until machine is stable
+			while( running && !stable ) {
+				var enabledTransitions : Set<Node> = selectEventlessTransitions();
+				if( enabledTransitions.isEmpty() ) {
+					if( internalQueue.isEmpty() )
+						stable = true;
+					else {
+						var internalEvent = internalQueue.dequeue();
+						datamodel.set("_event", internalEvent);
+						enabledTransitions = selectTransitions(internalEvent);
+					}
+				}
+				if( !enabledTransitions.isEmpty() )
+					microstep(enabledTransitions.toList());
+			}
+			// Here we invoke whatever needs to be invoked
 			for( state in statesToInvoke )
 				for( inv in state.invoke() )
-					invoke(inv);
-			statesToInvoke.clear();
-			previousConfiguration = configuration;
+					//inv.invoke(inv);
+					inv.doInvoke();
+	        statesToInvoke.clear();
+			// Invoking may have raised internal error events and we
+			// need to back up and handle those too        
+	        if( !internalQueue.isEmpty() ) {
+				mainEventLoop();
+				return;
+			}
 			checkBlockingQueue();
 		} else {
 			log("mainEventLoop: exitInterpreter");
-			// if we get here, we have reached a top-level final state or some external 
-			// entity has set continue to false  
+			// If we get here, we have reached a top-level final state or have been cancelled
 			exitInterpreter();
 		}
 	}
 	
 	function checkBlockingQueue() {
+		// A blocking wait for an external event.  Alternatively, if we have been invoked
+		// our parent session also might cancel us.  The mechanism for this is platform specific,
+		// but here we assume it's a special event we receive
 		var evt = externalQueue.dequeue();
 		if( evt != null )
 			mainEventLoopPart2(evt);
-		else if( cont ) 
+		else if( running ) 
 			externalQueue.callOnNewContent = true;
 		else
-			log("checkBlockingQueue: evt = " + Std.string(evt) + " cont = " + Std.string(cont));
+			log("checkBlockingQueue: evt = " + Std.string(evt) + " running = " + Std.string(running));
 	}
 	
-	function mainEventLoopPart2( evt : Event ) {
-		datamodel.set("_event", evt);
+	function mainEventLoopPart2( externalEvent : Event ) {
+		if( isCancelEvent(externalEvent) ) {
+			running = false;
+			mainEventLoop();
+			return;
+		}
+        datamodel.set("_event", externalEvent);
         for( state in configuration )
             for( inv in state.invoke() ) {
-                if( inv.get("id") == evt.get("invokeid") ) // event is the result of an <invoke> in this state
-                    applyFinalize(inv, evt);
-                if( inv.exists("autoforward") && inv.get("autoforward") == "true" )
-                    send(inv.get("id"), evt);
+				if( inv.get("invokeid") == externalEvent.get("invokeid") )
+					applyFinalize(inv, externalEvent);
+				if( inv.exists("autoforward") && inv.get("autoforward") == "true" )
+					send(inv.get("id"), externalEvent);
 			}
-        var enabledTransitions = selectTransitions(evt);
-        if( !enabledTransitions.isEmpty() ) {
-            microstep( enabledTransitions.toList() );
-            // now take any newly enabled null transitions and any transitions triggered by internal events
-            var macroStepComplete = false;
-            while( !macroStepComplete ) {
-                enabledTransitions = selectEventlessTransitions();
-                if( enabledTransitions.isEmpty() )
-                    if( internalQueue.isEmpty() )
-                        macroStepComplete = true;
-                    else {
-                        var internalEvent = internalQueue.dequeue();
-                        datamodel.set("_event", internalEvent);
-                        enabledTransitions = selectTransitions(internalEvent);
-					}
-                if( !enabledTransitions.isEmpty() )
-                    microstep(enabledTransitions.toList());
-			}
-		}
+        var enabledTransitions = selectTransitions(externalEvent);
+        if( !enabledTransitions.isEmpty() )
+			microstep(enabledTransitions.toList());
 		mainEventLoop();
+	}
+	
+	function isCancelEvent( evt : Event ) {
+		// FIXME
+		return false;
 	}
 	
 	/**
@@ -585,19 +614,19 @@ procedure procedure startEventLoop():
 		var enabledTransitions = new Set<Node>();
 		var atomicStates = configuration.toList().filter(NodeTools.isAtomic).sort(documentOrder);
 		for( state in atomicStates )
-			if( !isPreempted(state, enabledTransitions) )
-				for( s in new List<Node>().add2(state).append(getProperAncestors(state, null)) ) {
-					var exitLoop = false;
-					for( t in s.transition() ) {
-						if( !t.exists("event") && conditionMatch(t) ) {
-							enabledTransitions.add(t);
-							exitLoop = true;
-							break;
-						}
-					}
-					if( exitLoop )
+			for( s in new List<Node>().add2(state).append(getProperAncestors(state, null)) ) {
+				var exitLoop = false;
+				for( t in s.transition() ) {
+					if( !t.exists("event") && conditionMatch(t) ) {
+						enabledTransitions.add(t);
+						exitLoop = true;
 						break;
+					}
 				}
+				if( exitLoop )
+					break;
+			}
+		enabledTransitions = filterPreempted(enabledTransitions);
 		return enabledTransitions;
 	}
 	
@@ -633,18 +662,18 @@ procedure procedure startEventLoop():
 		var enabledTransitions = new Set<Node>();
 		var atomicStates = configuration.toList().filter(NodeTools.isAtomic).sort(documentOrder);
 		for( state in atomicStates )
-			if( !isPreempted(state, enabledTransitions) )
-				for( s in new List<Node>().add2(state).append(getProperAncestors(state, null)) ) {
-					var exitLoop = false;
-					for( t in s.transition() )
-						if( t.exists("event") && nameMatch(t.get("event"), event.name) && conditionMatch(t) ) {
-							enabledTransitions.add(t);
-							exitLoop = true;
-							break;
-						}
-					if( exitLoop )
+			for( s in new List<Node>().add2(state).append(getProperAncestors(state, null)) ) {
+				var exitLoop = false;
+				for( t in s.transition() )
+					if( t.exists("event") && nameMatch(t.get("event"), event.name) && conditionMatch(t) ) {
+						enabledTransitions.add(t);
+						exitLoop = true;
 						break;
-				}
+					}
+				if( exitLoop )
+					break;
+			}
+		enabledTransitions = filterPreempted(enabledTransitions);
 		return enabledTransitions;
 	}
 	
@@ -667,8 +696,14 @@ procedure procedure startEventLoop():
 		    return filteredTransitions
 		]</p>
 	**/
-	function filterPreempted( enabledTransitions : List<Node> ) {
-		// TODO
+	function filterPreempted( enabledTransitions : Set<Node> ) {
+		var filteredTransitions = new Set<Node>();
+		for( t in enabledTransitions ) {
+			// does any t2 in filteredTransitions preempt t? if not, add t to filteredTransitions
+			if( !filteredTransitions.toList().some(function(t2) return preemptsTransition(t2, t)) )
+				filteredTransitions.add(t);
+		}
+		return filteredTransitions;
 	}
 	
 	/**
@@ -694,34 +729,29 @@ procedure procedure startEventLoop():
 		        else return False
 		]</p>
 	**/
-	function preemptsTransition( t1 : Node, t2 : Node ) {
-		// TODO
-	}
+
+/*
+From: http://lists.w3.org/Archives/Public/www-voice/2013JanMar/0029.html
+
+Question:
+>> 13. I find the Type1/Type2/Type3 confusing for transitions. First, <transition> elements already have a 
+"type" attribute that is unrelated; a better term (Category?) should be used. Secondly, the prose descriptions 
+for both Type 2 and Type 3 do not seem rigorous. What is a "transition within a single child of <parallel>"? 
+A transition that is in a state that is the sole child of a parallel? A single transition that is a direct child 
+of a <parallel> node? Please revisit the preemptsTransition description and pseudo-code to make this subtle 
+area for bugs robust and clear.
+Answer:
+> Yes, other people have commented that the definition of preemption is quite murky.  I'll have to work on 
+clarifying it. "Category' is a better term than 'type' for the reason you mention. In the case of ""transition 
+within a single child of <parallel>", it is a transition whose source and target are contained within a single 
+<state> child of <parallel> and which can be taken without exiting that <state>.  
+> Another way of stating the issue is that two transition conflict if their exit sets (the set of states that 
+they exit) have a non-null intersection.  In case of conflict, we execute the 
+first transition (in document order) and preempt the second.  
+*/	
 	
-/**
-
-function isPreempted(s transitionList)
-
-Return true if a transition T in transitionList exits an ancestor of state s. In this case, taking T will pull the state machine out of s and thus we say that it preempts the selection of a transition from s. Such preemption will occur only if s is a descendant of a parallel region and T exits that region. If we did not do this preemption check, we could end up in an illegal configuration, namely one in which there were multiple active states that were not all descendants of a common parallel ancestor.
-
-function isPreempted(s transitionList):
-    preempted = false 
-    for t in transitionList:
-        if t.target:
-            LCA = findLCA([t.source].append(getTargetStates(t.target)))
-            if isDescendant(s,LCA):
-                preempted = true 
-                break
-    return preempted
-
- */
-	function isPreempted( s : Node, transitionList : Set<Node> ) {
-		for( t in transitionList )
-			if( t.exists("target") ) {
-				var lca = findLCA( new List<Node>().add2(t.parent).append(getTargetStates(t)) );
-				if( s.isDescendant(lca) )
-					return true;
-			}
+	function preemptsTransition( t1 : Node, t2 : Node ) {
+		// FIXME
 		return false;
 	}
 	
@@ -784,7 +814,7 @@ function isPreempted(s transitionList):
 		               ancestor = findLCCA([t.source].append(getTargetStates(t.target)))
 		           for s in configuration:
 		               if isDescendant(s,ancestor):
-		                   statesToExit.add(s)                    
+		                   statesToExit.add(s)
 		    for s in statesToExit:
 		        statesToInvoke.delete(s)
 		    statesToExit = statesToExit.toList().sort(exitOrder)
@@ -807,9 +837,15 @@ function isPreempted(s transitionList):
 		var statesToExit = new Set<Node>();
 		for( t in enabledTransitions ) {
 			if( t.exists("target") ) {
-				var lca = findLCA( new List<Node>().add2(t.parent).append(getTargetStates(t)) );
+				var ancestor = null;
+				var tstates = getTargetStates(t);
+				var source = getSourceState(t);
+				if( t.get("type") == "internal" && source.isCompound() && tstates.every(function(s) return s.isDescendant(source)) )
+					ancestor = source;
+				else
+					ancestor = findLCCA( new List<Node>().add2(source).append(getTargetStates(t)) );
 				for( s in configuration )
-					if( s.isDescendant(lca) )
+					if( s.isDescendant(ancestor) )
 						statesToExit.add(s);
 			}
 		}
@@ -835,6 +871,13 @@ function isPreempted(s transitionList):
 		}
 	}
 	
+	function getSourceState( transition : Node ) {
+		var source = transition.parent;
+		while( !source.isState() )
+			source = source.parent;
+		return source;
+	}
+	
 	/**
 		<h5>procedure executeTransitionContent(enabledTransitions)</h5>
 		
@@ -851,6 +894,9 @@ function isPreempted(s transitionList):
 			for( content in t )
 				executeContent(content);
 	}
+	
+	// FIXME: report: both initializeDatamodel and initializeDataModel is used in spec's code.
+	// current solution: us initializeDatamodel throughout
 	
 	/**
 		<h5>procedure enterStates(enabledTransitions)</h5>
@@ -923,21 +969,34 @@ function isPreempted(s transitionList):
 		var statesForDefaultEntry  = new Set<Node>();
 		for ( t in enabledTransitions ) {
 			if( t.exists("target") ) {
-				var targetStates = getTargetStates(t);
-				var lca = findLCA( new List<Node>().add2(t.parent).append(targetStates) );
-				for( s in targetStates ) {
-					addStatesToEnter( s, lca, statesToEnter, statesForDefaultEntry );
-				}
-				if( lca.isTParallel() )
-					for( child in lca.childStates() )
-						addStatesToEnter( child, lca, statesToEnter, statesForDefaultEntry );
+				var ancestor = null;
+				var tstates = getTargetStates(t);
+				var source = getSourceState(t);
+				if( t.get("type") == "internal" && source.isCompound() && tstates.every(function(s) return s.isDescendant(source)) )
+					ancestor = source;
+				else
+					ancestor = findLCCA( new List<Node>().add2(source).append(tstates) );
+	            for( s in tstates )
+	                addStatesToEnter(s,statesToEnter,statesForDefaultEntry);
+	            for( s in tstates )
+					for( anc in getProperAncestors(s,ancestor) ) {
+						statesToEnter.add(anc);
+						if( anc.isTParallel() )
+							for( child in anc.childStates() )
+								if( !statesToEnter.toList().some(function(s) return s.isDescendant(child)) )
+									addStatesToEnter(child,statesToEnter,statesForDefaultEntry);
+					}
 			}
 		}
-		for( s in statesToEnter )
-			statesToInvoke.add(s);
 		statesToEnter = statesToEnter.sort(enterOrder);
 		for ( s in statesToEnter ) {
 			configuration.add(s);
+			statesToInvoke.add(s);
+			if( binding == "late" && s.isFirstEntry ) {
+				//initializeDatamodel(datamodel.s,doc.s);
+				initializeDatamodel(datamodel, s);
+				s.isFirstEntry = false;
+			}
 			var onentry = s.onentry();
 			if ( onentry.hasNext() )
 				for( content in onentry.next() )
@@ -957,23 +1016,11 @@ function isPreempted(s transitionList):
 		for( s in configuration )
 			if( s.isTFinal() && s.parent.isTScxml() ) {
 				log("s = " + s);
-				cont = false;
+				running = false;
 			}
 	}
 	
-	// FIXME - see definition
-	function enterOrder( s0 : Node, s1 : Node ) {
-		if( s0.isDescendant(s1) ) return 1;
-		if( s1.isDescendant(s0) ) return -1;
-		return documentOrder(s0, s1);
-	}
-	
-	// FIXME - see definition
-	function exitOrder( s0 : Node, s1 : Node ) {
-		if( s0.isDescendant(s1) ) return -1;
-		if( s1.isDescendant(s0) ) return 1;
-		return documentOrder(s1, s0);
-	}
+	// FIXME report: addStatesToEnter's signature in spec is different between comment and declaration
 	
 	/**
 		<h5>procedure addStatesToEnter(state,root,statesToEnter,statesForDefaultEntry)</h5>
@@ -1011,35 +1058,29 @@ function isPreempted(s transitionList):
 		                addStatesToEnter(s,statesToEnter,statesForDefaultEntry)
 		]</p>
 	**/
-	function addStatesToEnter( s : Node, root : Node, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node> ) {
-		if( s.isTHistory() ) {
-			if( historyValue.exists(s.get("id")) ) {
-				for( s0 in historyValue.get(s.get("id")) )
-					addStatesToEnter( s0, s, statesToEnter, statesForDefaultEntry );
-			} else {
-				for( t in s.transition() )
-					for( s0 in getTargetStates(t) )
-						addStatesToEnter( s0, s, statesToEnter, statesForDefaultEntry );
-			}
+	function addStatesToEnter( state : Node, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node> ) {
+		if( state.isTHistory() ) {
+			if( historyValue.exists(state.get("id")) ) {
+				for( s in historyValue.get(state.get("id")) ) {
+					addStatesToEnter( s, statesToEnter, statesForDefaultEntry );
+					for( anc in getProperAncestors(s,state) )
+						statesToEnter.add(anc);
+				}
+			} else
+				for( t in state.transition() )
+					for( s in getTargetStates(t) )
+						addStatesToEnter( s, statesToEnter, statesForDefaultEntry );
 		} else {
-			statesToEnter.add(s);
-			if( s.isTParallel() )
-				for( child in s.childStates() )
-					addStatesToEnter( child, s, statesToEnter, statesForDefaultEntry );
-			else if( s.isCompound() ) {
-				statesForDefaultEntry.add(s);
-				var initial = s.initial();
+			statesToEnter.add(state);
+			if( state.isCompound() ) {
+				statesForDefaultEntry.add(state);
+				var initial = state.initial();
 				if( initial.hasNext() )
-					for( tState in getTargetStates( initial.next().transition().next() ) )
-						addStatesToEnter( tState, s, statesToEnter, statesForDefaultEntry );
-			}
-			for( anc in getProperAncestors(s, root) ) {
-				statesToEnter.add(anc);
-				if( anc.isTParallel() )
-					for( pChild in anc.childStates() )
-						if( !statesToEnter.toList().some(function(s2) return s2.isDescendant(pChild)) )
-							addStatesToEnter( pChild, anc, statesToEnter, statesForDefaultEntry );
-			}
+				for( s in getTargetStates( initial.next().transition().next() ) )
+					addStatesToEnter( s, statesToEnter, statesForDefaultEntry );
+			} else if( state.isTParallel() )
+				for( s in state.childStates() )
+					addStatesToEnter( s, statesToEnter, statesForDefaultEntry );
 		}
 	}
 	
@@ -1085,7 +1126,7 @@ function isPreempted(s transitionList):
 		            return anc
 		]</p>
 	**/
-	function findLCA( stateList : List<Node> ) {
+	function findLCCA( stateList : List<Node> ) {
 		for( ancestor in getProperAncestors(stateList.head(), null) )
 			//if( stateList.filter(function(s:Node) return s != stateList.head()).every(function(s) return s.isDescendant(ancestor)) )
 			if( stateList.filter( // cpp fix

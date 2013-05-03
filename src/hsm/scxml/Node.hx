@@ -4,11 +4,13 @@ class Node {
 	public var parent:Node;
 	public var name:String;
 	public var pos:Int; // position in document (used for sorting etc)
+	public var isFirstEntry:Bool; // see enterStates in Interp
 	public var atts:Hash<String>;
 	var nodes:Array<Node>;
 	//var cache:Hash<Node>;
 	public function new(p:Node) {
 		this.parent = p;
+		this.isFirstEntry = true;
 		this.atts = new Hash();
 		this.nodes = new Array();
 		//cache = new Hash();
