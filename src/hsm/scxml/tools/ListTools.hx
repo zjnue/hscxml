@@ -2,7 +2,9 @@ package hsm.scxml.tools;
 
 class ListTools {
 	public static inline function head<T>( l : List<T> ) return l.first()
-	public static inline function tail<T>( l : List<T> ) return l.last()
+	public static inline function tail<T>( l : List<T> ) {
+		var l2 = clone(l); l2.pop(); return l2;
+	}
 	public static inline function append<T>( l : List<T>, itemList : List<T> ) {
 		for( i in itemList ) l.add( i ); return l;
 	}

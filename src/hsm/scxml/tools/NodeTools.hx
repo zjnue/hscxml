@@ -37,9 +37,6 @@ class NodeTools {
 				return true;
 		return false;
 	}
-	public static function doInvoke( n : Node ) {
-		// FIXME
-	}
 	
 	// extra
 	public static inline function isTTransition( s : Node ) return Std.is(s, Transition)

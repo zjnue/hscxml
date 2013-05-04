@@ -34,7 +34,7 @@ class Scxml {
 	}
 	
 	inline public function stop() {
-		//interp.stop();
+		interp.stop();
 	}
 	
 	inline public function postEvent( str : String ) {
