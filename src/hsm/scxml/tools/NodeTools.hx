@@ -11,7 +11,7 @@ class NodeTools {
 	public static inline function isTInitial( s : Node ) return Std.is(s,Initial)
 	public static inline function isTHistory( s : Node ) return Std.is(s,History)
 	// defs
-	public static inline function isState( s : Node ) return isTState(s) || isTParallel(s) || isTFinal(s) || isTScxml(s)
+	public static inline function isState( s : Node ) return isTState(s) || isTParallel(s) || isTFinal(s)
 	public static inline function isPseudoState( s : Node ) return isTInitial(s) || isTHistory(s)
 	public static inline function isTransitionTarget( s : Node ) return isState(s) || isTHistory(s)
 	public static inline function isAtomic( s : Node ) return (isTState(s) && !hasChildStates(s)) || isTFinal(s)
