@@ -21,7 +21,4 @@ class ListTools {
 		for( i in arr ) l.add(i);
 		return l;
 	}
-	public static inline function add2<T>( l : List<T>, item : T ) {
-		l.add( item ); return l;
-	}
 }

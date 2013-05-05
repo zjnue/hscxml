@@ -8,6 +8,7 @@ import hsm.scxml.tools.NodeTools;
 import hscript.Parser;
 import hscript.Interp;
 
+using hsm.scxml.tools.ArrayTools;
 using hsm.scxml.tools.ListTools;
 using hsm.scxml.tools.NodeTools;
 
@@ -319,7 +320,7 @@ procedure interpret(doc):
 		initHInterp();
 		
 		var transition = d.initial().next().transition().next();
-		var s = new List<Node>().add2(transition);
+		var s = [transition].toList();
 		enterStates(s);
 		//mainEventLoop();
 		if( onInit != null )
@@ -623,7 +624,7 @@ function selectEventlessTransitions():
 		var enabledTransitions = new Set<Node>();
 		var atomicStates = configuration.toList().filter(NodeTools.isAtomic).sort(documentOrder);
 		for( state in atomicStates )
-			for( s in new List<Node>().add2(state).append(getProperAncestors(state, null)) ) {
+			for( s in [state].toList().append(getProperAncestors(state, null)) ) {
 				var exitLoop = false;
 				for( t in s.transition() ) {
 					if( !t.exists("event") && conditionMatch(t) ) {
@@ -679,7 +680,7 @@ function selectTransitions(event):
 		var enabledTransitions = new Set<Node>();
 		var atomicStates = configuration.toList().filter(NodeTools.isAtomic).sort(documentOrder);
 		for( state in atomicStates )
-			for( s in new List<Node>().add2(state).append(getProperAncestors(state, null)) ) {
+			for( s in [state].toList().append(getProperAncestors(state, null)) ) {
 				var exitLoop = false;
 				for( t in s.transition() )
 					if( t.exists("event") && nameMatch(t.get("event"), event.name) && conditionMatch(t) ) {
@@ -732,9 +733,9 @@ function removeConflictingTransitions(enabledTransitions):
 		var totalExitSet = new Set<Node>();
 		// toList sorts the transitions in the order of the states that selected them
 		for( t in enabledTransitions.toList() )
-			if( !totalExitSet.hasIntersection(computeExitSet(Lambda.list([t]))) ) {
+			if( !totalExitSet.hasIntersection(computeExitSet([t].toList())) ) {
 				filteredTransitions.add(t);
-				totalExitSet.union(computeExitSet(Lambda.list([t])));
+				totalExitSet.union(computeExitSet([t].toList()));
 			}
 		return filteredTransitions;
 	}
@@ -798,7 +799,7 @@ function removeConflictingTransitions(enabledTransitions):
 			var t1Preempted = false;
 			var transitionsToRemove = new Set<Node>();
 			for( t2 in filteredTransitions.toList() )
-				if( computeExitSet(Lambda.list([t1])).hasIntersection(computeExitSet(Lambda.list([t2]))) )
+				if( computeExitSet([t1].toList()).hasIntersection(computeExitSet([t2].toList())) )
 					if( getSourceState(t1).isDescendant(getSourceState(t2)) )
 						transitionsToRemove.add(t2);
 					else {
@@ -1223,7 +1224,7 @@ function getTransitionDomain(t)
 				&& targetStates.every(function(s) return s.isDescendant(sourceState)) )
 			return sourceState;
 		else
-			return findLCCA( Lambda.list([sourceState]).append(targetStates) );
+			return findLCCA( [sourceState].toList().append(targetStates) );
 	}
 	
 /**
