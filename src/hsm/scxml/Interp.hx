@@ -3,10 +3,8 @@ package hsm.scxml;
 import hsm.scxml.Types;
 import hsm.scxml.Node;
 import hsm.scxml.Compiler;
+import hsm.scxml.Model;
 import hsm.scxml.tools.NodeTools;
-
-import hscript.Parser;
-import hscript.Interp;
 
 using hsm.scxml.tools.ArrayTools;
 using hsm.scxml.tools.ListTools;
@@ -15,12 +13,8 @@ using hsm.scxml.tools.NodeTools;
 class Interp {
 	
 	var d : Node;
-	var hparse : hscript.Parser;
-	var hinterp : hscript.Interp;
 	
 	public function new() {
-		hparse = new hscript.Parser();
-		hinterp = new hscript.Interp();
 		log = function(msg:String) trace(msg);
 	}
 	
@@ -44,7 +38,7 @@ class Interp {
 	
 	var configuration : Set<Node>;
 	var statesToInvoke : Set<Node>;
-	var datamodel : DModel;
+	var datamodel : Model;
 	var internalQueue : Queue<Event>;
 	var externalQueue : BlockingQueue<Event>;
 	var historyValue : Hash<List<Node>>;
@@ -83,15 +77,21 @@ class Interp {
 		internalQueue = new Queue();
 		externalQueue = new BlockingQueue();
 		externalQueue.onNewContent = checkBlockingQueue;
-		historyValue = new Hash(); // check
+		historyValue = new Hash();
 		
-		datamodel = new DModel(d);
-		// check
-		var _sessionId = getSessionId();
-		var _name = doc.exists("name") ? doc.get("name") : _sessionId;
-		datamodel.set("_sessionId", _sessionId);
-		datamodel.set("_name", _name);
-		//initDatamodel(result.data);
+		var model = "hscript";//d.exists("datamodel") ? d.get("datamodel") : "hscript";
+		switch( model ) {
+			case "null":
+				datamodel = new NullModel(d);
+			case "ecmascript":
+				datamodel = new EcmaScriptModel(d);
+			case "xpath":
+				datamodel = new XPathModel(d);
+			case "hscript":
+				datamodel = new HScriptModel(d);
+			default:
+		}
+		datamodel.log = log;
 		
 		binding = d.exists("binding") ? d.get("binding") : "early";
 		if( binding == "early" )
@@ -100,12 +100,7 @@ class Interp {
 		running = true;
 		executeGlobalScriptElements(d);
 		
-		initHInterp();
-		
-		var transition = d.initial().next().transition().next();
-		var s = [transition].toList();
-		enterStates(s);
-		//mainEventLoop();
+		enterStates( [d.initial().next().transition().next()].toList() );
 		if( onInit != null )
 			onInit();
 	}
@@ -134,20 +129,8 @@ class Interp {
 			expandScxmlSource(el);
 	}
 	
-	static var sessionId:Int = 0;
-	function getSessionId() {
-		return Std.string(sessionId++);
-	}
-	
 	function executeGlobalScriptElements( doc : Node ) {
 		// FIXME
-	}
-	
-	function initHInterp() {
-		//hinterp.variables.set("log", log);
-		//hinterp.variables.set("Std", Std);
-		hinterp.variables.set("trace", log);
-		hinterp.variables.set("datamodel", datamodel);
 	}
 	
 	/*
@@ -163,7 +146,7 @@ class Interp {
 		}
 	}*/
 	
-	function initializeDatamodel( datamodel : DModel, doc : Node ) {
+	function initializeDatamodel( datamodel : Model, doc : Node ) {
 		// FIXME
 	}
 	
@@ -518,17 +501,10 @@ class Interp {
 	function nameMatch( str1 : String, str2 : String ) {
 		return str2.indexOf(str1) == 0;
 	}
-
-	function eval( expr : String ) : Dynamic {
-		var program = hparse.parseString(expr);
-		var bytes = hscript.Bytes.encode(program);
-		program = hscript.Bytes.decode(bytes);
-		return hinterp.execute(program);
-	}
 	
 	function conditionMatch( transition : Node ) : Bool {
-		if( transition.exists("cond") )
-			return eval( transition.get("cond") );
+		if( transition.exists("cond") && datamodel.supportsCond )
+			return datamodel.doCond( transition.get("cond") );
 		return true;
 	}
 	
@@ -557,14 +533,18 @@ class Interp {
 	function executeContent( c : Node ) {
 		switch( c.name ) {
 			case "log":
-				log("<log> :: label = " + c.get("label") + " :: expr = " + Std.string(c.get("expr")) + 
-					" :: value = " + Std.string(eval(c.get("expr"))) );
+				if( datamodel.supportsVal )
+					log("<log> :: label = " + c.get("label") + " :: expr = " + Std.string(c.get("expr")) + 
+						" :: value = " + Std.string( datamodel.doVal(c.get("expr")) ) );
 			case "raise":
 				internalQueue.enqueue(new Event(c.get("event")));
 			case "assign":
-				datamodel.set(c.get("location"), eval(c.get("expr")));
+				if( datamodel.supportsAssign )
+					datamodel.doAssign(c.get("location"), c.get("expr"));
 			case "if":
-				if( eval(c.get("cond")) ) {
+				if( !datamodel.supportsCond )
+					return;
+				if( datamodel.doCond(c.get("cond")) ) {
 					for( child in c ) {
 						if( child.name == "elseif" || child.name == "else" )
 							break;
@@ -575,7 +555,7 @@ class Interp {
 					var matched = false;
 					for( child in c ) {
 						if( !matched && child.name == "elseif" )
-							if( eval(child.get("cond")) ) {
+							if( datamodel.doCond(child.get("cond")) ) {
 								matched = true;
 								continue;
 							}
@@ -593,7 +573,8 @@ class Interp {
 					}
 				}
 			case "script":
-				eval( cast(c, Script).content );
+				if( datamodel.supportsScript )
+					datamodel.doScript( cast(c, Script).content );
 			default:
 		}
 	}

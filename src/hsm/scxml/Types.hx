@@ -22,21 +22,6 @@ class Event {
 	}
 }
 
-class DModel { // check: calling this Datamodel causes cpp to clash with DataModel in Node.hx
-	var doc : Node;
-	var h : Hash<Dynamic>;
-	public function new( d : Node ) {
-		doc = d;
-		h = new Hash();
-	}
-	public function set( key : String, val : Dynamic ) {
-		h.set(key, val);
-	}
-	public function get( key ) {
-		return h.get(key);
-	}
-}
-
 class Set<T> {
 	public var l : List<T>;
 	public function new( ?s : Set<T> ) l = s != null ? s.toList().clone() : new List<T>()
