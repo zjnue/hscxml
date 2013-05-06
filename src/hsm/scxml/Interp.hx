@@ -94,8 +94,7 @@ class Interp {
 		datamodel.log = log;
 		
 		binding = d.exists("binding") ? d.get("binding") : "early";
-		if( binding == "early" )
-			initializeDatamodel(datamodel, d);
+		initializeDatamodel( datamodel, result.data, (binding != "early") );
 		
 		running = true;
 		executeGlobalScriptElements(d);
@@ -135,21 +134,26 @@ class Interp {
 			executeContent(globalScripts.head());
 	}
 	
-	/*
-	function initDatamodel( dms : List<DataModel> ) {
-		for( dm in dms ) {
-			for( data in dm ) {
-				if( !data.isTData() )
-					continue;
-				var id = data.get("id");
-				var expr = data.get("expr");
-				datamodel.set(id, eval(expr));
+	function initializeDatamodel( datamodel : Model, dms : List<DataModel>, setValsToNull : Bool = false ) {
+		if( !(datamodel.supportsVal && datamodel.supportsProps) )
+			return;
+		for( dm in dms )
+			for( d in dm ) {
+				var id = d.get("id");
+				if( setValsToNull )
+					datamodel.set(id, null);
+				else if( d.exists("src") ) {
+					setFromSrc(id, d.get("src"));
+				} else {
+					var val = "";
+					if( d.exists("expr") )
+						val = d.get("expr");
+					else
+						for( child in d )
+							val += child.toString();
+					datamodel.set(id, datamodel.doVal(val));
+				}
 			}
-		}
-	}*/
-	
-	function initializeDatamodel( datamodel : Model, doc : Node ) {
-		// FIXME
 	}
 	
 	function mainEventLoop() {
@@ -375,8 +379,7 @@ class Interp {
 			configuration.add(s);
 			statesToInvoke.add(s);
 			if( binding == "late" && s.isFirstEntry ) {
-				//initializeDatamodel(datamodel.s,doc.s);
-				initializeDatamodel(datamodel, s);
+				initializeDatamodel( datamodel, cast s.datamodel(), false );
 				s.isFirstEntry = false;
 			}
 			for( onentry in s.onentry() )
@@ -619,6 +622,10 @@ class Interp {
 	
 	function invoke( inv : Node ) {
 		return "??"; // FIXME
+	}
+	
+	function setFromSrc( id : String, src : String ) {
+		// FIXME
 	}
 	
 	/** node here is the transition to pass in **/

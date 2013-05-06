@@ -40,7 +40,7 @@ class NodeTools {
 	
 	// extra
 	public static inline function isTTransition( s : Node ) return Std.is(s, Transition)
-	//public static inline function isTDataModel( s : Node ) return Std.is(s, DataModel)
+	public static inline function isTDataModel( s : Node ) return Std.is(s, DataModel)
 	public static inline function isTScript( s : Node ) return Std.is(s, Script)
 	public static inline function isTInvoke( s : Node ) return Std.is(s, Invoke)
 	public static inline function isTOnEntry( s : Node ) return Std.is(s, OnEntry)
@@ -53,7 +53,7 @@ class NodeTools {
 	public static inline function historyFilter( n : Node ) return isTHistory(n)
 	public static inline function finalFilter( n : Node ) return isTFinal(n)
 	public static inline function initialFilter( n : Node ) return isTInitial(n)
-	//public static inline function dataModelFilter( n : Node ) return isTDataModel(n)
+	public static inline function dataModelFilter( n : Node ) return isTDataModel(n)
 	public static inline function scriptFilter( n : Node ) return isTScript(n)
 	public static inline function invokeFilter( n : Node ) return isTInitial(n)
 	public static inline function onEntryFilter( n : Node ) return isTOnEntry(n)
@@ -65,7 +65,7 @@ class NodeTools {
 	public static inline function history( n : Node ) return Lambda.filter( n, historyFilter ).iterator()
 	public static inline function final( n : Node ) return Lambda.filter( n, finalFilter ).iterator()
 	public static inline function initial( n : Node ) return Lambda.filter( n, initialFilter ).iterator()
-	//public static inline function datamodel( n : Node ) return Lambda.filter( n, dataModelFilter )
+	public static inline function datamodel( n : Node ) return Lambda.filter( n, dataModelFilter )
 	public static inline function script( n : Node ) return Lambda.filter( n, scriptFilter )
 	public static inline function invoke( n : Node ) return Lambda.filter( n, invokeFilter ).iterator()
 	public static inline function onentry( n : Node ) return Lambda.filter( n, onEntryFilter ).iterator()
