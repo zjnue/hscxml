@@ -575,6 +575,38 @@ class Interp {
 			case "script":
 				if( datamodel.supportsScript )
 					datamodel.doScript( cast(c, Script).content );
+			case "foreach":
+				if( !(datamodel.supportsVal && datamodel.supportsProps) )
+					return;
+				
+				var arr : Array<Dynamic> = cast( datamodel.doVal(c.get("array")) ).copy();
+				var item = c.exists("item") ? c.get("item") : null;
+				var itemWasDefined = item != null && datamodel.exists(item);
+				var itemPrevVal = itemWasDefined ? datamodel.get(item) : null;
+				var index = c.exists("index") ? c.get("index") : null;
+				var indexWasDefined = index != null && datamodel.exists(index);
+				var indexPrevVal = indexWasDefined ? datamodel.get(index) : null;
+				var count = 0;
+				
+				for( e in arr ) {
+					if( item != null )
+						datamodel.set(item, e);
+					if( index != null )
+						datamodel.set(index, count++);
+					for( child in c )
+						executeContent( child );
+				}
+				if( item != null )
+					if( itemWasDefined )
+						datamodel.set(item, itemPrevVal);
+					else
+						datamodel.remove(item);
+				if( index != null )
+					if( indexWasDefined )
+						datamodel.set(index, indexPrevVal);
+					else
+						datamodel.remove(index);
+			
 			default:
 		}
 	}

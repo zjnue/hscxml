@@ -28,7 +28,7 @@ class Compiler {
 			case "invoke":		n = new Invoke(parent);
 			case "finalize":	n = new Finalize(parent);
 			case "content":		n = new Content(parent);
-			case "log", "raise", "assign", "if", "elseif", "else":
+			case "log", "raise", "assign", "if", "elseif", "else", "foreach":
 				n = new Exec(parent);
 			case "script":		n = new Script(parent); if( !x.exists("src") ) for( child in x ) cast(n, Script).content += child.toString();
 			default:

@@ -9,6 +9,7 @@ class Model {
 	
 	static var sessionId:Int = 0;
 	
+	public var supportsProps : Bool;
 	public var supportsCond : Bool;
 	public var supportsLoc : Bool;
 	public var supportsVal : Bool;
@@ -23,6 +24,7 @@ class Model {
 	}
 	
 	function init( doc : Node ) {
+		supportsProps = false;
 		supportsCond = false;
 		supportsLoc = false;
 		supportsVal = false;
@@ -42,8 +44,20 @@ class Model {
 		return Std.string(sessionId++);
 	}
 	
-	public function set( key : String, val : Dynamic ) {
+	public function get( key : String ) : Dynamic {
+		return null;
+	}
 	
+	public function set( key : String, val : Dynamic ) {
+		
+	}
+	
+	public function exists( key : String ) : Bool {
+		return false;
+	}
+	
+	public function remove( key : String ) {
+		
 	}
 	
 	public function doCond( expr : String ) : Bool {
@@ -119,6 +133,7 @@ class HScriptModel extends Model {
 	}
 	
 	override function init( doc : Node ) {
+		supportsProps = true;
 		supportsCond = true;
 		supportsLoc = true;
 		supportsVal = true;
@@ -144,8 +159,20 @@ class HScriptModel extends Model {
 		return log = value;
 	}
 	
+	override public function get( key : String ) : Dynamic {
+		return hinterp.variables.get( key );
+	}
+	
 	override public function set( key : String, val : Dynamic ) {
 		hinterp.variables.set( key, val );
+	}
+	
+	override public function exists( key : String ) : Bool {
+		return hinterp.variables.exists( key );
+	}
+	
+	override public function remove( key : String ) {
+		hinterp.variables.remove( key );
 	}
 	
 	function eval( expr : String ) : Dynamic {
