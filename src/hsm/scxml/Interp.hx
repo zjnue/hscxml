@@ -130,7 +130,9 @@ class Interp {
 	}
 	
 	function executeGlobalScriptElements( doc : Node ) {
-		// FIXME
+		var globalScripts = doc.script();
+		if( !globalScripts.isEmpty() )
+			executeContent(globalScripts.head());
 	}
 	
 	/*
