@@ -259,12 +259,8 @@ class Interp {
 				if( exitLoop )
 					break;
 			}
-		enabledTransitions = filterPreempted(enabledTransitions);
+		enabledTransitions = removeConflictingTransitions(enabledTransitions);
 		return enabledTransitions;
-	}
-	
-	inline function filterPreempted( enabledTransitions : Set<Node> ) {
-		return removeConflictingTransitions1(enabledTransitions);
 	}
 	
 	function selectTransitions( event : Event ) {
@@ -284,17 +280,6 @@ class Interp {
 			}
 		enabledTransitions = removeConflictingTransitions(enabledTransitions);
 		return enabledTransitions;
-	}
-	
-	function removeConflictingTransitions1( enabledTransitions : Set<Node> ) {
-		var filteredTransitions = new Set<Node>();
-		var totalExitSet = new Set<Node>();
-		for( t in enabledTransitions.toList() )
-			if( !totalExitSet.hasIntersection(computeExitSet([t].toList())) ) {
-				filteredTransitions.add(t);
-				totalExitSet.union(computeExitSet([t].toList()));
-			}
-		return filteredTransitions;
 	}
 	
 	function removeConflictingTransitions( enabledTransitions : Set<Node> ) {
@@ -407,7 +392,7 @@ class Interp {
 		for( t in transitions )
 			statesToEnter.union( Set.ofList(getTargetStates(t)) );
 		for( s in statesToEnter )
-			addDescendentStatesToEnter( s, statesToEnter, statesForDefaultEntry );
+			addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry );
 		for( t in transitions ) {
 			var ancestor = getTransitionDomain(t);
 			for( s in getTargetStates(t) )
@@ -415,17 +400,17 @@ class Interp {
 		}
 	}
 	
-	function addDescendentStatesToEnter( state : Node, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node> ) {
+	function addDescendantStatesToEnter( state : Node, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node> ) {
 		if( state.isTHistory() )
 			if( historyValue.exists(state.get("id")) )
 				for( s in historyValue.get(state.get("id")) ) {
-					addDescendentStatesToEnter( s, statesToEnter, statesForDefaultEntry );
+					addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry );
 					addAncestorStatesToEnter( s, state.parent, statesToEnter, statesForDefaultEntry );
 				}
 			else
 				for( t in state.transition() )
 					for( s in getTargetStates(t) ) {
-						addDescendentStatesToEnter( s, statesToEnter, statesForDefaultEntry );
+						addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry );
 						addAncestorStatesToEnter( s, state.parent, statesToEnter, statesForDefaultEntry );
 					}
 		else {
@@ -433,7 +418,7 @@ class Interp {
 			if( state.isCompound() ) {
 				statesForDefaultEntry.add(state);
 				for( s in getTargetStates(state.initial().next().transition().next()) ) {
-					addDescendentStatesToEnter( s, statesToEnter, statesForDefaultEntry );
+					addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry );
 					addAncestorStatesToEnter( s, state, statesToEnter, statesForDefaultEntry );
 				}
 			}
@@ -441,19 +426,17 @@ class Interp {
 				if( state.isTParallel() )
 					for( child in state.childStates() )
 						if( !statesToEnter.l.some(function(s) return s.isDescendant(child)) )
-							addDescendentStatesToEnter( child, statesToEnter, statesForDefaultEntry );
+							addDescendantStatesToEnter( child, statesToEnter, statesForDefaultEntry );
 		}
 	}
 	
 	function addAncestorStatesToEnter( state : Node, ancestor : Node, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node> ) {
-		var ancs = getProperAncestors(state,ancestor);
 		for( anc in getProperAncestors(state,ancestor) ) {
 			statesToEnter.add(anc);
 			if( anc.isTParallel() )
 				for( child in anc.childStates() )
 					if( !statesToEnter.l.some(function(s) return s.isDescendant(child)) )
-						//addStatesToEnter( child, statesToEnter, statesForDefaultEntry );
-						addDescendentStatesToEnter( child, statesToEnter, statesForDefaultEntry );
+						addDescendantStatesToEnter( child, statesToEnter, statesForDefaultEntry );
 		}
 	}
 	
