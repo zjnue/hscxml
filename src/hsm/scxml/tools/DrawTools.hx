@@ -101,7 +101,7 @@ class DrawTools {
 				var headId = child.get("target");
 				var targetNode = states.get(headId);
 				out += getIndent(depth) + tailId + "->" +
-					 (isCluster(targetNode) ? targetNode.childStates().first().get("id") + "[lhead=cluster_" + headId + "]" : headId);
+					 (isCluster(targetNode) ? targetNode.getChildStates().first().get("id") + "[lhead=cluster_" + headId + "]" : headId);
 				out += "\n";
 			
 			} else if( child.isTTransition() && node.exists("id") && child.exists("target") ) {
@@ -117,7 +117,7 @@ class DrawTools {
 					var invisId = "invis_" + nodeId;
 					
 					out += getIndent(depth) + "__x__ [style=invis];\n";
-					out += getIndent(depth) + node.childStates().first().get("id") + "-> __x__ [dir=none,ltail="+clusterId+",headclip=false];\n";
+					out += getIndent(depth) + node.getChildStates().first().get("id") + "-> __x__ [dir=none,ltail="+clusterId+",headclip=false];\n";
 					out += getIndent(depth) + "__x__ ->" + invisId + "[lhead="+clusterId+",tailclip=false];";
 					
 				} else {
@@ -125,8 +125,8 @@ class DrawTools {
 					var targetNode = states.get(headId);
 					
 					out += getIndent(depth) + 
-						(isCluster(node) ? node.childStates().first().get("id") : tailId) + "->" + 
-						(isCluster(targetNode) ? targetNode.childStates().first().get("id") : headId);
+						(isCluster(node) ? node.getChildStates().first().get("id") : tailId) + "->" + 
+						(isCluster(targetNode) ? targetNode.getChildStates().first().get("id") : headId);
 						
 					var hasCluster = isCluster(node) || isCluster(targetNode);
 					if( hasCluster ) out += "[";

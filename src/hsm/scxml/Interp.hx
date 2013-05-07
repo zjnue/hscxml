@@ -381,7 +381,7 @@ class Interp {
 					var grandparent = parent.parent;
 					internalQueue.enqueue( new Event("done.state." + parent.get("id"), s.get("donedata")) );
 					if( grandparent.isTParallel() )
-						if( grandparent.childStates().every(isInFinalState) )
+						if( grandparent.getChildStates().every(isInFinalState) )
 							internalQueue.enqueue( new Event("done.state." + grandparent.get("id")) );
 				}
 			}
@@ -424,7 +424,7 @@ class Interp {
 			}
 			else
 				if( state.isTParallel() )
-					for( child in state.childStates() )
+					for( child in state.getChildStates() )
 						if( !statesToEnter.l.some(function(s) return s.isDescendant(child)) )
 							addDescendantStatesToEnter( child, statesToEnter, statesForDefaultEntry );
 		}
@@ -434,7 +434,7 @@ class Interp {
 		for( anc in getProperAncestors(state,ancestor) ) {
 			statesToEnter.add(anc);
 			if( anc.isTParallel() )
-				for( child in anc.childStates() )
+				for( child in anc.getChildStates() )
 					if( !statesToEnter.l.some(function(s) return s.isDescendant(child)) )
 						addDescendantStatesToEnter( child, statesToEnter, statesForDefaultEntry );
 		}
@@ -443,9 +443,9 @@ class Interp {
 	function isInFinalState( s : Node ) : Bool {
 		var self = this;
 		if( s.isCompound() )
-			return s.childStates().some( function(s0) return s0.isTFinal() && self.configuration.isMember(s0) );
+			return s.getChildStates().some( function(s0) return s0.isTFinal() && self.configuration.isMember(s0) );
 		else if( s.isTParallel() )
-			return s.childStates().every(isInFinalState);
+			return s.getChildStates().every(isInFinalState);
 		else 
 			return false;
 	}
@@ -497,7 +497,7 @@ class Interp {
 	}
 	
 	function getDefaultInitialState( s : Node ) : Node {
-		var childStates = s.childStates();
+		var childStates = s.getChildStates();
 		var initial = s.initial();
 		if( initial.hasNext() ) {
 			var id = initial.next().transition().next().get("target");
@@ -627,7 +627,7 @@ class Interp {
 		if( s.get("id") == id )
 			return s;
 		else {
-			for( child in s.childStates() ) {
+			for( child in s.getChildStates() ) {
 				var ss = getTargetState(child, id);
 				if( ss != null )
 					return ss;

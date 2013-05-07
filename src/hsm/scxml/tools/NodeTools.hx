@@ -24,7 +24,7 @@ class NodeTools {
 		}
 		return false;
 	}
-	public static function childStates( n : Node ) : List<Node> {
+	public static function getChildStates( n : Node ) : List<Node> {
 		var l = new List<Node>();
 		for( e in n )
 			if( isState(e) )
