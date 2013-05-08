@@ -1,0 +1,11 @@
+# example usage: neko convert.n ecma
+-main Convert
+-neko convert.n
+
+--next
+
+# example usage: neko run.n ecma
+-cp ../src
+-main Run
+-lib hscript
+-neko run.n
