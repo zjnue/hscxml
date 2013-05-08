@@ -37,21 +37,8 @@ class Convert {
 			throw "Unknown target " + Std.string(args[1]) +". Usage:\nneko convert.n [ecma|xpath|hscript]\n";
 		}
 		
-//		// these tests currently have invalid content
-//		var ignore = [
-//			"496.txml",
-//			"577.txml",
-//			"test354.txml",
-//			"test446.txml",
-//			"test459.txml",
-//			"test483.txml",
-//			"test513.txml",
-//		];
-		
 		for( path in sys.FileSystem.readDirectory(cwd + "txml") ) {
 			
-//			if( Lambda.has(ignore, path) )
-//				continue;
 			var parts = path.split(".");
 			if( parts.pop() != "txml" )
 				continue;
