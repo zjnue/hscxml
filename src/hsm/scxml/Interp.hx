@@ -130,8 +130,8 @@ class Interp {
 	
 	function executeGlobalScriptElements( doc : Node ) {
 		var globalScripts = doc.script();
-		if( !globalScripts.isEmpty() )
-			executeContent(globalScripts.head());
+		if( globalScripts.hasNext() )
+			executeContent(globalScripts.next());
 	}
 	
 	function initializeDatamodel( datamodel : Model, dms : List<DataModel>, setValsToNull : Bool = false ) {

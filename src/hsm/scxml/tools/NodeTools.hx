@@ -37,7 +37,6 @@ class NodeTools {
 				return true;
 		return false;
 	}
-	
 	// extra
 	public static inline function isTTransition( s : Node ) return Std.is(s, Transition)
 	public static inline function isTDataModel( s : Node ) return Std.is(s, DataModel)
@@ -65,8 +64,8 @@ class NodeTools {
 	public static inline function history( n : Node ) return Lambda.filter( n, historyFilter ).iterator()
 	public static inline function final( n : Node ) return Lambda.filter( n, finalFilter ).iterator()
 	public static inline function initial( n : Node ) return Lambda.filter( n, initialFilter ).iterator()
-	public static inline function datamodel( n : Node ) return Lambda.filter( n, dataModelFilter )
-	public static inline function script( n : Node ) return Lambda.filter( n, scriptFilter )
+	public static inline function datamodel( n : Node ) return Lambda.filter( n, dataModelFilter ).iterator()
+	public static inline function script( n : Node ) return Lambda.filter( n, scriptFilter ).iterator()
 	public static inline function invoke( n : Node ) return Lambda.filter( n, invokeFilter ).iterator()
 	public static inline function onentry( n : Node ) return Lambda.filter( n, onEntryFilter ).iterator()
 	public static inline function onexit( n : Node ) return Lambda.filter( n, onExitFilter ).iterator()
