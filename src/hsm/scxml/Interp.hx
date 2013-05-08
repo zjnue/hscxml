@@ -486,7 +486,7 @@ class Interp {
 	}
 	
 	function nameMatch( str1 : String, str2 : String ) {
-		return str2.indexOf(str1) == 0;
+		return str1 == "*" ? true : str2.indexOf(str1) == 0;
 	}
 	
 	function conditionMatch( transition : Node ) : Bool {
