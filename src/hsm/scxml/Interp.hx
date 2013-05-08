@@ -486,7 +486,6 @@ class Interp {
 	}
 	
 	function conditionMatch( transition : Node ) : Bool {
-		//log("conditionMatch: transition = " + transition);
 		if( transition.exists("cond") && datamodel.supportsCond )
 			return datamodel.doCond( transition.get("cond") );
 		return true;
@@ -601,16 +600,17 @@ class Interp {
 						datamodel.set(index, count++);
 					executeBlock(c);
 				}
+				// it appears new foreach vars should remain set - see test 150
 				if( item != null )
 					if( itemWasDefined )
 						datamodel.set(item, itemPrevVal);
-					else
-						datamodel.remove(item);
+					//else
+					//	datamodel.remove(item);
 				if( index != null )
 					if( indexWasDefined )
 						datamodel.set(index, indexPrevVal);
-					else
-						datamodel.remove(index);
+					//else
+					//	datamodel.remove(index);
 			
 			default:
 		}
