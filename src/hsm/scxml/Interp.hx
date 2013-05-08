@@ -149,8 +149,7 @@ class Interp {
 					if( d.exists("expr") )
 						val = d.get("expr");
 					else
-						for( child in d )
-							val += child.toString();
+						val = cast(d, Data).content;
 					datamodel.set(id, datamodel.doVal(val));
 				}
 			}

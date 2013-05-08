@@ -93,7 +93,8 @@ class DataModel extends Node {
 }
 
 class Data extends Node {
-	public function new(p:Node) { super(p); }
+	public var content:String;
+	public function new(p:Node) { super(p); content = ""; }
 }
 
 class Invoke extends Node {
