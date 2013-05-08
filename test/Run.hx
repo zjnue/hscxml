@@ -5,7 +5,7 @@ class Run {
 		var args = Sys.args();
 		
 		if( args.length < 1 )
-			throw "Not enough arguments specified. Usage:\nneko convert.n [ecma|xpath|hscript]\n";
+			throw "Not enough arguments specified. Usage:\nneko run.n [ecma|xpath|hscript]\n";
 					
 		var cwd = Sys.getCwd();
 		var src = "";
@@ -25,7 +25,7 @@ class Run {
 			throw "Not yet supported";
 			
 		default:
-			throw "Unknown target " + Std.string(args[1]) +". Usage:\nneko convert.n [ecma|xpath|hscript]\n";
+			throw "Unknown target " + Std.string(args[1]) +". Usage:\nneko run.n [ecma|xpath|hscript]\n";
 		}
 		
 		// provides tmp jump option
