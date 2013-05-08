@@ -20,6 +20,9 @@ class Event {
 	public function get( key ) {
 		return h.get(key);
 	}
+	public function toString() {
+		return "[Event: " + name + "]";
+	}
 }
 
 class Set<T> {

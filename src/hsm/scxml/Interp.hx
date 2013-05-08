@@ -131,7 +131,7 @@ class Interp {
 	function executeGlobalScriptElements( doc : Node ) {
 		var globalScripts = doc.script();
 		if( globalScripts.hasNext() )
-			executeContent(globalScripts.next());
+			executeBlock([globalScripts.next()]);
 	}
 	
 	function initializeDatamodel( datamodel : Model, dms : List<DataModel>, setValsToNull : Bool = false ) {
@@ -166,7 +166,7 @@ class Interp {
 						macrostepDone = true;
 					else {
 						var internalEvent = internalQueue.dequeue();
-						datamodel.set("_event", internalEvent);
+						setEvent(internalEvent);
 						enabledTransitions = selectTransitions(internalEvent);
 					}
 				}
@@ -209,7 +209,7 @@ class Interp {
 			mainEventLoop();
 			return;
 		}
-		datamodel.set("_event", externalEvent);
+		setEvent(externalEvent);
 		for( state in configuration )
 			for( inv in state.invoke() ) {
 				if( inv.get("invokeid") == externalEvent.get("invokeid") )
@@ -232,8 +232,7 @@ class Interp {
 		var statesToExit = configuration.toList().sort(exitOrder);
 		for( s in statesToExit ) {
 			for( onexit in s.onexit() )
-				for( content in onexit )
-					executeContent(content);
+				executeBlock(onexit);
 			for( inv in s.invoke() )
 				cancelInvoke(inv);
 			configuration.delete(s);
@@ -323,8 +322,7 @@ class Interp {
 			}
 		for( s in statesToExit ) {
 			for( onexit in s.onexit() )
-				for( content in onexit )
-					executeContent(content);
+				executeBlock(onexit);
 			for( inv in s.invoke() )
 				cancelInvoke(inv);
 			configuration.delete(s);
@@ -351,8 +349,7 @@ class Interp {
 	
 	function executeTransitionContent( enabledTransitions : List<Node> ) {
 		for( t in enabledTransitions )
-			for( content in t )
-				executeContent(content);
+			executeBlock(t);
 	}
 	
 	function enterStates( enabledTransitions : List<Node> ) {
@@ -367,11 +364,10 @@ class Interp {
 				s.isFirstEntry = false;
 			}
 			for( onentry in s.onentry() )
-				for( content in onentry )
-					executeContent(content);
+				executeBlock(onentry);
 			if( statesForDefaultEntry.isMember(s) )
 				for( content in s.initial().next().transition().next() )
-					executeContent(content);
+					executeBlock(content);
 			if( s.isTFinal() ) {
 				if( s.parent.isTScxml() )
 					running = false;
@@ -490,6 +486,7 @@ class Interp {
 	}
 	
 	function conditionMatch( transition : Node ) : Bool {
+		//log("conditionMatch: transition = " + transition);
 		if( transition.exists("cond") && datamodel.supportsCond )
 			return datamodel.doCond( transition.get("cond") );
 		return true;
@@ -517,12 +514,30 @@ class Interp {
 		// FIXME
 	}
 	
+	inline function raise( evt : Event ) {
+		internalQueue.enqueue(evt);
+	}
+	
+	inline function setEvent( evt : Event ) {
+		datamodel.set("_event", evt);
+	}
+	
+	function executeBlock( it : Iterable<Node> ) {
+		for( i in it ) {
+			try {
+				executeContent(i);
+			} catch( e : Dynamic ) {
+				raise( new Event("error.execution") );
+				break;
+			}
+		}
+	}
+	
 	function executeContent( c : Node ) {
 		switch( c.name ) {
 			case "log":
 				if( datamodel.supportsVal )
-					log("<log> :: label = " + c.get("label") + " :: expr = " + Std.string(c.get("expr")) + 
-						" :: value = " + Std.string( datamodel.doVal(c.get("expr")) ) );
+					log("<log> label: " + c.get("label") + " val: " + Std.string( datamodel.doVal(c.get("expr")) ) );
 			case "raise":
 				internalQueue.enqueue(new Event(c.get("event")));
 			case "assign":
@@ -566,8 +581,12 @@ class Interp {
 				if( !(datamodel.supportsVal && datamodel.supportsProps) )
 					return;
 				
-				var arr : Array<Dynamic> = cast( datamodel.doVal(c.get("array")) ).copy();
+				var arr : Array<Dynamic> = datamodel.doVal(c.get("array")).copy();
 				var item = c.exists("item") ? c.get("item") : null;
+				
+				if( !datamodel.isLegalVar(item) )
+					throw "Illegal foreach item value used: " + item;
+					
 				var itemWasDefined = item != null && datamodel.exists(item);
 				var itemPrevVal = itemWasDefined ? datamodel.get(item) : null;
 				var index = c.exists("index") ? c.get("index") : null;
@@ -580,8 +599,7 @@ class Interp {
 						datamodel.set(item, e);
 					if( index != null )
 						datamodel.set(index, count++);
-					for( child in c )
-						executeContent( child );
+					executeBlock(c);
 				}
 				if( item != null )
 					if( itemWasDefined )

@@ -19,6 +19,8 @@ class Model {
 	public var isInState( default, set_isInState ) : String -> Bool;
 	public var log( default, set_log ) : String -> Void;
 	
+	var illegalValues : Array<Dynamic>;
+	
 	public function new( doc : Node ) {
 		init(doc);
 	}
@@ -30,6 +32,7 @@ class Model {
 		supportsVal = false;
 		supportsAssign = false;
 		supportsScript = false;
+		illegalValues = [];
 	}
 	
 	function set_isInState( value : String -> Bool ) {
@@ -79,6 +82,14 @@ class Model {
 	public function doScript( expr : String ) : Dynamic  {
 		return null;
 	}
+	
+	public function isLegalVar( value : String ) {
+		return true;
+	}
+	
+	public function toString() {
+		return "[Model]";
+	}
 }
 
 class NullModel extends Model {
@@ -104,10 +115,16 @@ class NullModel extends Model {
 	}
 	
 	override public function doCond( expr : String ) : Bool {
+		if( expr == "" )
+			return true;
 		var r = ~/$In\(['"]*([a-zA-Z0-9._]+)['"]*\)/;
 		if( r.match(expr.split(" ").join("")) )
 			return isInState(r.matched(1));
 		return false;
+	}
+	
+	override public function toString() {
+		return "[NullModel: " + Std.string(h) + "]";
 	}
 }
 
@@ -147,6 +164,8 @@ class HScriptModel extends Model {
 		var _name = doc.exists("name") ? doc.get("name") : _sessionId;
 		hinterp.variables.set("_sessionId", _sessionId);
 		hinterp.variables.set("_name", _name);
+		
+		illegalValues = ["continue"];
 	}
 	
 	override function set_isInState( value : String -> Bool ) {
@@ -183,7 +202,10 @@ class HScriptModel extends Model {
 	}
 	
 	override public function doCond( expr : String ) : Bool {
-		return eval(expr);
+		if( expr == "")
+			return true;
+		var val = eval(expr);
+		return Std.is(val, Bool) ? val : (val != null);
 	}
 	
 	override public function doLoc( expr : String ) : Dynamic   {
@@ -200,5 +222,13 @@ class HScriptModel extends Model {
 	
 	override public function doScript( expr : String ) : Dynamic  {
 		return eval(expr);
+	}
+	
+	override public function isLegalVar( value : String ) {
+		return !Lambda.has(illegalValues, value.split("'").join("").split("\"").join(""));
+	}
+	
+	override public function toString() {
+		return "[HScriptModel: " + Std.string(hinterp.variables) + "]";
 	}
 }
