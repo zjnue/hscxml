@@ -37,13 +37,24 @@ class Convert {
 			throw "Unknown target " + Std.string(args[1]) +". Usage:\nneko convert.n [ecma|xpath|hscript]\n";
 		}
 		
+		var stamp : Float;
+		
 		for( path in sys.FileSystem.readDirectory(cwd + "txml") ) {
 			
 			var parts = path.split(".");
 			if( parts.pop() != "txml" )
 				continue;
+				
+			Sys.print("converting.. " + path);
 			
-			new sys.io.Process("xsltproc", ["xsl/" + xsl, "txml/" + path, "-o", out + "/" + parts.join("") + ".xml"]);
+			stamp = haxe.Timer.stamp();
+			
+			// grab a stable build of the open-source saxon xslt 2.0 processor and place it in this folder
+			// http://sourceforge.net/projects/saxon/files/Saxon-HE/9.4/SaxonHE9-4-0-7J.zip/download
+			
+			Sys.command("java", ["-jar", "saxon9he.jar", "-xsltversion:2.0", "-s:txml/" + path, "-xsl:xsl/" + xsl, "-o:" + out + "/" + parts.join("") + ".xml"]);
+			
+			Sys.print(" [" + Std.string( Std.int((haxe.Timer.stamp() - stamp) * 100) / 100) + "s]\n");
 		}
 		
 	}
