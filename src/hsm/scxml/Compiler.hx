@@ -25,6 +25,7 @@ class Compiler {
 			case "transition":	n = new Transition(parent);
 			case "datamodel":	var d = new DataModel(parent); data.add(d); n = d;
 			case "data":		n = new Data(parent); if( !x.exists("expr") ) for( child in x ) cast(n, Data).content += child.toString();
+			case "send":		n = new Send(parent);
 			case "invoke":		n = new Invoke(parent);
 			case "finalize":	n = new Finalize(parent);
 			case "content":		n = new Content(parent);

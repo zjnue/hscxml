@@ -97,11 +97,19 @@ class Data extends Node {
 	public function new(p:Node) { super(p); content = ""; }
 }
 
-class Invoke extends Node {
+class Send extends Node {
 	public function new(p:Node) { super(p); }
 }
 
 class Content extends Node {
+	public function new(p:Node) { super(p); }
+}
+
+class Param extends Node {
+	public function new(p:Node) { super(p); }
+}
+
+class Invoke extends Node {
 	public function new(p:Node) { super(p); }
 }
 
