@@ -31,6 +31,7 @@ class Run {
 		// provides tmp jump option
 		var from = args.length > 1 ? args[1] : null;
 		var fromFound = false;
+		var count = args.length > 2 ? Std.parseInt(args[2])  : -1;
 		
 		var sm : hsm.Scxml = null;
 		
@@ -46,12 +47,21 @@ class Run {
 		
 			var content = sys.io.File.getContent(cwd + src + "/" + path);
 			
-			trace("\n\n[[[[[[[[[ Test: " + path + " ]]]]]]]]]]\n");
+			Sys.print("\n[[[[[[[[[ Test: " + path + " ]]]]]]]]]]\n");
 			
-			sm = new hsm.Scxml();
-			sm.init( content, function() sm.start() );
+			try {
+				sm = new hsm.Scxml();
+				sm.init( content, function() sm.start() );
+			} catch( e : Dynamic ) {
+				Sys.print("\nERROR " + Std.string(e) + "\n");
+			}
+			
+			if( count != -1)
+				if( --count == 0 )
+					break;
 		}
 		
+		Sys.print("\n");
 	}
 	
 }
