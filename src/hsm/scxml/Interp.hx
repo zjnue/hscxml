@@ -70,7 +70,7 @@ class Interp {
 		var result = compiler.compile(doc, null);
 		d = result.node;
 		
-		log("d = \n" + d.toString());
+		//log("d = \n" + d.toString());
 		
 		configuration = new Set();
 		statesToInvoke = new Set();
@@ -598,7 +598,8 @@ class Interp {
 						datamodel.set(item, e);
 					if( index != null )
 						datamodel.set(index, count++);
-					executeBlock(c);
+					for( child in c )
+						executeContent(child);
 				}
 				// it appears new foreach vars should remain set - see test 150
 				if( item != null )
