@@ -192,7 +192,7 @@ class Interp {
 			}
 			checkBlockingQueue();
 		} else {
-			log("mainEventLoop: exitInterpreter");
+			//log("mainEventLoop: exitInterpreter");
 			exitInterpreter();
 		}
 	}
@@ -521,8 +521,39 @@ class Interp {
 		internalQueue.enqueue(evt);
 	}
 	
+	inline function addToExternalQueue( evt : Event ) {
+		externalQueue.enqueue(evt);
+	}
+	
 	inline function setEvent( evt : Event ) {
 		datamodel.set("_event", evt);
+	}
+	
+	inline function getDuration( delay : String ) {
+		return ( delay == null || delay == "" ) ? 0 : Std.parseFloat(delay.split("s").join("")); // FIXME
+	}
+	
+	inline function isValidAndSupportedSendTarget( target : Dynamic ) {
+		return true; // FIXME
+	}
+	
+	inline function isValidAndSupportedSendType( type : String ) {
+		return datamodel.hasIoProc(type);
+	}
+	
+	inline function ioProcessorSupportsPost() {
+		return isValidAndSupportedSendType("http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor");
+	}
+	
+	function getSendProp( n : Node, att0 : String, att1 : String ) {
+		var prop = null;
+		if( n.exists(att0) )
+			prop = n.get(att0);
+		if( n.exists(att1) ) {
+			if( prop != null ) throw "check";
+			prop = datamodel.doVal( n.get(att1) );
+		}
+		return prop;
 	}
 	
 	function executeBlock( it : Iterable<Node> ) {
@@ -538,6 +569,138 @@ class Interp {
 	
 	function executeContent( c : Node ) {
 		switch( c.name ) {
+			case "send":
+				
+				if( !datamodel.supportsVal && datamodel.supportsLoc )
+					return;
+				
+				var data : Array<{key:String, value:Dynamic}> = [];
+				var event = getSendProp( c, "event", "eventexpr" );
+				var target = getSendProp( c, "target", "targetexpr" );
+				
+				if( !isValidAndSupportedSendTarget(target) )
+					raise( new Event("error.execution") );
+				
+				var type = getSendProp( c, "type", "typeexpr" );
+				
+				if( type == null )
+					type = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";
+				if( type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" && event == null )
+					throw "check";
+				if( !isValidAndSupportedSendType(type) )
+					raise( new Event("error.execution") );
+				if( ioProcessorSupportsPost() && type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" )
+					type = "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor";
+				
+				var delay = getSendProp( c, "delay", "delayexpr" );
+				if( delay != null && target == "_internal" )
+					throw "check";
+					
+				var id = c.exists("id") ? c.get("id") : null;
+				var idlocation = c.exists("idlocation") ? c.get("idlocation") : null;
+				if( id != null && idlocation != null )
+					throw "check";
+					
+				var namelist = null;
+				if( c.exists("namelist") ) {
+					namelist = c.get("namelist");
+					var locs = namelist.split(" ");
+					for( loc in locs ) {
+						data.push({key:loc, value:datamodel.doVal(loc)});
+					}
+				}
+				
+				var params = [];
+				var content = [];
+				for( child in c ) {
+					if( child.isTParam() )
+						params.push(child);
+					else if( child.isTContent() )
+						content.push(child);
+				}
+				
+				// enforce more rules
+				if( content.length > 0 ) {
+					if( event != null )
+						throw "check";
+					if( namelist != null || params.length > 0 )
+						throw "check";
+				}
+				
+				for( param in params ) {
+					var name = param.get("name");
+					var expr = param.exists("expr") ? datamodel.doVal(param.get("expr")) : null;
+					var location = null;
+					if( param.exists("location") ) {
+						if( expr != null )
+							throw "check";
+						location = datamodel.doLoc(param.get("location"));
+					} else {
+						if( expr == null )
+							throw "check";
+					}
+					data.push({key:name, value:((expr != null) ? expr : location)});
+				}
+				
+				if( event != null ) {
+				
+					switch( type ) {
+						
+						case "http://www.w3.org/TR/scxml/#SCXMLEventProcessor":
+						
+							var duration = getDuration(delay);
+							var evt = new Event(event);
+							
+							evt.name = event;
+							evt.set("origin", datamodel.getIoProc(type).location);
+							
+							var sendid = ( id != null ) ? id : idlocation;
+							if( sendid != null )
+								evt.set("sendid", sendid);
+							evt.set("origintype", "scxml");
+							var evtData = evt.data;
+							var inData = data.copy(); // FIXME check
+							for( item in inData ) {
+								if( !evtData.exists(item.key) || (evtData.exists(item.key) && !Std.is(evtData.get(item.key), Array)) )
+									evtData.set(item.key, new Array<Dynamic>());
+								evtData.get(item.key).push(item.value);
+							}
+							
+							var cb = addToExternalQueue;
+							if( target == null )
+								cb = raise;
+							else {
+								switch( target ) {
+									case "#_internal":
+										cb = raise;
+								}
+							}
+							
+							if( duration > 0 ) {
+							
+								#if (neko || service)
+								
+								// FIXME
+								cb( evt );
+								
+								#else
+								
+								var t = haxe.Timer.delay(callback(cb, evt), Std.int(duration * 1000));
+								sendTimers.push(t);
+								
+								#end
+								
+							} else
+								cb( evt );
+							
+						case "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor":
+							
+							// FIXME
+							
+					}
+
+				}
+				
 			case "log":
 				if( datamodel.supportsVal )
 					log("<log> label: " + c.get("label") + " val: " + Std.string( datamodel.doVal(c.get("expr")) ) );

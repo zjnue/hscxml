@@ -12,6 +12,8 @@ private typedef Md5 = haxe.crypto.Md5;
 private typedef Md5 = haxe.Md5;
 #end
 
+typedef TEvtProc = {location:String};
+
 class Model {
 	
 	static var sessionId:Int = 0;
@@ -48,6 +50,18 @@ class Model {
 	
 	function set_log( value : String -> Void ) {
 		return log = value;
+	}
+	
+	public function hasIoProc( key : String ) {
+		return false;
+	}
+	
+	public function getIoProc( key : String ) {
+		return null;
+	}
+	
+	public function setIoProc( key : String, value : TEvtProc ) {
+		
 	}
 	
 	public function getSessionId() {
@@ -115,6 +129,7 @@ class NullModel extends Model {
 		var _name = doc.exists("name") ? doc.get("name") : _sessionId;
 		h.set("_sessionId", _sessionId);
 		h.set("_name", _name);
+		h.set("_ioprocessors", new Hash<TEvtProc>());
 	}
 	
 	override public function set( key : String, val : Dynamic ) {
@@ -171,6 +186,9 @@ class HScriptModel extends Model {
 		var _name = doc.exists("name") ? doc.get("name") : _sessionId;
 		hinterp.variables.set("_sessionId", _sessionId);
 		hinterp.variables.set("_name", _name);
+		var _ioprocessors = new Hash<TEvtProc>();
+		hinterp.variables.set("_ioprocessors", _ioprocessors);
+		setIoProc("http://www.w3.org/TR/scxml/#SCXMLEventProcessor", {location : "default"});
 		
 		illegalValues = ["continue"];
 	}
@@ -183,6 +201,24 @@ class HScriptModel extends Model {
 	override function set_log( value : String -> Void ) {
 		hinterp.variables.set("trace", value);
 		return log = value;
+	}
+	
+	override public function hasIoProc( key : String ) {
+		var md5Key = Md5.encode(key);
+		var procs : Hash<TEvtProc> = hinterp.variables.get("_ioprocessors");
+		return procs.exists( md5Key );
+	}
+	
+	override public function getIoProc( key : String ) {
+		var md5Key = Md5.encode(key);
+		var procs : Hash<TEvtProc> = hinterp.variables.get("_ioprocessors");
+		return procs.exists( md5Key ) ? procs.get( md5Key ) : null;
+	}
+	
+	override public function setIoProc( key : String, value : TEvtProc ) {
+		var md5Key = Md5.encode(key);
+		var procs : Hash<TEvtProc> = hinterp.variables.get("_ioprocessors");
+		procs.set( md5Key , value );
 	}
 	
 	override public function get( key : String ) : Dynamic {
