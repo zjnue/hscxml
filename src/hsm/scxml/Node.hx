@@ -106,7 +106,8 @@ class Send extends Node {
 }
 
 class Content extends Node {
-	public function new(p:Node) { super(p); }
+	public var content:String;
+	public function new(p:Node) { super(p); content = ""; }
 }
 
 class Param extends Node {

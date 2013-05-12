@@ -247,6 +247,7 @@ class HScriptModel extends Model {
 	override public function doCond( expr : String ) : Bool {
 		if( expr == "")
 			return true;
+		expr = expr.split("===").join("==");
 		var val = eval(expr);
 		return Std.is(val, Bool) ? val : (val != null);
 	}

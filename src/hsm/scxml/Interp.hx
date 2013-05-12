@@ -699,12 +699,21 @@ class Interp {
 						content.push(child);
 				}
 				
+				var contentVal = null;
+				
 				// enforce more rules
 				if( content.length > 0 ) {
-					if( event != null )
-						throw "check";
+					//if( event != null ) // see test179
+					//	throw "check";
 					if( namelist != null || params.length > 0 )
 						throw "check";
+					if( content.length > 1 )
+						throw "Send may contain only one content child.";
+					var cnode = content[0];
+					if( cnode.exists("expr") )
+						contentVal = datamodel.doVal(cnode.get("expr"));
+					else
+						contentVal = StringTools.trim(cast(cnode, Content).content);
 				}
 				
 				for( param in params ) {
@@ -738,18 +747,23 @@ class Interp {
 							if( sendid != null )
 								evt.set("sendid", sendid);
 							evt.set("origintype", "scxml");
-							var evtData = evt.data;
-							var inData = data.copy(); // FIXME check
-							for( item in inData ) {
-								if( Reflect.hasField(evtData, item.key) ) {
-									var val = Reflect.field(evtData, item.key);
-									if( Std.is(val, Array) ) {
-										val.push(item.value);
-									} else {
-										Reflect.setField(evtData, item.key, [val, item.value]);
-									}
-								} else
-									Reflect.setField(evtData, item.key, item.value);
+							
+							if( content.length > 0 )
+								Reflect.setField(evt, "data", contentVal);
+							else {
+								var evtData = evt.data;
+								var inData = data.copy(); // FIXME check
+								for( item in inData ) {
+									if( Reflect.hasField(evtData, item.key) ) {
+										var val = Reflect.field(evtData, item.key);
+										if( Std.is(val, Array) ) {
+											val.push(item.value);
+										} else {
+											Reflect.setField(evtData, item.key, [val, item.value]);
+										}
+									} else
+										Reflect.setField(evtData, item.key, item.value);
+								}
 							}
 							
 							var cb = addToExternalQueue;
