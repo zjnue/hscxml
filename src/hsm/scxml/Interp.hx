@@ -775,14 +775,14 @@ class Interp {
 							}
 							
 							var cb = addToExternalQueue;
-							if( target == null )
-								cb = raise;
-							else {
+//							if( target == null )
+//								cb = raise;
+//							else {
 								switch( target ) {
 									case "#_internal":
 										cb = raise;
 								}
-							}
+//							}
 							
 							sendEvent( evt, Std.int(duration * 1000), cb );
 							
