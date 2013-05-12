@@ -217,14 +217,14 @@ class Interp {
 		if( evt == null ) {
 			log("no external event found");
 			var raised = checkEvents();
-			if( raised)
+			if( raised )
 				mainEventLoop();
 			else {
 				Sys.sleep(0.2);
 				checkBlockingQueue();
 			}
-		}
-		mainEventLoopPart2( evt );
+		} if( running )
+			mainEventLoopPart2( evt );
 	}
 	
 	#else
