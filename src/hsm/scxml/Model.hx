@@ -5,6 +5,13 @@ import hscript.Interp;
 
 import hsm.scxml.Node;
 
+#if haxe3
+private typedef Hash<T> = haxe.ds.StringMap<T>;
+private typedef Md5 = haxe.crypto.Md5;
+#else
+private typedef Md5 = haxe.Md5;
+#end
+
 class Model {
 	
 	static var sessionId:Int = 0;

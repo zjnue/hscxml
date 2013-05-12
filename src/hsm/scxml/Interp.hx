@@ -10,6 +10,10 @@ using hsm.scxml.tools.ArrayTools;
 using hsm.scxml.tools.ListTools;
 using hsm.scxml.tools.NodeTools;
 
+#if haxe3
+private typedef Hash<T> = haxe.ds.StringMap<T>;
+#end
+
 class Interp {
 	
 	var d : Node;
@@ -22,7 +26,7 @@ class Interp {
 	public var log : String -> Void;
 	public var topNode( get_topNode, never ) : Node;
 	
-	function get_topNode() return d
+	function get_topNode() { return d; }
 	
 	public function postEvent( str : String ) {
 		externalQueue.enqueue( new Event(str) );

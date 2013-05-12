@@ -6,6 +6,10 @@ import hsm.scxml.tools.NodeTools;
 
 using hsm.scxml.tools.NodeTools;
 
+#if haxe3
+private typedef Hash<T> = haxe.ds.StringMap<T>;
+#end
+
 class DrawTools {
 	
 	/**

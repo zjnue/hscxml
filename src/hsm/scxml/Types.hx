@@ -2,6 +2,10 @@ package hsm.scxml;
 
 using hsm.scxml.tools.ListTools;
 
+#if haxe3
+private typedef Hash<T> = haxe.ds.StringMap<T>;
+#end
+
 class Event {
 	public var name : String;
 	public var data : Hash<Dynamic>;
@@ -27,21 +31,21 @@ class Event {
 
 class Set<T> {
 	public var l : List<T>;
-	public function new( ?s : Set<T> ) l = s != null ? s.toList().clone() : new List<T>()
-	public inline function add( i : T ) if( !Lambda.has(l, i) ) l.add( i )
-	public inline function delete( i : T ) return l.remove( i )
-	public inline function union( s : Set<T> ) for( i in s ) add(i)
-	public inline function isMember( i : T ) return Lambda.has(l, i)
+	public function new( ?s : Set<T> ) { l = s != null ? s.toList().clone() : new List<T>(); }
+	public inline function add( i : T ) { if( !Lambda.has(l, i) ) l.add( i ); }
+	public inline function delete( i : T ) { return l.remove( i ); }
+	public inline function union( s : Set<T> ) { for( i in s ) add(i); }
+	public inline function isMember( i : T ) { return Lambda.has(l, i); }
 	public function hasIntersection( s : Set<T> ) {
 		for( i in s )
 			if( Lambda.has(l, i) )
 				return true;
 		return false;
 	}
-	public inline function isEmpty() return l.isEmpty()
-	public inline function clear() return l = new List<T>()
-	public inline function toList() return l
-	public inline function iterator() return l.iterator()
+	public inline function isEmpty() { return l.isEmpty(); }
+	public inline function clear() { return l = new List<T>(); }
+	public inline function toList() { return l; }
+	public inline function iterator() { return l.iterator(); }
 	public inline static function ofList<T>( l : List<T> ) : Set<T> {
 		var s = new Set<T>();
 		s.l = l;
@@ -51,10 +55,10 @@ class Set<T> {
 
 class Queue<T> {
 	var l : List<T>;
-	public function new() l = new List<T>()
-	public inline function enqueue( i : T ) l.add( i )
-	public inline function dequeue() return l.pop()
-	public inline function isEmpty() return l.isEmpty()
+	public function new() { l = new List<T>(); }
+	public inline function enqueue( i : T ) { l.add( i ); }
+	public inline function dequeue() { return l.pop(); }
+	public inline function isEmpty() { return l.isEmpty(); }
 	public function toString() {
 		var out = "";
 		for ( item in l ) out += Std.string(item) + "\n";

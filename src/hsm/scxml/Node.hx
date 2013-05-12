@@ -1,5 +1,9 @@
 package hsm.scxml;
 
+#if haxe3
+private typedef Hash<T> = haxe.ds.StringMap<T>;
+#end
+
 class Node {
 	public var parent:Node;
 	public var name:String;
