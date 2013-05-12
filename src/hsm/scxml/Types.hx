@@ -8,14 +8,14 @@ private typedef Hash<T> = haxe.ds.StringMap<T>;
 
 class Event {
 	public var name : String;
-	public var data : Hash<Dynamic>;
+	public var data : Dynamic;
 	var h : Hash<String>;
 	public function new( name : String, ?data : Dynamic ) {
 		this.name = name;
-		this.data = new Hash();
+		this.data = {};
 		if( data != null )
 			for( key in Reflect.fields(data) )
-				this.data.set(key, Reflect.field(data, key) );
+				Reflect.setField(this.data, key, Reflect.field(data, key));
 		h = new Hash();
 	}
 	public function set( key : String, val : Dynamic ) {

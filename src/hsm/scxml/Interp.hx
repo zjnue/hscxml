@@ -740,9 +740,7 @@ class Interp {
 							var evtData = evt.data;
 							var inData = data.copy(); // FIXME check
 							for( item in inData ) {
-								if( !evtData.exists(item.key) || (evtData.exists(item.key) && !Std.is(evtData.get(item.key), Array)) )
-									evtData.set(item.key, new Array<Dynamic>());
-								evtData.get(item.key).push(item.value);
+								Reflect.setField(evtData, item.key, item.value);
 							}
 							
 							var cb = addToExternalQueue;
