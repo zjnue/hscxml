@@ -625,6 +625,12 @@ class Interp {
 		return isValidAndSupportedSendType("http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor");
 	}
 	
+	static var locId : Int = 0;
+	
+	inline function getLocationId() {
+		return "locId_" + locId++;
+	}
+	
 	function getSendProp( n : Node, att0 : String, att1 : String ) {
 		var prop = null;
 		if( n.exists(att0) )
@@ -680,6 +686,8 @@ class Interp {
 				var idlocation = c.exists("idlocation") ? c.get("idlocation") : null;
 				if( id != null && idlocation != null )
 					throw "check";
+				if( idlocation != null )
+					datamodel.set(idlocation, getLocationId());
 					
 				var namelist = null;
 				if( c.exists("namelist") ) {
