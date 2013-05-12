@@ -9,10 +9,12 @@ private typedef Hash<T> = haxe.ds.StringMap<T>;
 class Event {
 	public var name : String;
 	public var data : Dynamic;
+	public var raw : String;
 	var h : Hash<String>;
 	public function new( name : String, ?data : Dynamic ) {
 		this.name = name;
 		this.data = {};
+		this.raw = "";
 		if( data != null )
 			for( key in Reflect.fields(data) )
 				Reflect.setField(this.data, key, Reflect.field(data, key));
@@ -25,7 +27,12 @@ class Event {
 		return h.get(key);
 	}
 	public function toString() {
-		return "[Event: " + name + "]";
+		var out = "[Event: " + name;
+		for( field in Reflect.fields(data) )
+			out += "\n\t" + field + " = " + Std.string(Reflect.field(data, field));
+		if( out != "[Event: " + name )
+			out += "\n";
+		return out + "]";
 	}
 }
 

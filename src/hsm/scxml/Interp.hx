@@ -560,6 +560,7 @@ class Interp {
 	}
 	
 	inline function setEvent( evt : Event ) {
+		evt.raw = evt.toString();
 		datamodel.set("_event", evt);
 	}
 	
@@ -740,7 +741,15 @@ class Interp {
 							var evtData = evt.data;
 							var inData = data.copy(); // FIXME check
 							for( item in inData ) {
-								Reflect.setField(evtData, item.key, item.value);
+								if( Reflect.hasField(evtData, item.key) ) {
+									var val = Reflect.field(evtData, item.key);
+									if( Std.is(val, Array) ) {
+										val.push(item.value);
+									} else {
+										Reflect.setField(evtData, item.key, [val, item.value]);
+									}
+								} else
+									Reflect.setField(evtData, item.key, item.value);
 							}
 							
 							var cb = addToExternalQueue;
