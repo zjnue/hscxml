@@ -65,7 +65,7 @@ class Model {
 	}
 	
 	public function getSessionId() {
-		return Std.string(sessionId++);
+		return "sessionid_"+Std.string(sessionId++);
 	}
 	
 	public function get( key : String ) : Dynamic {
@@ -127,7 +127,7 @@ class NullModel extends Model {
 		h = new Hash();
 		var _sessionId = getSessionId();
 		var _name = doc.exists("name") ? doc.get("name") : _sessionId;
-		h.set("_sessionId", _sessionId);
+		h.set("_sessionid", _sessionId);
 		h.set("_name", _name);
 		h.set("_ioprocessors", new Hash<TEvtProc>());
 	}
@@ -184,7 +184,7 @@ class HScriptModel extends Model {
 		
 		var _sessionId = getSessionId();
 		var _name = doc.exists("name") ? doc.get("name") : _sessionId;
-		hinterp.variables.set("_sessionId", _sessionId);
+		hinterp.variables.set("_sessionid", _sessionId);
 		hinterp.variables.set("_name", _name);
 		var _ioprocessors = new Hash<TEvtProc>();
 		hinterp.variables.set("_ioprocessors", _ioprocessors);
