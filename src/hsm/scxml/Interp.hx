@@ -14,6 +14,15 @@ using hsm.scxml.tools.NodeTools;
 private typedef Hash<T> = haxe.ds.StringMap<T>;
 #end
 
+#if !not_service
+typedef TDelayedEvent = {
+	id : Int,
+	evt : Event,
+	exriresStamp : Float,
+	func : Event -> Void
+}
+#end
+
 class Interp {
 	
 	var d : Node;
@@ -82,6 +91,10 @@ class Interp {
 		externalQueue = new BlockingQueue();
 		externalQueue.onNewContent = checkBlockingQueue;
 		historyValue = new Hash();
+		
+		#if !not_service
+		eventQueue = [];
+		#end
 		
 		var model = "hscript";//d.exists("datamodel") ? d.get("datamodel") : "hscript";
 		switch( model ) {
@@ -197,6 +210,25 @@ class Interp {
 		}
 	}
 	
+	#if !not_service
+	
+	function checkBlockingQueue() {
+		var evt = externalQueue.dequeue();
+		if( evt == null ) {
+			log("no external event found");
+			var raised = checkEvents();
+			if( raised)
+				mainEventLoop();
+			else {
+				Sys.sleep(0.2);
+				checkBlockingQueue();
+			}
+		}
+		mainEventLoopPart2( evt );
+	}
+	
+	#else
+	
 	function checkBlockingQueue() {
 		var evt = externalQueue.dequeue();
 		if( evt != null )
@@ -206,6 +238,8 @@ class Interp {
 		else
 			log("checkBlockingQueue: evt = " + Std.string(evt) + " running = " + Std.string(running));
 	}
+	
+	#end
 	
 	function mainEventLoopPart2( externalEvent : Event ) {
 		if( isCancelEvent(externalEvent) ) {
@@ -529,6 +563,51 @@ class Interp {
 		datamodel.set("_event", evt);
 	}
 	
+	#if !not_service
+	
+	static var delayedEventId : Int = 0;
+	
+	var eventQueue:Array<TDelayedEvent>;
+	
+	function sortEventData( e0 : TDelayedEvent, e1 : TDelayedEvent ) {
+		return Std.int((e1.exriresStamp - e0.exriresStamp) * 1000);
+	}
+	
+	function checkEvents() {
+		eventQueue.sort(sortEventData);
+		var events = eventQueue;
+		var now = haxe.Timer.stamp();
+		var raised = false;
+		while( events.length > 0 && (events[events.length-1].exriresStamp < now) ) {
+			var eventData = events.pop();
+			log("processing event: id = " + eventData.id);
+			eventData.func(eventData.evt);
+			raised = true;
+		}
+		return raised;
+	}
+	
+	#end
+	
+	function sendEvent( evt : Event, delayMs : Int = 0, addEvent : Event -> Void ) {
+		if( delayMs == 0 )
+			addEvent(evt);
+		else {
+			#if !not_service
+			var id = delayedEventId++;
+			log("adding delayed event: id = " + id + " name = " + evt.name + " delayMs = " + delayMs);
+			eventQueue.push({
+				id : id,
+				evt : evt,
+				exriresStamp : haxe.Timer.stamp() + delayMs / 1000,
+				func : addEvent
+			});
+			#else
+			haxe.Timer.delay( callback(addEvent,evt), delayMs );
+			#end
+		}
+	}
+	
 	inline function getDuration( delay : String ) {
 		return ( delay == null || delay == "" ) ? 0 : Std.parseFloat(delay.split("s").join("")); // FIXME
 	}
@@ -676,22 +755,7 @@ class Interp {
 								}
 							}
 							
-							if( duration > 0 ) {
-							
-								#if (neko || service)
-								
-								// FIXME
-								cb( evt );
-								
-								#else
-								
-								var t = haxe.Timer.delay(callback(cb, evt), Std.int(duration * 1000));
-								sendTimers.push(t);
-								
-								#end
-								
-							} else
-								cb( evt );
+							sendEvent( evt, Std.int(duration * 1000), cb );
 							
 						case "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor":
 							
