@@ -92,9 +92,7 @@ class Interp {
 		externalQueue.onNewContent = checkBlockingQueue;
 		historyValue = new Hash();
 		
-		#if !not_service
-		eventQueue = [];
-		#end
+		extraInit();
 		
 		var model = "hscript";//d.exists("datamodel") ? d.get("datamodel") : "hscript";
 		switch( model ) {
@@ -119,6 +117,13 @@ class Interp {
 		enterStates( [d.initial().next().transition().next()].toList() );
 		if( onInit != null )
 			onInit();
+	}
+	
+	function extraInit() {
+		canceledSendIds = new Hash();
+		#if !not_service
+		eventQueue = []; // FIXME not_service events should also be in queue
+		#end
 	}
 	
 	function valid( doc : Xml ) {
@@ -262,8 +267,7 @@ class Interp {
 	}
 	
 	function isCancelEvent( evt : Event ) {
-		// FIXME
-		return false;
+		return (evt.sendid != null && canceledSendIds.exists(evt.sendid));
 	}
 	
 	function exitInterpreter() {
@@ -637,7 +641,7 @@ class Interp {
 		return "locId_" + locId++;
 	}
 	
-	function getSendProp( n : Node, att0 : String, att1 : String ) {
+	function getAltProp( n : Node, att0 : String, att1 : String ) {
 		var prop = null;
 		if( n.exists(att0) )
 			prop = n.get(att0);
@@ -659,21 +663,34 @@ class Interp {
 		}
 	}
 	
+	var canceledSendIds : Hash<Bool>;
+	
 	function executeContent( c : Node ) {
 		switch( c.name ) {
+			case "cancel":
+				
+				if( !datamodel.supportsVal )
+					return;
+				
+				var sendid = getAltProp( c, "sendid", "sendidexpr" );
+				canceledSendIds.set(sendid, true);
+				
+				if( eventQueue != null && eventQueue.length > 0 )
+					eventQueue = Lambda.array( Lambda.filter(eventQueue, function(evtData) return evtData.evt.sendid != sendid) );
+				
 			case "send":
 				
 				if( !datamodel.supportsVal && datamodel.supportsLoc )
 					return;
 				
 				var data : Array<{key:String, value:Dynamic}> = [];
-				var event = getSendProp( c, "event", "eventexpr" );
-				var target = getSendProp( c, "target", "targetexpr" );
+				var event = getAltProp( c, "event", "eventexpr" );
+				var target = getAltProp( c, "target", "targetexpr" );
 				
 				if( target != null && !isValidAndSupportedSendTarget(target) )
 					raise( new Event("error.execution") );
 				
-				var type = getSendProp( c, "type", "typeexpr" );
+				var type = getAltProp( c, "type", "typeexpr" );
 				
 				if( type == "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor" && !ioProcessorSupportsPost() ) {
 					raise( new Event("error.communication") );
@@ -689,7 +706,7 @@ class Interp {
 				if( ioProcessorSupportsPost() && type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" )
 					type = "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor";
 				
-				var delay = getSendProp( c, "delay", "delayexpr" );
+				var delay = getAltProp( c, "delay", "delayexpr" );
 				if( delay != null && target == "_internal" )
 					throw "check";
 					
@@ -762,7 +779,9 @@ class Interp {
 							evt.name = event;
 							evt.origin = datamodel.getIoProc(type).location;
 							
-							var sendid = ( id != null ) ? id : idlocation;
+							var sendid = null;
+							if( id != null ) sendid = id;
+							if( idlocation != null ) sendid = datamodel.get(idlocation);
 							if( sendid != null )
 								evt.sendid = sendid;
 							evt.origintype = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";

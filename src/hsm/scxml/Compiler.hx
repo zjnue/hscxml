@@ -30,7 +30,7 @@ class Compiler {
 			case "finalize":	n = new Finalize(parent);
 			case "content":		n = new Content(parent); if( !x.exists("expr") ) for( child in x ) cast(n, Content).content += child.toString();
 			case "param":		n = new Param(parent);
-			case "log", "raise", "assign", "if", "elseif", "else", "foreach":
+			case "log", "raise", "assign", "if", "elseif", "else", "foreach", "cancel":
 				n = new Exec(parent);
 			case "script":		n = new Script(parent); if( !x.exists("src") ) for( child in x ) cast(n, Script).content += child.toString();
 			default:
