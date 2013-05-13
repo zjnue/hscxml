@@ -7,24 +7,25 @@ private typedef Hash<T> = haxe.ds.StringMap<T>;
 #end
 
 class Event {
+	// see 5.10.1 The Internal Structure of Events
 	public var name : String;
+	public var type : String;
+	public var sendid : String;
+	public var origin : String;
+	public var origintype : String;
+	public var invokeid : String;
 	public var data : Dynamic;
+	// ?
 	public var raw : String;
-	var h : Hash<String>;
+	
 	public function new( name : String, ?data : Dynamic ) {
 		this.name = name;
 		this.data = {};
+		this.type = "platform";
 		this.raw = "";
 		if( data != null )
 			for( key in Reflect.fields(data) )
 				Reflect.setField(this.data, key, Reflect.field(data, key));
-		h = new Hash();
-	}
-	public function set( key : String, val : Dynamic ) {
-		h.set(key, val);
-	}
-	public function get( key ) {
-		return h.get(key);
 	}
 	public function toString() {
 		var out = "[Event: " + name;

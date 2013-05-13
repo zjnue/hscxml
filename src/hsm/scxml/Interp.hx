@@ -250,7 +250,7 @@ class Interp {
 		setEvent(externalEvent);
 		for( state in configuration )
 			for( inv in state.invoke() ) {
-				if( inv.get("invokeid") == externalEvent.get("invokeid") )
+				if( inv.get("invokeid") == externalEvent.invokeid )
 					applyFinalize(inv, externalEvent);
 				if( inv.exists("autoforward") && inv.get("autoforward") == "true" )
 					send(inv.get("id"), externalEvent);
@@ -760,12 +760,12 @@ class Interp {
 							var evt = new Event(event);
 							
 							evt.name = event;
-							evt.set("origin", datamodel.getIoProc(type).location);
+							evt.origin = datamodel.getIoProc(type).location;
 							
 							var sendid = ( id != null ) ? id : idlocation;
 							if( sendid != null )
-								evt.set("sendid", sendid);
-							evt.set("origintype", "scxml");
+								evt.sendid = sendid;
+							evt.origintype = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";
 							
 							if( content.length > 0 )
 								Reflect.setField(evt, "data", contentVal);
@@ -792,6 +792,7 @@ class Interp {
 								switch( target ) {
 									case "#_internal":
 										cb = raise;
+										evt.type = "internal";
 								}
 //							}
 							
