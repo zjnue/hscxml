@@ -669,6 +669,11 @@ class Interp {
 				
 				var type = getSendProp( c, "type", "typeexpr" );
 				
+				if( type == "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor" && !ioProcessorSupportsPost() ) {
+					raise( new Event("error.communication") );
+					return;
+				}
+				
 				if( type == null )
 					type = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";
 				if( type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" && event == null )
