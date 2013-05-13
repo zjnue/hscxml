@@ -613,8 +613,14 @@ class Interp {
 		return ( delay == null || delay == "" ) ? 0 : Std.parseFloat(delay.split("s").join("")); // FIXME
 	}
 	
+	var invokedData : Hash<Dynamic>; // FIXME
+	
 	inline function isValidAndSupportedSendTarget( target : Dynamic ) {
-		return true; // FIXME
+		return if( Lambda.has(["#_internal", "#_parent", "#_scxml_" + datamodel.get("_sessionid")], target ) ||
+					(invokedData != null && invokedData.exists(target.substr(2))) )
+			true;
+		else
+			datamodel.exists(target);
 	}
 	
 	inline function isValidAndSupportedSendType( type : String ) {
@@ -664,7 +670,7 @@ class Interp {
 				var event = getSendProp( c, "event", "eventexpr" );
 				var target = getSendProp( c, "target", "targetexpr" );
 				
-				if( !isValidAndSupportedSendTarget(target) )
+				if( target != null && !isValidAndSupportedSendTarget(target) )
 					raise( new Event("error.execution") );
 				
 				var type = getSendProp( c, "type", "typeexpr" );
