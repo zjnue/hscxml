@@ -47,6 +47,7 @@ class NodeTools {
 	public static inline function isTData( s : Node ) { return Std.is(s, Data); }
 	public static inline function isTParam( s : Node ) { return Std.is(s, Param); }
 	public static inline function isTContent( s : Node ) { return Std.is(s, Content); }
+	public static inline function isTFinalize( s : Node ) { return Std.is(s, Finalize); }
 	// filters
 	public static inline function stateFilter( n : Node ) { return isTState(n); }
 	public static inline function parallelFilter( n : Node ) { return isTParallel(n); }
@@ -56,7 +57,7 @@ class NodeTools {
 	public static inline function initialFilter( n : Node ) { return isTInitial(n); }
 	public static inline function dataModelFilter( n : Node ) { return isTDataModel(n); }
 	public static inline function scriptFilter( n : Node ) { return isTScript(n); }
-	public static inline function invokeFilter( n : Node ) { return isTInitial(n); }
+	public static inline function invokeFilter( n : Node ) { return isTInvoke(n); }
 	public static inline function onEntryFilter( n : Node ) { return isTOnEntry(n); }
 	public static inline function onExitFilter( n : Node ) { return isTOnExit(n); }
 	// lists

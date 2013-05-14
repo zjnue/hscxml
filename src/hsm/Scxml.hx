@@ -38,7 +38,7 @@ class Scxml {
 	}
 	
 	inline public function postEvent( str : String ) {
-		interp.postEvent(str);
+		interp.postEvent( new Event(str) );
 	}
 	
 	inline function set_data( value : String ) {

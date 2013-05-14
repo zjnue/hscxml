@@ -31,14 +31,18 @@ class Interp {
 		log = function(msg:String) trace(msg);
 	}
 	
+	// invoke related
+	public var parentEventHandler : Event -> Void;
+	public var invokeId : String;
+	
 	public var onInit : Void -> Void;
 	public var log : String -> Void;
 	public var topNode( get_topNode, never ) : Node;
 	
 	function get_topNode() { return d; }
 	
-	public function postEvent( str : String ) {
-		externalQueue.enqueue( new Event(str) );
+	public function postEvent( evt : Event ) {
+		externalQueue.enqueue( evt );
 	}
 	
 	public function start() {
@@ -121,6 +125,7 @@ class Interp {
 	
 	function extraInit() {
 		canceledSendIds = new Hash();
+		invokedData = new Hash();
 		#if !not_service
 		eventQueue = []; // FIXME not_service events should also be in queue
 		#end
@@ -515,14 +520,6 @@ class Interp {
 		return l;
 	}
 	
-	function sendDoneEvent( id : String ) {
-		// FIXME
-	}
-	
-	function cancelInvoke( inv : Node ) {
-		// FIXME
-	}
-	
 	function nameMatch( str1 : String, str2 : String ) {
 		return str1 == "*" ? true : str2.indexOf(str1) == 0;
 	}
@@ -543,16 +540,44 @@ class Interp {
 			return childStates.iterator().next();
 	}
 	
+	var invokedData : Hash<Dynamic>;
+	
+	function cancelInvoke( inv : Node ) {
+		// FIXME
+	}
+	
 	function applyFinalize( inv : Node, evt : Event ) {
 		// FIXME
 	}
 	
 	function send( invokeid : String, evt : Event ) {
-		// FIXME
+		if( !invokedData.exists(invokeid) )
+			throw "check";
+			
+		var invData = invokedData.get(invokeid);
+		if( !isScxmlInvokeType(invData.type) )
+			throw "Invoke type currently not supported: " + invData.type;
+		
+		var inst = cast( invData.instance, hsm.scxml.Interp );
+		inst.postEvent(evt);
+	}
+	
+	inline function isScxmlInvokeType( type : String ) {
+		return (type == "http://www.w3.org/TR/scxml/" || type == "scxml");
 	}
 	
 	function returnDoneEvent( doneData : Dynamic ) : Void {
-		// FIXME
+		if( parentEventHandler == null )
+			return;
+		
+		var data = doneData; // FIXME make a copy
+		
+		if( invokeId == null )
+			"No invoke id specified.";
+		
+		var evt = new Event( "done.invoke." + invokeId );
+		evt.invokeid = invokeId;
+		parentEventHandler(evt);
 	}
 	
 	inline function raise( evt : Event ) {
@@ -617,8 +642,6 @@ class Interp {
 		return ( delay == null || delay == "" ) ? 0 : Std.parseFloat(delay.split("s").join("")); // FIXME
 	}
 	
-	var invokedData : Hash<Dynamic>; // FIXME
-	
 	inline function isValidAndSupportedSendTarget( target : Dynamic ) {
 		return if( Lambda.has(["#_internal", "#_parent", "#_scxml_" + datamodel.get("_sessionid")], target ) ||
 					(invokedData != null && invokedData.exists(target.substr(2))) )
@@ -636,9 +659,20 @@ class Interp {
 	}
 	
 	static var locId : Int = 0;
-	
 	inline function getLocationId() {
 		return "locId_" + locId++;
+	}
+	
+	static var platformId : Int = 0;
+	inline function getPlatformId() {
+		return "platformId_" + platformId++;
+	}
+	
+	function getInvokeId( inv : Node ) {
+		var node = inv.parent;
+		while( !node.isState() && node.parent != null )
+			node = node.parent;
+		return node.get("id") + "." + getPlatformId();
 	}
 	
 	function getAltProp( n : Node, att0 : String, att1 : String ) {
@@ -716,15 +750,9 @@ class Interp {
 					throw "check";
 				if( idlocation != null )
 					datamodel.set(idlocation, getLocationId());
-					
-				var namelist = null;
-				if( c.exists("namelist") ) {
-					namelist = c.get("namelist");
-					var locs = namelist.split(" ");
-					for( loc in locs ) {
-						data.push({key:loc, value:datamodel.doVal(loc)});
-					}
-				}
+				
+				var namelist = c.exists("namelist") ? c.get("namelist") : null;
+				data = data.concat( getNamelistData(namelist) );
 				
 				var params = [];
 				var content = [];
@@ -735,37 +763,15 @@ class Interp {
 						content.push(child);
 				}
 				
-				var contentVal = null;
+				if( content.length > 0 && (namelist != null || params.length > 0) )
+					throw "check";
+				if( content.length > 1 )
+					throw "Send may contain only one content child.";
 				
-				// enforce more rules
-				if( content.length > 0 ) {
-					//if( event != null ) // see test179
-					//	throw "check";
-					if( namelist != null || params.length > 0 )
-						throw "check";
-					if( content.length > 1 )
-						throw "Send may contain only one content child.";
-					var cnode = content[0];
-					if( cnode.exists("expr") )
-						contentVal = datamodel.doVal(cnode.get("expr"));
-					else
-						contentVal = StringTools.trim(cast(cnode, Content).content);
-				}
+				var contentVal = parseContent(content);
 				
-				for( param in params ) {
-					var name = param.get("name");
-					var expr = param.exists("expr") ? datamodel.doVal(param.get("expr")) : null;
-					var location = null;
-					if( param.exists("location") ) {
-						if( expr != null )
-							throw "check";
-						location = datamodel.doLoc(param.get("location"));
-					} else {
-						if( expr == null )
-							throw "check";
-					}
-					data.push({key:name, value:((expr != null) ? expr : location)});
-				}
+				var paramsData = parseParams(params);
+				data = data.concat(paramsData);
 				
 				if( event != null ) {
 				
@@ -778,6 +784,7 @@ class Interp {
 							
 							evt.name = event;
 							evt.origin = datamodel.getIoProc(type).location;
+							evt.type = "internal";
 							
 							var sendid = null;
 							if( id != null ) sendid = id;
@@ -805,15 +812,21 @@ class Interp {
 							}
 							
 							var cb = addToExternalQueue;
-//							if( target == null )
-//								cb = raise;
-//							else {
-								switch( target ) {
-									case "#_internal":
-										cb = raise;
-										evt.type = "internal";
-								}
-//							}
+
+							switch( target ) {
+								case "#_internal":
+									cb = raise;
+									
+								case "#_parent":
+									if( parentEventHandler == null )
+										"No parent event handler defined.";
+									if( invokeId == null )
+										"No invokeId specified and trying to communicate with parent.";
+									evt.invokeid = invokeId;
+									cb = parentEventHandler;
+									
+								default:
+							}
 							
 							sendEvent( evt, Std.int(duration * 1000), cb );
 							
@@ -908,12 +921,162 @@ class Interp {
 		}
 	}
 	
-	function executeInvoke( i : Node ) {
-		return "??"; // FIXME
+	function getNamelistData( namelist : String ) {
+		var data = [];
+		if( namelist != null ) {
+			var names = namelist.split(" ");
+			for( name in names )
+				data.push({key:name, value:datamodel.doLoc(name)});
+		}
+		return data;
+	}
+	
+	function parseContent( content : Array<Node> ) {
+		var contentVal = null;
+		if( content.length > 0 ) {
+			var cnode = content[0];
+			if( cnode.exists("expr") )
+				contentVal = datamodel.doVal(cnode.get("expr"));
+			else
+				contentVal = StringTools.trim(cast(cnode, Content).content);
+		}
+		return contentVal;
+	}
+	
+	function parseParams( params : Array<Node> ) {
+		var data = [];
+		for( param in params ) {
+			var name = param.get("name");
+			var expr = param.exists("expr") ? datamodel.doVal(param.get("expr")) : null;
+			var location = null;
+			if( param.exists("location") ) {
+				if( expr != null )
+					throw "check";
+				location = datamodel.doLoc(param.get("location"));
+			} else {
+				if( expr == null )
+					throw "check";
+			}
+			data.push({key:name, value:((expr != null) ? expr : location)});
+		}
+		return data;
 	}
 	
 	function invoke( inv : Node ) {
-		return "??"; // FIXME
+		
+		if( !(datamodel.supportsVal && datamodel.supportsLoc) )
+			return;
+		
+		try {
+		
+			var type = getAltProp( inv, "type", "typeexpr" );
+			if( type != null && !invokeTypeAccepted(type) )
+				throw "Bad invoke type: " + type;
+			
+			var src = getAltProp( inv, "src", "srcexpr" );
+			
+			var id = inv.exists("id") ? inv.get("id") : null;
+			var idlocation = inv.exists("idlocation") ? datamodel.doLoc(inv.get("idlocation")) : null;
+			if( id != null && idlocation != null )
+				throw "check";
+			var invokeid = id;
+			if( idlocation != null ) {
+				invokeid = getInvokeId(inv);
+				datamodel.set(idlocation, invokeid);
+			}
+			
+			// FIXME what do we do here if invokeid is still null?
+			// this can be the case if neither id or idlocation are set on inv
+			if( invokeid == null )
+				throw "check";
+			
+			var data = [];
+			
+			var namelist = inv.exists("namelist") ? inv.get("namelist") : null;
+			data = data.concat( getNamelistData(namelist) );
+			
+			var autoforward = inv.exists("autoforward") ? inv.get("autoforward") : "false";
+			
+			var params = [];
+			var content = [];
+			var finalize = [];
+			for( child in inv ) {
+				if( child.isTParam() )
+					params.push(child);
+				else if( child.isTContent() )
+					content.push(child);
+				else if( child.isTFinalize() )
+					finalize.push(child);
+			}
+			
+			if( content.length > 0 && src != null )
+				throw "check";
+			if( content.length > 1 )
+				throw "check";
+			if( finalize.length > 1 )
+				throw "check";
+			if( params.length > 0 && namelist != null )
+				throw "check";
+			
+			var contentVal = parseContent(content);
+			var params = parseParams(params);
+				
+			switch( type ) {
+				
+				case "http://www.w3.org/TR/scxml/", "scxml":
+				
+					if( invokedData.exists(invokeid) )
+						throw "Invoke id already exists: " + invokeid;
+					
+					var xmlStr = contentVal; // FIXME get from src if defined
+					var xml = Xml.parse(xmlStr).firstElement();
+					var models = xml.elementsNamed("datamodel");
+					if( models.hasNext() )
+						for( dataNode in models.next().elementsNamed("data") ) {
+							var nodeId = dataNode.get("id");
+							for( d in data )
+								if( d.key == nodeId ) {
+									dataNode.set(nodeId, d.value);
+									break;
+								}
+						}
+					
+					var me = this;
+					var inst = new hsm.scxml.Interp();
+					inst.invokeId = invokeid;
+					inst.parentEventHandler = function( evt : Event ) {
+						log("parentEventHandler: evt.name = " + evt.name);
+						me.addToExternalQueue(evt);
+					};
+					inst.log = function(msg) { log("log-from-child: " + msg); };
+					inst.onInit = function() { inst.start(); };
+					
+					invokedData.set(invokeid, {
+						type : type,
+						instance : inst
+					});
+					
+					inst.interpret( xml );
+					
+				default:
+			}
+			
+		} catch( e : Dynamic ) {
+			// cancel
+			// raise error
+		}
+	}
+	
+	function invokeTypeAccepted( type : String ) {
+		switch( type ) {
+			case
+				"http://www.w3.org/TR/scxml/", "scxml": return true;//,
+//				"http://www.w3.org/TR/ccxml/", "ccxml",
+//				"http://www.w3.org/TR/voicexml30/", "voicexml30",
+//				"http://www.w3.org/TR/voicexml21/", "voicexml21": return true;
+			default:
+				return false;
+		}
 	}
 	
 	function setFromSrc( id : String, src : String ) {
