@@ -124,7 +124,7 @@ class Interp {
 	}
 	
 	function extraInit() {
-		canceledSendIds = new Hash();
+		cancelledSendIds = new Hash();
 		invokedData = new Hash();
 		#if !not_service
 		eventQueue = []; // FIXME not_service events should also be in queue
@@ -272,7 +272,7 @@ class Interp {
 	}
 	
 	function isCancelEvent( evt : Event ) {
-		return (evt.sendid != null && canceledSendIds.exists(evt.sendid));
+		return (evt.sendid != null && cancelledSendIds.exists(evt.sendid));
 	}
 	
 	function exitInterpreter() {
@@ -543,10 +543,12 @@ class Interp {
 	var invokedData : Hash<Dynamic>;
 	
 	function cancelInvoke( inv : Node ) {
+		//log("cancelInvoke: inv.id = " + inv.get("id"));
 		// FIXME
 	}
 	
 	function applyFinalize( inv : Node, evt : Event ) {
+		//log("applyFinalize: inv.id = " + inv.get("id") + " evt.name = " + evt.name);
 		// FIXME
 	}
 	
@@ -697,7 +699,7 @@ class Interp {
 		}
 	}
 	
-	var canceledSendIds : Hash<Bool>;
+	var cancelledSendIds : Hash<Bool>;
 	
 	function executeContent( c : Node ) {
 		switch( c.name ) {
@@ -707,7 +709,7 @@ class Interp {
 					return;
 				
 				var sendid = getAltProp( c, "sendid", "sendidexpr" );
-				canceledSendIds.set(sendid, true);
+				cancelledSendIds.set(sendid, true);
 				
 				if( eventQueue != null && eventQueue.length > 0 )
 					eventQueue = Lambda.array( Lambda.filter(eventQueue, function(evtData) return evtData.evt.sendid != sendid) );
@@ -962,12 +964,16 @@ class Interp {
 		return data;
 	}
 	
+	static var hackInvId : Int = 0;
+	
 	function invoke( inv : Node ) {
 		
 		if( !(datamodel.supportsVal && datamodel.supportsLoc) )
 			return;
 		
 		try {
+		
+			//log("invoke(): inv.id = " + inv.get("id"));
 		
 			var type = getAltProp( inv, "type", "typeexpr" );
 			if( type != null && !invokeTypeAccepted(type) )
@@ -985,10 +991,18 @@ class Interp {
 				datamodel.set(idlocation, invokeid);
 			}
 			
+			//log(".. invokeid = " + invokeid);
+			
+			
 			// FIXME what do we do here if invokeid is still null?
-			// this can be the case if neither id or idlocation are set on inv
-			if( invokeid == null )
-				throw "check";
+			// this can be the case if neither id nor idlocation are set on inv
+			// going by the tests, it seems we need to generate and set a new id for inv is it is still null here - check with spec
+			if( invokeid == null ) {
+				id = "hackInvId_" + (hackInvId++);
+				inv.set("id", id);
+				invokeid = id;
+			}
+			//log(".. invokeid = " + invokeid);
 			
 			var data = [];
 			
