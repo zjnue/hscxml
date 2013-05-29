@@ -53,7 +53,7 @@ class Convert {
 				
 			Sys.print("converting.. " + path);
 			
-			fileName = parts.join("") + ".xml";
+			fileName = parts.join("") + ".scxml";
 			stamp = haxe.Timer.stamp();
 			
 			// grab a stable build of the open-source saxon xslt 2.0 processor and place it in this folder
