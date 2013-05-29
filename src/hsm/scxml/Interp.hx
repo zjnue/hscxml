@@ -955,9 +955,6 @@ class Interp {
 				datamodel.set(idlocation, invokeid);
 			}
 			
-			//log(".. invokeid = " + invokeid);
-			
-			
 			// FIXME what do we do here if invokeid is still null?
 			// this can be the case if neither id nor idlocation are set on inv
 			// going by the tests, it seems we need to generate and set a new id for inv is it is still null here - check with spec
@@ -966,7 +963,6 @@ class Interp {
 				inv.set("id", id);
 				invokeid = id;
 			}
-			//log(".. invokeid = " + invokeid);
 			
 			var data = [];
 			
@@ -996,12 +992,27 @@ class Interp {
 			if( params.length > 0 && namelist != null )
 				throw "check";
 			
-			var contentVal = parseContent(content);
+			var contentVal = null;
 			var params = parseParams(params);
+			data = data.concat( params );
+			
+			if( src != null ) {
 				
-			switch( type ) {
+				if( src.indexOf("file:") >= 0 ) {
+					var file = src.substr(5);
+					var path = Sys.getCwd() + "ecma/"; // FIXME tmp hack (relative urls..)
+					contentVal = sys.io.File.getContent(path+file);
+				}
 				
-				case "http://www.w3.org/TR/scxml/", "scxml":
+				//var http = new haxe.Http(src);
+			
+			} else {
+				contentVal = parseContent(content);
+			}
+			
+			switch( stripEndSlash(type) ) {
+				
+				case "http://www.w3.org/TR/scxml", "scxml":
 				
 					if( hasInvokedData(invokeid) )
 						throw "Invoke id already exists: " + invokeid;
@@ -1022,7 +1033,6 @@ class Interp {
 	}
 	
 	function createChildInterp() {
-		
 		var xmlStr = Thread.readMessage(true);
 		var data : Array<{key:String,value:Dynamic}> = Thread.readMessage(true);
 		var invokeid = Thread.readMessage(true);
@@ -1059,15 +1069,19 @@ class Interp {
 	}
 	
 	function invokeTypeAccepted( type : String ) {
-		switch( type ) {
+		switch( stripEndSlash(type) ) {
 			case
-				"http://www.w3.org/TR/scxml/", "scxml": return true;//,
+				"http://www.w3.org/TR/scxml", "scxml": return true;//,
 //				"http://www.w3.org/TR/ccxml/", "ccxml",
 //				"http://www.w3.org/TR/voicexml30/", "voicexml30",
 //				"http://www.w3.org/TR/voicexml21/", "voicexml21": return true;
 			default:
 				return false;
 		}
+	}
+	
+	inline function stripEndSlash( str : String ) {
+		return (str.substr(-1) == "/") ? str.substr(0,str.length-1) : str;
 	}
 	
 	function setFromSrc( id : String, src : String ) {
