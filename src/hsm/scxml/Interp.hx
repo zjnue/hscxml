@@ -12,8 +12,10 @@ using hsm.scxml.tools.NodeTools;
 
 #if neko
 import neko.vm.Thread;
+import neko.vm.Mutex;
 #elseif cpp
 import cpp.vm.Thread;
+import cpp.vm.Mutex;
 #end
 
 #if haxe3
@@ -42,6 +44,7 @@ class Interp {
 		externalQueue.enqueue( evt );
 	}
 	
+	var invokedDataMutex:Mutex;
 	var timerThread : TimerThread;
 	var mainThread : Thread;
 	
@@ -132,6 +135,7 @@ class Interp {
 	function extraInit() {
 		cancelledSendIds = new Hash();
 		invokedData = new Hash();
+		invokedDataMutex = new Mutex();
 	}
 	
 	function valid( doc : Xml ) {
@@ -516,10 +520,10 @@ class Interp {
 	}
 	
 	function send( invokeid : String, evt : Event ) {
-		if( !invokedData.exists(invokeid) )
+		if( !hasInvokedData(invokeid) )
 			throw "check";
 			
-		var invData = invokedData.get(invokeid);
+		var invData = getInvokedData(invokeid);
 		if( !isScxmlInvokeType(invData.type) )
 			throw "Invoke type currently not supported: " + invData.type;
 		
@@ -572,9 +576,9 @@ class Interp {
 		return ( delay == null || delay == "" ) ? 0 : Std.parseFloat(delay.split("s").join("")); // FIXME
 	}
 	
-	inline function isValidAndSupportedSendTarget( target : Dynamic ) {
+	inline function isValidAndSupportedSendTarget( target : String ) {
 		return if( Lambda.has(["#_internal", "#_parent", "#_scxml_" + datamodel.get("_sessionid")], target ) ||
-					(invokedData != null && invokedData.exists(target.substr(2))) )
+					(invokedData != null && hasInvokedData(target.substr(2))) )
 			true;
 		else
 			datamodel.exists(target);
@@ -753,6 +757,19 @@ class Interp {
 									cb = parentEventHandler;
 									
 								default:
+								
+									if( target != null && target.length > 2 ) {
+										
+										if( target.indexOf("#_") == 0 ) {
+											var sub = target.substr(2);
+											if( hasInvokedData(sub) ) {
+												var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(sub);
+												var inst = cast( data.instance, hsm.scxml.Interp );
+												inst.postEvent(evt);
+											}
+										}
+									
+									}
 							}
 							
 							sendEvent( evt, Std.int(duration * 1000), cb );
@@ -891,6 +908,28 @@ class Interp {
 	
 	static var hackInvId : Int = 0;
 	
+	function setInvokedData(id:String, data:Dynamic) {
+		invokedDataMutex.acquire();
+		invokedData.set(id, data);
+		invokedDataMutex.release();
+	}
+	
+	function getInvokedData(id:String) {
+		var data : Dynamic = null;
+		invokedDataMutex.acquire();
+		data = invokedData.get(id);
+		invokedDataMutex.release();
+		return data;
+	}
+	
+	function hasInvokedData(id:String) {
+		var has = false;
+		invokedDataMutex.acquire();
+		has = invokedData.exists(id);
+		invokedDataMutex.release();
+		return has;
+	}
+	
 	function invoke( inv : Node ) {
 		
 		if( !(datamodel.supportsVal && datamodel.supportsLoc) )
@@ -964,38 +1003,14 @@ class Interp {
 				
 				case "http://www.w3.org/TR/scxml/", "scxml":
 				
-					if( invokedData.exists(invokeid) )
+					if( hasInvokedData(invokeid) )
 						throw "Invoke id already exists: " + invokeid;
 					
-					var xmlStr = contentVal; // FIXME get from src if defined
-					var xml = Xml.parse(xmlStr).firstElement();
-					var models = xml.elementsNamed("datamodel");
-					if( models.hasNext() )
-						for( dataNode in models.next().elementsNamed("data") ) {
-							var nodeId = dataNode.get("id");
-							for( d in data )
-								if( d.key == nodeId ) {
-									dataNode.set(nodeId, d.value);
-									break;
-								}
-						}
-					
-					var me = this;
-					var inst = new hsm.scxml.Interp();
-					inst.invokeId = invokeid;
-					inst.parentEventHandler = function( evt : Event ) {
-						log("parentEventHandler: evt.name = " + evt.name);
-						me.addToExternalQueue(evt);
-					};
-					inst.log = function(msg) { log("log-from-child: " + msg); };
-					inst.onInit = function() { inst.start(); };
-					
-					invokedData.set(invokeid, {
-						type : type,
-						instance : inst
-					});
-					
-					inst.interpret( xml );
+					var c = Thread.create(createChildInterp);
+					c.sendMessage(contentVal);
+					c.sendMessage(data);
+					c.sendMessage(invokeid);
+					c.sendMessage(type);
 					
 				default:
 			}
@@ -1004,6 +1019,43 @@ class Interp {
 			// cancel
 			// raise error
 		}
+	}
+	
+	function createChildInterp() {
+		
+		var xmlStr = Thread.readMessage(true);
+		var data : Array<{key:String,value:Dynamic}> = Thread.readMessage(true);
+		var invokeid = Thread.readMessage(true);
+		var type = Thread.readMessage(true);
+		
+		var xml = Xml.parse(xmlStr).firstElement();
+		var models = xml.elementsNamed("datamodel");
+		if( models.hasNext() )
+			for( dataNode in models.next().elementsNamed("data") ) {
+				var nodeId = dataNode.get("id");
+				for( d in data )
+					if( d.key == nodeId ) {
+						dataNode.set(nodeId, d.value);
+						break;
+					}
+			}
+		
+		var me = this;
+		var inst = new hsm.scxml.Interp();
+		inst.invokeId = invokeid;
+		inst.parentEventHandler = function( evt : Event ) {
+			log("parentEventHandler: evt.name = " + evt.name);
+			me.addToExternalQueue(evt);
+		};
+		inst.log = function(msg) { log("log-from-child: " + msg); };
+		inst.onInit = function() { inst.start(); };
+		
+		setInvokedData(invokeid, {
+			type : type,
+			instance : inst
+		});
+		
+		inst.interpret( xml );
 	}
 	
 	function invokeTypeAccepted( type : String ) {
