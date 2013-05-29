@@ -2,6 +2,20 @@ package hsm.scxml;
 
 using hsm.scxml.tools.ListTools;
 
+#if neko
+import neko.vm.Deque;
+import neko.vm.Thread;
+import neko.vm.Mutex;
+import neko.vm.Lock;
+#elseif cpp
+import cpp.vm.Deque;
+import cpp.vm.Thread;
+import cpp.vm.Mutex;
+import cpp.vm.Lock;
+#end
+
+import haxe.Timer;
+
 #if haxe3
 private typedef Hash<T> = haxe.ds.StringMap<T>;
 #end
@@ -75,19 +89,81 @@ class Queue<T> {
 }
 
 class BlockingQueue<T> {
-	var l : List<T>;
-	public function new() { l = new List<T>(); callOnNewContent = false; }
-	public var callOnNewContent : Bool;
-	public var onNewContent : Void -> Void;
-	public inline function enqueue( i : T ) {
-		l.add( i );
-		if (callOnNewContent) {
-			callOnNewContent = false;
-			onNewContent();
-		}
+	var dq : Deque<T>;
+	public function new() { dq = new Deque<T>(); }
+	public inline function enqueue( i : T ) { dq.add( i ); }
+	public inline function dequeue() { return dq.pop(true); }
+}
+
+typedef TTimerData = {
+	time : Float,
+	func : Void->Void	
+}
+
+class TimerThread {
+	var mutex : Mutex;
+	var queueLock : Lock;
+	var queue : Array<TTimerData>;
+	var running : Bool;
+	
+	public function new() {
+		queue = [];
+		queueLock = new Lock();
+		mutex = new Mutex();
+		running = true;
+		Thread.create( mainLoop );
 	}
-	public function dequeue() {
-		//while( l.isEmpty() ) {}
-		return l.pop();
+	
+	function sortEventData( e0 : TTimerData, e1 : TTimerData ) {
+		return Std.int((e0.time - e1.time) * 1000);
+	}
+	
+	public function addTimer( delaySec : Float, cb : Void -> Void ) {
+		mutex.acquire();
+		queue.push( { time : Timer.stamp() + delaySec, func : cb } );
+		queue.sort(sortEventData);
+		mutex.release();
+		queueLock.release();
+	}
+	
+	public function quit( ?cb : Void -> Void ) {
+		var me = this;
+		addTimer( 0, function() {
+			me.running = false;
+			if( cb != null )  
+				cb();
+		} );
+	}
+	
+	function mainLoop() {
+		while( running ) {
+			var wake : Null<Float> = null;
+			var now = Timer.stamp();
+			var ready = new Array<TTimerData>();
+			mutex.acquire();
+			while( queue.length > 0 ) {
+				if( queue[0].time <= now )
+					ready.push(queue.shift());
+				else {
+					wake = queue[0].time;
+					break;
+				}
+			}
+			mutex.release();
+			for( d in ready ) {
+				d.func();
+				if( !running )
+					break;
+			}
+			if( !running )
+				break;
+			if( wake == null )
+				queueLock.wait();
+			else {
+				var delay = wake - Timer.stamp();
+				if( delay > 0 )
+					queueLock.wait(delay);
+			}
+		}
 	}
 }

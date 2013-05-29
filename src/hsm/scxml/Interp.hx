@@ -10,17 +10,14 @@ using hsm.scxml.tools.ArrayTools;
 using hsm.scxml.tools.ListTools;
 using hsm.scxml.tools.NodeTools;
 
-#if haxe3
-private typedef Hash<T> = haxe.ds.StringMap<T>;
+#if neko
+import neko.vm.Thread;
+#elseif cpp
+import cpp.vm.Thread;
 #end
 
-#if !not_service
-typedef TDelayedEvent = {
-	id : Int,
-	evt : Event,
-	exriresStamp : Float,
-	func : Event -> Void
-}
+#if haxe3
+private typedef Hash<T> = haxe.ds.StringMap<T>;
 #end
 
 class Interp {
@@ -45,8 +42,17 @@ class Interp {
 		externalQueue.enqueue( evt );
 	}
 	
+	var timerThread : TimerThread;
+	var mainThread : Thread;
+	
 	public function start() {
-		mainEventLoop();
+		
+		mainThread = Thread.create(mainEventLoop);
+		mainThread.sendMessage(Thread.current());
+		Thread.readMessage(true);
+		
+		// TODO check if timer needs to stop earlier
+		timerThread.quit();
 	}
 	
 	public function stop() {
@@ -93,7 +99,6 @@ class Interp {
 		statesToInvoke = new Set();
 		internalQueue = new Queue();
 		externalQueue = new BlockingQueue();
-		externalQueue.onNewContent = checkBlockingQueue;
 		historyValue = new Hash();
 		
 		extraInit();
@@ -115,6 +120,7 @@ class Interp {
 		binding = d.exists("binding") ? d.get("binding") : "early";
 		initializeDatamodel( datamodel, result.data, (binding != "early") );
 		
+		timerThread = new TimerThread();
 		running = true;
 		executeGlobalScriptElements(d);
 		
@@ -126,9 +132,6 @@ class Interp {
 	function extraInit() {
 		cancelledSendIds = new Hash();
 		invokedData = new Hash();
-		#if !not_service
-		eventQueue = []; // FIXME not_service events should also be in queue
-		#end
 	}
 	
 	function valid( doc : Xml ) {
@@ -183,7 +186,8 @@ class Interp {
 	}
 	
 	function mainEventLoop() {
-		if( running ) {
+		var main = Thread.readMessage(true);
+		while( running ) {
 			var enabledTransitions : Set<Node> = null;
 			var macrostepDone = false;
 			while( running && !macrostepDone ) {
@@ -200,75 +204,34 @@ class Interp {
 				if( !enabledTransitions.isEmpty() )
 					microstep(enabledTransitions.toList());
 			}
-			if( !running ) {
-				running = false;
-				mainEventLoop();
-				return;
-			}
+			if( !running )
+				break;
 			for( state in statesToInvoke )
 				for( inv in state.invoke() )
 					invoke(inv);
 			statesToInvoke.clear();
-			if( !internalQueue.isEmpty() ) {
-				mainEventLoop();
-				return;
+			if( !internalQueue.isEmpty() )
+				continue;
+			var externalEvent = externalQueue.dequeue();
+			if( isCancelEvent(externalEvent) ) {
+				running = false;
+				continue;
 			}
-			checkBlockingQueue();
-		} else {
-			//log("mainEventLoop: exitInterpreter");
-			exitInterpreter();
+			setEvent(externalEvent);
+			for( state in configuration )
+				for( inv in state.invoke() ) {
+					if( inv.get("invokeid") == externalEvent.invokeid )
+						applyFinalize(inv, externalEvent);
+					if( inv.exists("autoforward") && inv.get("autoforward") == "true" )
+						send(inv.get("id"), externalEvent);
+				}
+			var enabledTransitions = selectTransitions(externalEvent);
+			if( !enabledTransitions.isEmpty() )
+				microstep(enabledTransitions.toList());
 		}
-	}
-	
-	#if !not_service
-	
-	function checkBlockingQueue() {
-		var evt = externalQueue.dequeue();
-		if( evt == null ) {
-			log("no external event found");
-			var raised = checkEvents();
-			if( raised )
-				mainEventLoop();
-			else {
-				Sys.sleep(0.2);
-				checkBlockingQueue();
-			}
-		} if( running )
-			mainEventLoopPart2( evt );
-	}
-	
-	#else
-	
-	function checkBlockingQueue() {
-		var evt = externalQueue.dequeue();
-		if( evt != null )
-			mainEventLoopPart2(evt);
-		else if( running ) 
-			externalQueue.callOnNewContent = true;
-		else
-			log("checkBlockingQueue: evt = " + Std.string(evt) + " running = " + Std.string(running));
-	}
-	
-	#end
-	
-	function mainEventLoopPart2( externalEvent : Event ) {
-		if( isCancelEvent(externalEvent) ) {
-			running = false;
-			mainEventLoop();
-			return;
-		}
-		setEvent(externalEvent);
-		for( state in configuration )
-			for( inv in state.invoke() ) {
-				if( inv.get("invokeid") == externalEvent.invokeid )
-					applyFinalize(inv, externalEvent);
-				if( inv.exists("autoforward") && inv.get("autoforward") == "true" )
-					send(inv.get("id"), externalEvent);
-			}
-		var enabledTransitions = selectTransitions(externalEvent);
-		if( !enabledTransitions.isEmpty() )
-			microstep(enabledTransitions.toList());
-		mainEventLoop();
+		//log("mainEventLoop: exitInterpreter");
+		exitInterpreter();
+		main.sendMessage("done");
 	}
 	
 	function isCancelEvent( evt : Event ) {
@@ -595,49 +558,14 @@ class Interp {
 		datamodel.set("_event", evt);
 	}
 	
-	#if !not_service
-	
-	static var delayedEventId : Int = 0;
-	
-	var eventQueue:Array<TDelayedEvent>;
-	
-	function sortEventData( e0 : TDelayedEvent, e1 : TDelayedEvent ) {
-		return Std.int((e1.exriresStamp - e0.exriresStamp) * 1000);
-	}
-	
-	function checkEvents() {
-		eventQueue.sort(sortEventData);
-		var events = eventQueue;
-		var now = haxe.Timer.stamp();
-		var raised = false;
-		while( events.length > 0 && (events[events.length-1].exriresStamp < now) ) {
-			var eventData = events.pop();
-			log("processing event: id = " + eventData.id);
-			eventData.func(eventData.evt);
-			raised = true;
-		}
-		return raised;
-	}
-	
-	#end
-	
 	function sendEvent( evt : Event, delayMs : Int = 0, addEvent : Event -> Void ) {
 		if( delayMs == 0 )
 			addEvent(evt);
-		else {
-			#if !not_service
-			var id = delayedEventId++;
-			log("adding delayed event: id = " + id + " name = " + evt.name + " delayMs = " + delayMs);
-			eventQueue.push({
-				id : id,
-				evt : evt,
-				exriresStamp : haxe.Timer.stamp() + delayMs / 1000,
-				func : addEvent
+		else
+			timerThread.addTimer(delayMs/1000, function() {
+				if( !isCancelEvent(evt) )
+					addEvent(evt);
 			});
-			#else
-			haxe.Timer.delay( callback(addEvent,evt), delayMs );
-			#end
-		}
 	}
 	
 	inline function getDuration( delay : String ) {
@@ -710,10 +638,7 @@ class Interp {
 				
 				var sendid = getAltProp( c, "sendid", "sendidexpr" );
 				cancelledSendIds.set(sendid, true);
-				
-				if( eventQueue != null && eventQueue.length > 0 )
-					eventQueue = Lambda.array( Lambda.filter(eventQueue, function(evtData) return evtData.evt.sendid != sendid) );
-				
+					
 			case "send":
 				
 				if( !datamodel.supportsVal && datamodel.supportsLoc )
