@@ -946,7 +946,7 @@ class Interp {
 			var src = getAltProp( inv, "src", "srcexpr" );
 			
 			var id = inv.exists("id") ? inv.get("id") : null;
-			var idlocation = inv.exists("idlocation") ? datamodel.doLoc(inv.get("idlocation")) : null;
+			var idlocation = inv.exists("idlocation") ? inv.get("idlocation") : null;
 			if( id != null && idlocation != null )
 				throw "check";
 			var invokeid = id;
