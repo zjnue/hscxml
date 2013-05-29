@@ -249,6 +249,8 @@ class HScriptModel extends Model {
 			return true;
 		expr = expr.split("===").join("==");
 		var val = eval(expr);
+		if( val == null && exists(expr) )
+			return true;
 		return Std.is(val, Bool) ? val : (val != null);
 	}
 	
