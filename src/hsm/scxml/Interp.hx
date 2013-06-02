@@ -528,9 +528,10 @@ class Interp {
 		}
 	}
 	
+	// TODO check, evt does not seem necessary here
 	function applyFinalize( inv : Node, evt : Event ) {
-		log("applyFinalize: inv.id = " + inv.get("id") + " evt.name = " + evt.name);
-		// FIXME
+		for( f in inv.finalize() )
+			executeBlock(f);
 	}
 	
 	function send( invokeid : String, evt : Event ) {
@@ -976,6 +977,8 @@ class Interp {
 				inv.set("id", id);
 				invokeid = id;
 			}
+			// TODO check this (see test 234)
+			inv.set("invokeid", invokeid);
 			
 			var data = [];
 			

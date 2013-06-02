@@ -54,6 +54,7 @@ class NodeTools {
 	public static inline function transitionFilter( n : Node ) { return isTTransition(n); }
 	public static inline function historyFilter( n : Node ) { return isTHistory(n); }
 	public static inline function finalFilter( n : Node ) { return isTFinal(n); }
+	public static inline function finalizeFilter( n : Node ) { return isTFinalize(n); }
 	public static inline function initialFilter( n : Node ) { return isTInitial(n); }
 	public static inline function dataModelFilter( n : Node ) { return isTDataModel(n); }
 	public static inline function scriptFilter( n : Node ) { return isTScript(n); }
@@ -66,6 +67,7 @@ class NodeTools {
 	public static inline function transition( n : Node ) { return Lambda.filter( n, transitionFilter ).iterator(); }
 	public static inline function history( n : Node ) { return Lambda.filter( n, historyFilter ).iterator(); }
 	public static inline function final( n : Node ) { return Lambda.filter( n, finalFilter ).iterator(); }
+	public static inline function finalize( n : Node ) { return Lambda.filter( n, finalizeFilter ).iterator(); }
 	public static inline function initial( n : Node ) { return Lambda.filter( n, initialFilter ).iterator(); }
 	public static inline function datamodel( n : Node ) { return Lambda.filter( n, dataModelFilter ).iterator(); }
 	public static inline function script( n : Node ) { return Lambda.filter( n, scriptFilter ).iterator(); }
