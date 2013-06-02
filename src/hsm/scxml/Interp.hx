@@ -462,7 +462,7 @@ class Interp {
 	function getTransitionDomain( transition : Node ) {
 		var targetStates = getTargetStates(transition);
 		var sourceState = getSourceState(transition);
-		if( targetStates == null )
+		if( targetStates.isEmpty() )
 			return sourceState;
 		else if( transition.get("type") == "internal" && sourceState.isCompound() 
 				&& targetStates.every(function(s) return s.isDescendant(sourceState)) )
@@ -510,12 +510,26 @@ class Interp {
 	var invokedData : Hash<Dynamic>;
 	
 	function cancelInvoke( inv : Node ) {
-		//log("cancelInvoke: inv.id = " + inv.get("id"));
-		// FIXME
+		log("cancelInvoke: inv.id = " + inv.get("id"));
+		var id = inv.exists("id") ? inv.get("id") : null;
+		if( id == null ) {
+			var idlocation = inv.exists("idlocation") ? inv.get("idlocation") : null;
+			if( idlocation == null )
+				throw "No id or idlocation specified";
+			id = datamodel.get(idlocation);
+		}
+		log("id = " + id);
+		if( hasInvokedData(id) ) {
+			var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(id);
+			data.instance.running = false;
+			log("data.instance.running = " + data.instance.running);
+		} else {
+			log("no invoke data found for id: " + id);
+		}
 	}
 	
 	function applyFinalize( inv : Node, evt : Event ) {
-		//log("applyFinalize: inv.id = " + inv.get("id") + " evt.name = " + evt.name);
+		log("applyFinalize: inv.id = " + inv.get("id") + " evt.name = " + evt.name);
 		// FIXME
 	}
 	
@@ -764,8 +778,7 @@ class Interp {
 											var sub = target.substr(2);
 											if( hasInvokedData(sub) ) {
 												var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(sub);
-												var inst = cast( data.instance, hsm.scxml.Interp );
-												inst.postEvent(evt);
+												data.instance.postEvent(evt);
 											}
 										}
 									
@@ -952,7 +965,7 @@ class Interp {
 			var invokeid = id;
 			if( idlocation != null ) {
 				invokeid = getInvokeId(inv);
-				datamodel.set(idlocation, invokeid);
+				datamodel.doAssign(idlocation, "'" + invokeid + "'");
 			}
 			
 			// FIXME what do we do here if invokeid is still null?
@@ -1091,6 +1104,8 @@ class Interp {
 	/** node here is the transition to pass in **/
 	function getTargetStates( node : Node ) : List<Node> {
 		var l = new List<Node>();
+		if( !node.exists("target") )
+			return l;
 		var ids = node.get("target").split(" ");
 		var top = node;
 		while( !(top.parent == null) && !(top.isTScxml()) )
