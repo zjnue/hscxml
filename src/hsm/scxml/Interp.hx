@@ -522,6 +522,7 @@ class Interp {
 		if( hasInvokedData(id) ) {
 			var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(id);
 			data.instance.running = false;
+			data.instance.parentEventHandler = function( evt : Event ) {};
 			log("data.instance.running = " + data.instance.running);
 		} else {
 			log("no invoke data found for id: " + id);
