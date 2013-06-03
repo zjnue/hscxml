@@ -276,6 +276,8 @@ class HScriptModel extends Model {
 	}
 	
 	override public function doScript( expr : String ) : Dynamic {
+		expr = StringTools.trim(expr);
+		expr = expr.split("var ").join(""); // tmp workaround - see test 302
 		return eval(expr);
 	}
 	

@@ -164,8 +164,8 @@ class Interp {
 	
 	function executeGlobalScriptElements( doc : Node ) {
 		var globalScripts = doc.script();
-		if( globalScripts.hasNext() )
-			executeBlock([globalScripts.next()]);
+		for( script in globalScripts )
+			executeContent(script);
 	}
 	
 	function initializeDatamodel( datamodel : Model, dms : List<DataModel>, setValsToNull : Bool = false ) {
@@ -869,8 +869,16 @@ class Interp {
 					}
 				}
 			case "script":
-				if( datamodel.supportsScript )
-					datamodel.doScript( cast(c, Script).content );
+				if( datamodel.supportsScript ) {
+					if( c.exists("src") ) {
+						var src = c.get("src");
+						var h = new haxe.Http(src);
+						h.onData = function(data:String) { datamodel.doScript( data ); };
+						h.onError = function(err:String) { throw "Script error: " + err; }; 
+						h.request(false);
+					} else
+						datamodel.doScript( cast(c, Script).content );
+				}
 			case "foreach":
 				if( !(datamodel.supportsVal && datamodel.supportsProps) )
 					return;
