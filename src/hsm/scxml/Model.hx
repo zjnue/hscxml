@@ -270,6 +270,8 @@ class HScriptModel extends Model {
 	}
 	
 	override public function doAssign( loc : String, val : String ) : Dynamic  {
+		if( !exists(loc) )
+			throw "Trying to assign a value to an undeclared variable.";
 		return eval(loc + " = " + val);
 	}
 	
