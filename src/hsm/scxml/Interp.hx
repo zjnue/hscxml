@@ -251,7 +251,7 @@ class Interp {
 				cancelInvoke(inv);
 			configuration.delete(s);
 			if( s.isTFinal() && s.parent.isTScxml() )
-				returnDoneEvent(s.get("donedata"));
+				returnDoneEvent( getDoneData(s) );
 		}
 	}
 	
@@ -388,7 +388,7 @@ class Interp {
 				else {
 					var parent = s.parent;
 					var grandparent = parent.parent;
-					internalQueue.enqueue( new Event("done.state." + parent.get("id"), s.get("donedata")) );
+					internalQueue.enqueue( new Event("done.state." + parent.get("id"), getDoneData(s)) );
 					if( grandparent.isTParallel() )
 						if( grandparent.getChildStates().every(isInFinalState) )
 							internalQueue.enqueue( new Event("done.state." + grandparent.get("id")) );
@@ -551,6 +551,38 @@ class Interp {
 		return (type == "http://www.w3.org/TR/scxml/" || type == "scxml");
 	}
 	
+	function getDoneData( n : Node ) {
+		var val = null;
+		for( d in n.donedata() ) {
+			if( val != null )
+				break;
+			var params = [];
+			var content = [];
+			for( child in d ) {
+				if( child.isTParam() )
+					params.push(child);
+				else if( child.isTContent() )
+					content.push(child);
+			}
+			if( content.length > 0 && params.length > 0 )
+				throw "check";
+			if( content.length > 1 )
+				throw "Send may contain only one content child.";
+			if( content.length > 0 )
+				val = parseContent(content);
+			else {
+				try {
+					var data = parseParams(params);
+					var val = {};
+					setEventData(val, data);
+				} catch( e:Dynamic ) {
+					raise( new Event("error.execution") );
+				}
+			}
+		}
+		return val;
+	}
+	
 	function returnDoneEvent( doneData : Dynamic ) : Void {
 		if( parentEventHandler == null )
 			return;
@@ -644,6 +676,20 @@ class Interp {
 				raise( new Event("error.execution") );
 				break;
 			}
+		}
+	}
+	
+	function setEventData( evtData : {}, fromData : Array<{key:String, value:Dynamic}> ) {
+		for( item in fromData ) {
+			if( Reflect.hasField(evtData, item.key) ) {
+				var val = Reflect.field(evtData, item.key);
+				if( Std.is(val, Array) ) {
+					val.push(item.value);
+				} else {
+					Reflect.setField(evtData, item.key, [val, item.value]);
+				}
+			} else
+				Reflect.setField(evtData, item.key, item.value);
 		}
 	}
 	
@@ -742,21 +788,8 @@ class Interp {
 							
 							if( content.length > 0 )
 								Reflect.setField(evt, "data", contentVal);
-							else {
-								var evtData = evt.data;
-								var inData = data.copy(); // FIXME check
-								for( item in inData ) {
-									if( Reflect.hasField(evtData, item.key) ) {
-										var val = Reflect.field(evtData, item.key);
-										if( Std.is(val, Array) ) {
-											val.push(item.value);
-										} else {
-											Reflect.setField(evtData, item.key, [val, item.value]);
-										}
-									} else
-										Reflect.setField(evtData, item.key, item.value);
-								}
-							}
+							else
+								setEventData(evt.data, data.copy());
 							
 							var cb = addToExternalQueue;
 

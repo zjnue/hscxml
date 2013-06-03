@@ -34,20 +34,18 @@ class Event {
 	
 	public function new( name : String, ?data : Dynamic ) {
 		this.name = name;
-		this.data = {};
+		this.data = data == null ? {} : data;
 		this.type = "platform";
 		this.raw = "";
-		if( data != null )
-			for( key in Reflect.fields(data) )
-				Reflect.setField(this.data, key, Reflect.field(data, key));
 	}
 	public function toString() {
-		var out = "[Event: " + name;
-		for( field in Reflect.fields(data) )
-			out += "\n\t" + field + " = " + Std.string(Reflect.field(data, field));
-		if( out != "[Event: " + name )
-			out += "\n";
-		return out + "]";
+		var out = "[Event: " + name + " data: ";
+		if( Std.is(data, {}) )
+			for( field in Reflect.fields(data) )
+				out += "\n\t" + field + " = " + Std.string(Reflect.field(data, field));
+		else
+			out += "\n\t" + Std.string(data);
+		return out + "\n]";
 	}
 }
 

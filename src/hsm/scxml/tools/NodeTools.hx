@@ -48,6 +48,7 @@ class NodeTools {
 	public static inline function isTParam( s : Node ) { return Std.is(s, Param); }
 	public static inline function isTContent( s : Node ) { return Std.is(s, Content); }
 	public static inline function isTFinalize( s : Node ) { return Std.is(s, Finalize); }
+	public static inline function isTDoneData( s : Node ) { return Std.is(s, DoneData); }
 	// filters
 	public static inline function stateFilter( n : Node ) { return isTState(n); }
 	public static inline function parallelFilter( n : Node ) { return isTParallel(n); }
@@ -57,6 +58,7 @@ class NodeTools {
 	public static inline function finalizeFilter( n : Node ) { return isTFinalize(n); }
 	public static inline function initialFilter( n : Node ) { return isTInitial(n); }
 	public static inline function dataModelFilter( n : Node ) { return isTDataModel(n); }
+	public static inline function doneDataFilter( n : Node ) { return isTDoneData(n); }
 	public static inline function scriptFilter( n : Node ) { return isTScript(n); }
 	public static inline function invokeFilter( n : Node ) { return isTInvoke(n); }
 	public static inline function onEntryFilter( n : Node ) { return isTOnEntry(n); }
@@ -70,6 +72,7 @@ class NodeTools {
 	public static inline function finalize( n : Node ) { return Lambda.filter( n, finalizeFilter ).iterator(); }
 	public static inline function initial( n : Node ) { return Lambda.filter( n, initialFilter ).iterator(); }
 	public static inline function datamodel( n : Node ) { return Lambda.filter( n, dataModelFilter ).iterator(); }
+	public static inline function donedata( n : Node ) { return Lambda.filter( n, doneDataFilter ).iterator(); }
 	public static inline function script( n : Node ) { return Lambda.filter( n, scriptFilter ).iterator(); }
 	public static inline function invoke( n : Node ) { return Lambda.filter( n, invokeFilter ).iterator(); }
 	public static inline function onentry( n : Node ) { return Lambda.filter( n, onEntryFilter ).iterator(); }

@@ -88,19 +88,19 @@ class Model {
 		return false;
 	}
 	
-	public function doLoc( expr : String ) : Dynamic  {
+	public function doLoc( expr : String ) : Dynamic {
 		return null;
 	}
 	
-	public function doVal( expr : String ) : Dynamic  {
+	public function doVal( expr : String ) : Dynamic {
 		return null;
 	}
 	
-	public function doAssign( loc : String, val : String ) : Dynamic  {
+	public function doAssign( loc : String, val : String ) : Dynamic {
 		return null;
 	}
 	
-	public function doScript( expr : String ) : Dynamic  {
+	public function doScript( expr : String ) : Dynamic {
 		return null;
 	}
 	
@@ -261,21 +261,21 @@ class HScriptModel extends Model {
 		return Std.is(val, Bool) ? val : (val != null);
 	}
 	
-	override public function doLoc( expr : String ) : Dynamic   {
+	override public function doLoc( expr : String ) : Dynamic {
 		return eval(expr);
 	}
 	
-	override public function doVal( expr : String ) : Dynamic   {
+	override public function doVal( expr : String ) : Dynamic {
 		return eval(expr);
 	}
 	
-	override public function doAssign( loc : String, val : String ) : Dynamic  {
+	override public function doAssign( loc : String, val : String ) : Dynamic {
 		if( !exists(loc) )
 			throw "Trying to assign a value to an undeclared variable.";
 		return eval(loc + " = " + val);
 	}
 	
-	override public function doScript( expr : String ) : Dynamic  {
+	override public function doScript( expr : String ) : Dynamic {
 		return eval(expr);
 	}
 	

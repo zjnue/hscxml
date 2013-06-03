@@ -122,6 +122,10 @@ class Finalize extends Node {
 	public function new(p:Node) { super(p); }
 }
 
+class DoneData extends Node {
+	public function new(p:Node) { super(p); }
+}
+
 class Exec extends Node {
 	public function new(p:Node) { super(p); }
 }

@@ -29,6 +29,7 @@ class Compiler {
 			case "send":		n = new Send(parent);
 			case "invoke":		n = new Invoke(parent);
 			case "finalize":	n = new Finalize(parent);
+			case "donedata":	n = new DoneData(parent);
 			case "content":		n = new Content(parent); if( !x.exists("expr") ) for( child in x ) cast(n, Content).content += child.toString(); addChildren = false;
 			case "param":		n = new Param(parent);
 			case "log", "raise", "assign", "if", "elseif", "else", "foreach", "cancel":
