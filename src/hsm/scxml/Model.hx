@@ -190,7 +190,7 @@ class HScriptModel extends Model {
 		hinterp.variables.set("_ioprocessors", _ioprocessors);
 		setIoProc("http://www.w3.org/TR/scxml/#SCXMLEventProcessor", {location : "default"});
 		
-		illegalValues = ["continue"];
+		illegalValues = ["continue", "_sessionid", "_name"];
 	}
 	
 	override function set_isInState( value : String -> Bool ) {
@@ -226,6 +226,8 @@ class HScriptModel extends Model {
 	}
 	
 	override public function set( key : String, val : Dynamic ) {
+		if( Lambda.has(illegalValues, key) )
+			throw "Tried to set illegal key: " + key;
 		hinterp.variables.set( key, val );
 	}
 	
@@ -272,6 +274,8 @@ class HScriptModel extends Model {
 	override public function doAssign( loc : String, val : String ) : Dynamic {
 		if( !exists(loc) )
 			throw "Trying to assign a value to an undeclared variable.";
+		if( Lambda.has(illegalValues, loc) )
+			throw "Tried to assign to illegal location: " + loc;
 		return eval(loc + " = " + val);
 	}
 	
