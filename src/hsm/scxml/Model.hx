@@ -4,6 +4,7 @@ import hscript.Parser;
 import hscript.Interp;
 
 import hsm.scxml.Node;
+import hsm.scxml.Types;
 
 #if haxe3
 private typedef Hash<T> = haxe.ds.StringMap<T>;
@@ -108,6 +109,10 @@ class Model {
 		return true;
 	}
 	
+	public function setEvent( evt : Event ) {
+	
+	}
+	
 	public function toString() {
 		return "[Model]";
 	}
@@ -190,7 +195,7 @@ class HScriptModel extends Model {
 		hinterp.variables.set("_ioprocessors", _ioprocessors);
 		setIoProc("http://www.w3.org/TR/scxml/#SCXMLEventProcessor", {location : "default"});
 		
-		illegalValues = ["continue", "_sessionid", "_name", "_ioprocessors"];
+		illegalValues = ["continue", "_sessionid", "_name", "_ioprocessors", "_event"];
 	}
 	
 	override function set_isInState( value : String -> Bool ) {
@@ -287,6 +292,10 @@ class HScriptModel extends Model {
 	
 	override public function isLegalVar( value : String ) {
 		return !Lambda.has(illegalValues, value.split("'").join("").split("\"").join(""));
+	}
+	
+	override public function setEvent( evt : Event ) {
+		hinterp.variables.set( "_event", evt );
 	}
 	
 	override public function toString() {

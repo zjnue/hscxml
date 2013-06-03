@@ -613,7 +613,7 @@ class Interp {
 	
 	inline function setEvent( evt : Event ) {
 		evt.raw = evt.toString();
-		datamodel.set("_event", evt);
+		datamodel.setEvent(evt);
 	}
 	
 	function sendEvent( evt : Event, delayMs : Int = 0, addEvent : Event -> Void ) {
