@@ -11,6 +11,7 @@ class Compiler {
 	public function compile( x : Xml, parent : Node, ?data : List<DataModel>, ?count : Int = -1 ) : { node : Node, data : List<DataModel> } {
 		var n : Node = null;
 		var pos : Int = (count == -1) ? 0 : count;
+		var addChildren = true;
 		if( data == null )
 			data = new List<DataModel>();
 		switch( x.nodeName ) {
@@ -24,22 +25,23 @@ class Compiler {
 			case "onexit":		n = new OnExit(parent);
 			case "transition":	n = new Transition(parent);
 			case "datamodel":	var d = new DataModel(parent); data.add(d); n = d;
-			case "data":		n = new Data(parent); if( !x.exists("expr") ) for( child in x ) cast(n, Data).content += child.toString();
+			case "data":		n = new Data(parent); if( !x.exists("expr") ) for( child in x ) cast(n, Data).content += child.toString(); addChildren = false;
 			case "send":		n = new Send(parent);
 			case "invoke":		n = new Invoke(parent);
 			case "finalize":	n = new Finalize(parent);
-			case "content":		n = new Content(parent); if( !x.exists("expr") ) for( child in x ) cast(n, Content).content += child.toString();
+			case "content":		n = new Content(parent); if( !x.exists("expr") ) for( child in x ) cast(n, Content).content += child.toString(); addChildren = false;
 			case "param":		n = new Param(parent);
 			case "log", "raise", "assign", "if", "elseif", "else", "foreach", "cancel":
 				n = new Exec(parent);
-			case "script":		n = new Script(parent); if( !x.exists("src") ) for( child in x ) cast(n, Script).content += child.toString();
+			case "script":		n = new Script(parent); if( !x.exists("src") ) for( child in x ) cast(n, Script).content += child.toString(); addChildren = false;
 			default:
 				throw "node type not yet implemented: " + x.nodeName;
 		}
 		n.pos = pos;
 		n.name = x.nodeName;
-		for( child in x.elements() )
-			n.addNode( compile(child, n, data, ++pos).node );
+		if( addChildren )
+			for( child in x.elements() )
+				n.addNode( compile(child, n, data, ++pos).node );
 		for( att in x.attributes() )
 			n.set(att, x.get(att));
 		return { node : n, data : data };

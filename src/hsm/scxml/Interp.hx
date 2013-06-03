@@ -1062,7 +1062,7 @@ class Interp {
 				var nodeId = dataNode.get("id");
 				for( d in data )
 					if( d.key == nodeId ) {
-						dataNode.set(nodeId, d.value);
+						dataNode.set("expr", Std.string(d.value));
 						break;
 					}
 			}
