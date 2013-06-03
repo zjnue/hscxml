@@ -190,7 +190,7 @@ class HScriptModel extends Model {
 		hinterp.variables.set("_ioprocessors", _ioprocessors);
 		setIoProc("http://www.w3.org/TR/scxml/#SCXMLEventProcessor", {location : "default"});
 		
-		illegalValues = ["continue", "_sessionid", "_name"];
+		illegalValues = ["continue", "_sessionid", "_name", "_ioprocessors"];
 	}
 	
 	override function set_isInState( value : String -> Bool ) {
