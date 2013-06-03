@@ -572,9 +572,8 @@ class Interp {
 				val = parseContent(content);
 			else {
 				try {
-					var data = parseParams(params);
-					var val = {};
-					setEventData(val, data);
+					val = {};
+					setEventData(val, parseParams(params));
 				} catch( e:Dynamic ) {
 					raise( new Event("error.execution") );
 				}
