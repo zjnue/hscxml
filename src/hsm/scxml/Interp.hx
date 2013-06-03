@@ -119,6 +119,12 @@ class Interp {
 			default:
 		}
 		datamodel.log = log;
+		datamodel.isInState = function(id:String) {
+			for( state in configuration )
+				if( id == state.get("id") )
+					return true;
+			return false;
+		};
 		
 		binding = d.exists("binding") ? d.get("binding") : "early";
 		initializeDatamodel( datamodel, result.data, (binding != "early") );
