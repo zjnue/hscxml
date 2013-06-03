@@ -174,7 +174,7 @@ class Interp {
 			executeContent(script);
 	}
 	
-	function initializeDatamodel( datamodel : Model, dms : List<DataModel>, setValsToNull : Bool = false ) {
+	function initializeDatamodel( datamodel : Model, dms : Iterable<DataModel>, setValsToNull : Bool = false ) {
 		if( !(datamodel.supportsVal && datamodel.supportsProps) )
 			return;
 		for( dm in dms )
@@ -380,7 +380,8 @@ class Interp {
 			configuration.add(s);
 			statesToInvoke.add(s);
 			if( binding == "late" && s.isFirstEntry ) {
-				initializeDatamodel( datamodel, cast s.datamodel(), false );
+				var dms : Iterator<DataModel> = cast s.datamodel();
+				initializeDatamodel( datamodel, {iterator:function() return dms}, false );
 				s.isFirstEntry = false;
 			}
 			for( onentry in s.onentry() )
