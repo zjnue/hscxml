@@ -552,7 +552,7 @@ class Interp {
 	}
 	
 	function getDoneData( n : Node ) {
-		var val = null;
+		var val : Dynamic = null;
 		for( d in n.donedata() ) {
 			if( val != null )
 				break;
