@@ -716,26 +716,26 @@ class Interp {
 				if( !datamodel.supportsVal && datamodel.supportsLoc )
 					return;
 				
+				var errorEvt : Event = null;
+				
 				var data : Array<{key:String, value:Dynamic}> = [];
 				var event = getAltProp( c, "event", "eventexpr" );
 				var target = getAltProp( c, "target", "targetexpr" );
 				
 				if( target != null && !isValidAndSupportedSendTarget(target) )
-					raise( new Event("error.execution") );
+					if( errorEvt == null ) errorEvt = new Event("error.execution");
 				
 				var type = getAltProp( c, "type", "typeexpr" );
 				
-				if( type == "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor" && !ioProcessorSupportsPost() ) {
-					raise( new Event("error.communication") );
-					return;
-				}
+				if( type == "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor" && !ioProcessorSupportsPost() )
+					if( errorEvt == null ) errorEvt = new Event("error.communication");
 				
 				if( type == null )
 					type = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";
 				if( type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" && event == null )
 					throw "check";
 				if( !isValidAndSupportedSendType(type) )
-					raise( new Event("error.execution") );
+					if( errorEvt == null ) errorEvt = new Event("error.execution");
 				if( ioProcessorSupportsPost() && type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" )
 					type = "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor";
 				
@@ -797,6 +797,9 @@ class Interp {
 							else
 								setEventData(evt.data, data.copy());
 							
+							if( errorEvt != null )
+								errorEvt.sendid = sendid;
+							
 							var cb = addToExternalQueue;
 
 							switch( target ) {
@@ -828,6 +831,8 @@ class Interp {
 							
 							if( target == null )
 								evt.type = "external";
+							if( errorEvt != null )
+								raise(errorEvt);
 							
 							sendEvent( evt, Std.int(duration * 1000), cb );
 							
