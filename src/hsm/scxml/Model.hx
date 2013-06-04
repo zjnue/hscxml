@@ -257,6 +257,7 @@ class HScriptModel extends Model {
 		expr = expr.split("===").join("==");
 		expr = expr.split("&lt;").join("<");
 		expr = expr.split("&gt;").join(">");
+		expr = expr.split("&amp;").join("&");
 		var val = null;
 		try {
 			val = eval(expr);

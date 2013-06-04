@@ -826,6 +826,9 @@ class Interp {
 									}
 							}
 							
+							if( target == null )
+								evt.type = "external";
+							
 							sendEvent( evt, Std.int(duration * 1000), cb );
 							
 						case "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor":
@@ -840,7 +843,9 @@ class Interp {
 				if( datamodel.supportsVal )
 					log("<log> label: " + c.get("label") + " val: " + Std.string( datamodel.doVal(c.get("expr")) ) );
 			case "raise":
-				internalQueue.enqueue(new Event(c.get("event")));
+				var evt = new Event(c.get("event"));
+				evt.type = "internal";
+				internalQueue.enqueue(evt);
 			case "assign":
 				if( datamodel.supportsAssign )
 					datamodel.doAssign(c.get("location"), c.get("expr"));
