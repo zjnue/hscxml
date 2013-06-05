@@ -163,7 +163,7 @@ class Interp {
 				hasInitial = true;
 			expandScxmlSource(el);
 		}
-		if( x.exists("initial") || (x.nodeName == "scxml" && !hasInitial) ) {
+		if( x.exists("initial") || (!x.exists("initial") && Lambda.has(["scxml", "state", "parallel"], x.nodeName) && !hasInitial) ) {
 			var ins = Xml.createElement("initial");
 			var trans = Xml.createElement("transition");
 			var tval = x.exists("initial") ? x.get("initial") : null;
@@ -174,6 +174,8 @@ class Interp {
 						break;
 					}
 			}
+			if( tval == null )
+				return;
 			trans.set("target", tval);
 			ins.insertChild(trans, 0);
 			x.insertChild(ins, 0);
