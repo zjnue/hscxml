@@ -517,7 +517,6 @@ class Interp {
 	var invokedData : Hash<Dynamic>;
 	
 	function cancelInvoke( inv : Node ) {
-		log("cancelInvoke: inv.id = " + inv.get("id"));
 		var id = inv.exists("id") ? inv.get("id") : null;
 		if( id == null ) {
 			var idlocation = inv.exists("idlocation") ? inv.get("idlocation") : null;
@@ -525,12 +524,10 @@ class Interp {
 				throw "No id or idlocation specified";
 			id = datamodel.get(idlocation);
 		}
-		log("id = " + id);
 		if( hasInvokedData(id) ) {
 			var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(id);
 			data.instance.running = false;
 			data.instance.parentEventHandler = function( evt : Event ) {};
-			log("data.instance.running = " + data.instance.running);
 		} else {
 			log("no invoke data found for id: " + id);
 		}
@@ -724,18 +721,21 @@ class Interp {
 				
 				if( target != null && !isValidAndSupportedSendTarget(target) )
 					if( errorEvt == null ) errorEvt = new Event("error.execution");
-				
 				var type = getAltProp( c, "type", "typeexpr" );
 				
-				if( type == "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor" && !ioProcessorSupportsPost() )
-					if( errorEvt == null ) errorEvt = new Event("error.communication");
+				if( type == "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor" && !ioProcessorSupportsPost() ) {
+					raise( new Event("error.communication") );
+					return;
+				}
 				
 				if( type == null )
 					type = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";
 				if( type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" && event == null )
 					throw "check";
-				if( !isValidAndSupportedSendType(type) )
-					if( errorEvt == null ) errorEvt = new Event("error.execution");
+				if( !isValidAndSupportedSendType(type) ) {
+					raise( new Event("error.execution") );
+					return;
+				}
 				if( ioProcessorSupportsPost() && type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" )
 					type = "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor";
 				
@@ -1128,7 +1128,6 @@ class Interp {
 		var inst = new hsm.scxml.Interp();
 		inst.invokeId = invokeid;
 		inst.parentEventHandler = function( evt : Event ) {
-			log("parentEventHandler: evt.name = " + evt.name);
 			me.addToExternalQueue(evt);
 		};
 		inst.log = function(msg) { log("log-from-child: " + msg); };
