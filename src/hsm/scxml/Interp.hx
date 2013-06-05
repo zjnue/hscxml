@@ -499,8 +499,13 @@ class Interp {
 	}
 	
 	function conditionMatch( transition : Node ) : Bool {
-		if( transition.exists("cond") && datamodel.supportsCond )
-			return datamodel.doCond( transition.get("cond") );
+		try {
+			if( transition.exists("cond") && datamodel.supportsCond )
+				return datamodel.doCond( transition.get("cond") );
+		} catch( e:Dynamic ) {
+			raise( new Event("error.execution") );
+			return false;
+		}
 		return true;
 	}
 	

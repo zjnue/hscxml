@@ -29,7 +29,9 @@ class Model {
 	public var isInState( default, set_isInState ) : String -> Bool;
 	public var log( default, set_log ) : String -> Void;
 	
-	var illegalValues : Array<Dynamic>;
+	var illegalLhs : Array<String>;
+	var illegalExpr : Array<String>;
+	var illegalValues : Array<String>;
 	
 	public function new( doc : Node ) {
 		init(doc);
@@ -42,6 +44,8 @@ class Model {
 		supportsVal = false;
 		supportsAssign = false;
 		supportsScript = false;
+		illegalLhs = [];
+		illegalExpr = [];
 		illegalValues = [];
 	}
 	
@@ -195,7 +199,9 @@ class HScriptModel extends Model {
 		hinterp.variables.set("_ioprocessors", _ioprocessors);
 		setIoProc("http://www.w3.org/TR/scxml/#SCXMLEventProcessor", {location : "default"});
 		
-		illegalValues = ["continue", "_sessionid", "_name", "_ioprocessors", "_event"];
+		illegalExpr = ["continue", "return"];
+		illegalLhs = ["_sessionid", "_name", "_ioprocessors", "_event"];
+		illegalValues = illegalExpr.concat(illegalLhs);
 	}
 	
 	override function set_isInState( value : String -> Bool ) {
@@ -259,6 +265,8 @@ class HScriptModel extends Model {
 		expr = expr.split("&gt;").join(">");
 		expr = expr.split("&amp;").join("&");
 		var val = null;
+		if( Lambda.has(illegalExpr, expr) )
+			throw "Illegal expr used in cond: " + expr;
 		try {
 			val = eval(expr);
 		} catch( e:Dynamic ) {
