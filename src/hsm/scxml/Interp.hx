@@ -1211,7 +1211,9 @@ class Interp {
 			for( h in s.history() ) {
 				var hh = getTargetState(h, id);
 				if( hh != null )
-					return getTargetStates( h.transition().next() );
+					return historyValue.exists( h.get("id") ) ?
+						historyValue.get( h.get("id") ) : 
+						getTargetStates( h.transition().next() );
 			}
 		}
 		return null;
