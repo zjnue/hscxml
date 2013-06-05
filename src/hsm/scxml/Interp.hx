@@ -1188,21 +1188,30 @@ class Interp {
 			return l;
 		var ids = node.get("target").split(" ");
 		var top = node;
-		while( !(top.parent == null) && !(top.isTScxml()) )
+		while( top.parent != null && !top.isTScxml() )
 			top = top.parent;
-		for( id in ids )
-			l.add( getTargetState(top, id) );
+		for( id in ids ) {
+			var ts = getTargetState(top, id);
+			for( tss in ts )
+				l.add( tss );
+		}
 		return l;
 	}
 	
-	function getTargetState( s : Node, id : String ) : Node {
+	// TODO optimize heavily - store states, history, etc in global vars for quick ref
+	function getTargetState( s : Node, id : String ) : List<Node> {
 		if( s.get("id") == id )
-			return s;
+			return [s].toList();
 		else {
 			for( child in s.getChildStates() ) {
 				var ss = getTargetState(child, id);
 				if( ss != null )
 					return ss;
+			}
+			for( h in s.history() ) {
+				var hh = getTargetState(h, id);
+				if( hh != null )
+					return getTargetStates( h.transition().next() );
 			}
 		}
 		return null;
