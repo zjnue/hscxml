@@ -510,7 +510,30 @@ class Interp {
 	}
 	
 	function nameMatch( str1 : String, str2 : String ) {
-		return str1 == "*" ? true : str2.indexOf(str1) == 0;
+		if( str1 == "*" )
+			return true;
+		var out = false;
+		for( str in str1.split(" ") ) {
+			var a = str.split(".");
+			var b = str2.split(".");
+			for( i in 0...a.length ) {
+				var partA = a[i];
+				var partB = b[i];
+				if( partA == "*" ) {
+					out = true; break;
+				}
+				if( partA == partB ) {
+					if( i == a.length-1 ) {
+						out = true; break;
+					} else
+						continue;
+				} else
+					break;
+			}
+			if( out )
+				break;
+		}
+		return out;
 	}
 	
 	function conditionMatch( transition : Node ) : Bool {
