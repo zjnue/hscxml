@@ -154,18 +154,31 @@ class Interp {
 		throw "failWithError";
 	}
 	
-	function expandScxmlSource( x : Xml ) { 
-		if( x.nodeType == Xml.Element && x.exists("initial") ) {
-			var tval = x.get("initial");
+	function expandScxmlSource( x : Xml ) {
+		if( x.nodeType != Xml.Element )
+			return;
+		var hasInitial = false;
+		for( el in x.elements() ) {
+			if( el.nodeName == "initial" )
+				hasInitial = true;
+			expandScxmlSource(el);
+		}
+		if( x.exists("initial") || (x.nodeName == "scxml" && !hasInitial) ) {
 			var ins = Xml.createElement("initial");
 			var trans = Xml.createElement("transition");
+			var tval = x.exists("initial") ? x.get("initial") : null;
+			if( tval == null ) {
+				for( el in x.elements() )
+					if( Lambda.has(["state", "parallel", "final"], el.nodeName) ) {
+						tval = el.get("id");
+						break;
+					}
+			}
 			trans.set("target", tval);
 			ins.insertChild(trans, 0);
 			x.insertChild(ins, 0);
 			x.remove("initial");
 		}
-		for( el in x.elements() )
-			expandScxmlSource(el);
 	}
 	
 	function executeGlobalScriptElements( doc : Node ) {
