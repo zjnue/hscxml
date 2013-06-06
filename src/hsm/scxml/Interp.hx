@@ -408,8 +408,7 @@ class Interp {
 			for( onentry in s.onentry() )
 				executeBlock(onentry);
 			if( statesForDefaultEntry.isMember(s) )
-				for( content in s.initial().next().transition().next() )
-					executeBlock(content);
+				executeBlock(s.initial().next().transition().next());
 			if( s.isTFinal() ) {
 				if( s.parent.isTScxml() )
 					running = false;
