@@ -71,16 +71,19 @@ class Interp {
 	var running : Bool;
 	var binding : String;
 	
+	// TODO check
 	function entryOrder( s0 : Node, s1 : Node ) {
-		if( s0.isDescendant(s1) ) return 1;
-		if( s1.isDescendant(s0) ) return -1;
-		return documentOrder(s0, s1);
+//		if( s0.isDescendant(s1) ) return 1;
+//		if( s1.isDescendant(s0) ) return -1;
+//		return documentOrder(s0, s1);
+		return documentOrder(s1, s0);
 	}
 	
+	// TODO check
 	function exitOrder( s0 : Node, s1 : Node ) {
-		if( s0.isDescendant(s1) ) return -1;
-		if( s1.isDescendant(s0) ) return 1;
-		return documentOrder(s1, s0);
+		//if( s0.isDescendant(s1) ) return -1;
+		//if( s1.isDescendant(s0) ) return 1;
+		return documentOrder(s0, s1);//s1, s0);
 	}
 	
 	inline function documentOrder( s0 : Node, s1 : Node ) {
