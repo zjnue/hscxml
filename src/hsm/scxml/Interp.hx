@@ -253,7 +253,7 @@ class Interp {
 					if( inv.exists("autoforward") && inv.get("autoforward") == "true" )
 						send(inv.get("id"), externalEvent);
 				}
-			var enabledTransitions = selectTransitions(externalEvent);
+			enabledTransitions = selectTransitions(externalEvent);
 			if( !enabledTransitions.isEmpty() )
 				microstep(enabledTransitions.toList());
 		}
@@ -296,6 +296,7 @@ class Interp {
 					break;
 			}
 		enabledTransitions = removeConflictingTransitions(enabledTransitions);
+		enabledTransitions.l.sort(entryOrder); // ZB: added
 		return enabledTransitions;
 	}
 	
