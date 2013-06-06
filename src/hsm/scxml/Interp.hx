@@ -163,7 +163,7 @@ class Interp {
 				hasInitial = true;
 			expandScxmlSource(el);
 		}
-		if( x.exists("initial") || (!x.exists("initial") && Lambda.has(["scxml", "state", "parallel"], x.nodeName) && !hasInitial) ) {
+		if( x.exists("initial") || (!x.exists("initial") && Lambda.has(["scxml", "state"], x.nodeName) && !hasInitial) ) {
 			var ins = Xml.createElement("initial");
 			var trans = Xml.createElement("transition");
 			var tval = x.exists("initial") ? x.get("initial") : null;
@@ -374,6 +374,8 @@ class Interp {
 	function computeExitSet( transitions : List<Node> ) {
 		var statesToExit = new Set<Node>();
 		for( t in transitions ) {
+			if( !t.exists("target") ) // ZB: added
+				continue;
 			var domain = getTransitionDomain(t);
 			for( s in configuration )
 				if( s.isDescendant(domain) )
