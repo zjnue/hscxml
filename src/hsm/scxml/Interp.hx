@@ -771,8 +771,13 @@ class Interp {
 				var event = getAltProp( c, "event", "eventexpr" );
 				var target = getAltProp( c, "target", "targetexpr" );
 				
-				if( target != null && !isValidAndSupportedSendTarget(target) )
-					if( errorEvt == null ) errorEvt = new Event("error.execution");
+				if( target != null && !isValidAndSupportedSendTarget(target) ) {
+					if( target.indexOf("#_scxml_") == 0 ) {
+						raise( new Event("error.communication") );
+						return;
+					} else if( errorEvt == null )
+						errorEvt = new Event("error.execution");
+				}
 				var type = getAltProp( c, "type", "typeexpr" );
 				
 				if( type == "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor" && !ioProcessorSupportsPost() ) {
