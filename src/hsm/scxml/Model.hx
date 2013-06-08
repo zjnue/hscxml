@@ -270,12 +270,17 @@ class HScriptModel extends Model {
 		expr = expr.split(".slice(").join(".substr(");
 		expr = expr.split("'undefined'").join("null");
 		
-		var r = ~/typeof ([a-zA-Z0-9-_]*) /;
+		var r = ~/typeof ([a-zA-Z0-9\._]+) /;
 		while( r.match(expr) )
 			if( !exists(r.matched(1)) )
 				expr = r.matchedLeft() + "null " + r.matchedRight();
 			else
 				expr = r.matchedLeft() + "Type.getClassName(Type.getClass(" + r.matched(1) + ")) " + r.matchedRight();
+		
+		// for obj['Var'] access
+		var r2 = ~/([a-zA-Z0-9\._]+)\['(.*)'\]/;
+		while( r2.match(expr) )
+			expr = 	r2.matchedLeft() + r2.matched(1) + "." + r2.matched(2) + r2.matchedRight();
 		
 		var val = null;
 		if( Lambda.has(illegalExpr, expr) )
