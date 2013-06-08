@@ -195,25 +195,26 @@ class Interp {
 	function initializeDatamodel( datamodel : Model, dms : Iterable<DataModel>, setValsToNull : Bool = false ) {
 		if( !(datamodel.supportsVal && datamodel.supportsProps) )
 			return;
-		try {
-			for( dm in dms )
-				for( d in dm ) {
-					var id = d.get("id");
-					if( setValsToNull )
-						datamodel.set(id, null);
-					else if( d.exists("src") ) {
-						setFromSrc(id, d.get("src"));
-					} else {
-						var val = "";
-						if( d.exists("expr") )
-							val = d.get("expr");
-						else
-							val = cast(d, Data).content;
+		for( dm in dms )
+			for( d in dm ) {
+				var id = d.get("id");
+				if( setValsToNull )
+					datamodel.set(id, null);
+				else if( d.exists("src") ) {
+					setFromSrc(id, d.get("src"));
+				} else {
+					var val = "";
+					if( d.exists("expr") )
+						val = d.get("expr");
+					else
+						val = cast(d, Data).content;
+					try {
 						datamodel.set(id, datamodel.doVal(val));
-				}
+					} catch( e:Dynamic ) {
+						datamodel.set(id, null);
+						raise( new Event("error.execution") );
+					}
 			}
-		} catch( e:Dynamic ) {
-			raise( new Event("error.execution") );
 		}
 	}
 	
