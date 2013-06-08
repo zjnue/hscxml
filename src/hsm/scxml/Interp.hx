@@ -1140,11 +1140,8 @@ class Interp {
 			
 			if( src != null ) {
 				
-				if( src.indexOf("file:") >= 0 ) {
-					var file = src.substr(5);
-					var path = Sys.getCwd() + "ecma/"; // FIXME tmp hack (relative urls..)
-					contentVal = sys.io.File.getContent(path+file);
-				}
+				if( src.indexOf("file:") >= 0 )
+					contentVal = getFileContent(src);
 				
 				//var http = new haxe.Http(src);
 			
@@ -1226,7 +1223,21 @@ class Interp {
 	}
 	
 	function setFromSrc( id : String, src : String ) {
-		// FIXME
+		var val = null;
+		if( src.indexOf("file:") >= 0 )
+			val = getFileContent(src);
+		try {
+			datamodel.set(id, datamodel.doVal(val));
+		} catch( e:Dynamic ) {
+			datamodel.set(id, null);
+			raise( new Event("error.execution") );
+		}
+	}
+	
+	inline function getFileContent( src : String ) {
+		var file = src.substr(5);
+		var path = Sys.getCwd() + "ecma/"; // FIXME tmp hack (relative urls..)
+		return sys.io.File.getContent(path+file);
 	}
 	
 	/** node here is the transition to pass in **/
