@@ -269,6 +269,7 @@ class HScriptModel extends Model {
 		expr = expr.split("String(").join("Std.string(");
 		expr = expr.split(".slice(").join(".substr(");
 		expr = expr.split("'undefined'").join("null");
+		expr = expr.split("undefined").join("null");
 		
 		var r = ~/typeof ([a-zA-Z0-9\._]+) /;
 		while( r.match(expr) )
