@@ -32,9 +32,10 @@ class Compiler {
 			case "donedata":	n = new DoneData(parent);
 			case "content":		n = new Content(parent); if( !x.exists("expr") ) for( child in x ) cast(n, Content).content += child.toString(); addChildren = false;
 			case "param":		n = new Param(parent);
-			case "log", "raise", "assign", "if", "elseif", "else", "foreach", "cancel":
+			case "log", "raise", "if", "elseif", "else", "foreach", "cancel":
 				n = new Exec(parent);
 			case "script":		n = new Script(parent); if( !x.exists("src") ) for( child in x ) cast(n, Script).content += child.toString(); addChildren = false;
+			case "assign":		n = new Assign(parent); if( !x.exists("expr") ) for( child in x ) cast(n, Assign).content += child.toString(); addChildren = false;
 			default:
 				throw "node type not yet implemented: " + x.nodeName;
 		}

@@ -48,11 +48,11 @@ class Node {
 		for ( i in 0...n) offset += "      ";
 		var a = "";
 		for ( att in z.atts.keys() ) a += " :: " + att + " = " + z.atts.get(att);
-		a += "\n";
-		var no = "";
-		for ( node in z.list() )
-			no += getString(node,n+1);
-		return offset + z.name + a + no;
+//		a += "\n";
+//		var no = "";
+//		for ( node in z.list() )
+//			no += getString(node,n+1);
+		return offset + z.name + a;// + no;
 	}
 }
 
@@ -131,6 +131,11 @@ class Exec extends Node {
 }
 
 class Script extends Exec {
+	public var content:String;
+	public function new(p:Node) { super(p); content = ""; }
+}
+
+class Assign extends Exec {
 	public var content:String;
 	public function new(p:Node) { super(p); content = ""; }
 }

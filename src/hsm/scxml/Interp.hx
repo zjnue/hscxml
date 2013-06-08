@@ -911,8 +911,12 @@ class Interp {
 				evt.type = "internal";
 				internalQueue.enqueue(evt);
 			case "assign":
-				if( datamodel.supportsAssign )
+				if( !datamodel.supportsAssign )
+					return;
+				if( c.exists("expr") )
 					datamodel.doAssign(c.get("location"), c.get("expr"));
+				else
+					datamodel.doAssign(c.get("location"), cast(c, Assign).content);
 			case "if":
 				if( !datamodel.supportsCond )
 					return;
