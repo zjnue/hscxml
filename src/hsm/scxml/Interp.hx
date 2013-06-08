@@ -1012,12 +1012,17 @@ class Interp {
 	
 	function parseContent( content : Array<Node> ) {
 		var contentVal = null;
-		if( content.length > 0 ) {
-			var cnode = content[0];
-			if( cnode.exists("expr") )
-				contentVal = datamodel.doVal(cnode.get("expr"));
-			else
-				contentVal = StringTools.trim(cast(cnode, Content).content);
+		try {
+			if( content.length > 0 ) {
+				var cnode = content[0];
+				if( cnode.exists("expr") )
+					contentVal = datamodel.doVal(cnode.get("expr"));
+				else
+					contentVal = StringTools.trim(cast(cnode, Content).content);
+			}
+		} catch( e:Dynamic ) {
+			raise( new Event("error.execution") );
+			contentVal = null;
 		}
 		return contentVal;
 	}
