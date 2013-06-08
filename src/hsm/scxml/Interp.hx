@@ -777,6 +777,7 @@ class Interp {
 						return;
 					} else if( errorEvt == null )
 						errorEvt = new Event("error.execution");
+					throw "check";
 				}
 				var type = getAltProp( c, "type", "typeexpr" );
 				
