@@ -195,6 +195,7 @@ class HScriptModel extends Model {
 		var _name = doc.exists("name") ? doc.get("name") : _sessionId;
 		hinterp.variables.set("_sessionid", _sessionId);
 		hinterp.variables.set("_name", _name);
+		hinterp.variables.set("Std", Std);
 		var _ioprocessors = new Hash<TEvtProc>();
 		hinterp.variables.set("_ioprocessors", _ioprocessors);
 		setIoProc("http://www.w3.org/TR/scxml/#SCXMLEventProcessor", {location : "default"});
@@ -264,6 +265,8 @@ class HScriptModel extends Model {
 		expr = expr.split("&lt;").join("<");
 		expr = expr.split("&gt;").join(">");
 		expr = expr.split("&amp;").join("&");
+		expr = expr.split("String(").join("Std.string(");
+		expr = expr.split(".slice(").join(".substr(");
 		var val = null;
 		if( Lambda.has(illegalExpr, expr) )
 			throw "Illegal expr used in cond: " + expr;
