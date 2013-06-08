@@ -207,7 +207,7 @@ class Interp {
 					if( d.exists("expr") )
 						val = d.get("expr");
 					else
-						val = cast(d, Data).content;
+						val = cast(d, Data).content; // FIXME check spec - try to evaluate content for different types..
 					try {
 						datamodel.set(id, datamodel.doVal(val));
 					} catch( e:Dynamic ) {
@@ -1237,7 +1237,13 @@ class Interp {
 	inline function getFileContent( src : String ) {
 		var file = src.substr(5);
 		var path = Sys.getCwd() + "ecma/"; // FIXME tmp hack (relative urls..)
-		return sys.io.File.getContent(path+file);
+		return trim( sys.io.File.getContent(path+file) );
+	}
+	
+	// TODO find better place
+	inline function trim( str : String ) {
+		var r = ~/[ \n\r\t]+/g;
+		return StringTools.trim(r.replace(str, " "));
 	}
 	
 	/** node here is the transition to pass in **/

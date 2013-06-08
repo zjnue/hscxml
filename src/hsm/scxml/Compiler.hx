@@ -25,17 +25,17 @@ class Compiler {
 			case "onexit":		n = new OnExit(parent);
 			case "transition":	n = new Transition(parent);
 			case "datamodel":	var d = new DataModel(parent); data.add(d); n = d;
-			case "data":		n = new Data(parent); if( !x.exists("expr") ) for( child in x ) cast(n, Data).content += child.toString(); addChildren = false;
+			case "data":		n = new Data(parent); if( !x.exists("expr") ) setContent(cast(n, Data), x); addChildren = false;
 			case "send":		n = new Send(parent);
 			case "invoke":		n = new Invoke(parent);
 			case "finalize":	n = new Finalize(parent);
 			case "donedata":	n = new DoneData(parent);
-			case "content":		n = new Content(parent); if( !x.exists("expr") ) for( child in x ) cast(n, Content).content += child.toString(); addChildren = false;
+			case "content":		n = new Content(parent); if( !x.exists("expr") ) setContent(cast(n, Content), x); addChildren = false;
 			case "param":		n = new Param(parent);
 			case "log", "raise", "if", "elseif", "else", "foreach", "cancel":
 				n = new Exec(parent);
-			case "script":		n = new Script(parent); if( !x.exists("src") ) for( child in x ) cast(n, Script).content += child.toString(); addChildren = false;
-			case "assign":		n = new Assign(parent); if( !x.exists("expr") ) for( child in x ) cast(n, Assign).content += child.toString(); addChildren = false;
+			case "script":		n = new Script(parent); if( !x.exists("src") ) setContent(cast(n, Script), x); addChildren = false;
+			case "assign":		n = new Assign(parent); if( !x.exists("expr") ) setContent(cast(n, Assign), x); addChildren = false;
 			default:
 				throw "node type not yet implemented: " + x.nodeName;
 		}
@@ -47,6 +47,18 @@ class Compiler {
 		for( att in x.attributes() )
 			n.set(att, x.get(att));
 		return { node : n, data : data };
+	}
+	
+	function setContent( contentNode : {content:String}, xml : Xml  ) {
+		var buf = new StringBuf();
+		for( child in xml )
+			buf.add( child.toString() );
+		contentNode.content = trim(buf.toString());
+	}
+	
+	inline function trim( str : String ) {
+		var r = ~/[ \n\r\t]+/g;
+		return StringTools.trim(r.replace(str, " "));
 	}
 	
 }
