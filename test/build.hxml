@@ -7,7 +7,7 @@
 # example usage: neko run.n ecma
 -cp ../src
 -main Run
--lib hscript
+-lib hscript:1.8
 -neko run.n
 
 --next
