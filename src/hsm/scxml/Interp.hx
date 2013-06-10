@@ -71,23 +71,16 @@ class Interp {
 	var running : Bool;
 	var binding : String;
 	
-	// TODO check
 	function entryOrder( s0 : Node, s1 : Node ) {
-//		if( s0.isDescendant(s1) ) return 1;
-//		if( s1.isDescendant(s0) ) return -1;
-//		return documentOrder(s0, s1);
+		return documentOrder(s0, s1);
+	}
+	
+	function exitOrder( s0 : Node, s1 : Node ) {
 		return documentOrder(s1, s0);
 	}
 	
-	// TODO check
-	function exitOrder( s0 : Node, s1 : Node ) {
-		//if( s0.isDescendant(s1) ) return -1;
-		//if( s1.isDescendant(s0) ) return 1;
-		return documentOrder(s0, s1);//s1, s0);
-	}
-	
 	inline function documentOrder( s0 : Node, s1 : Node ) {
-		return ( s0.pos > s1.pos ) ? -1 : 1;
+		return s0.pos - s1.pos;
 	}
 	
 	public function interpret(doc:Xml) {
@@ -301,7 +294,6 @@ class Interp {
 					break;
 			}
 		enabledTransitions = removeConflictingTransitions(enabledTransitions);
-		enabledTransitions.l.sort(entryOrder); // ZB: added
 		return enabledTransitions;
 	}
 	
