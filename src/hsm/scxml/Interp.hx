@@ -519,31 +519,17 @@ class Interp {
 		return l;
 	}
 	
-	function nameMatch( str1 : String, str2 : String ) {
-		if( str1 == "*" )
-			return true;
-		var out = false;
-		for( str in str1.split(" ") ) {
-			var a = str.split(".");
-			var b = str2.split(".");
-			for( i in 0...a.length ) {
-				var partA = a[i];
-				var partB = b[i];
-				if( partA == "*" ) {
-					out = true; break;
-				}
-				if( partA == partB ) {
-					if( i == a.length-1 ) {
-						out = true; break;
-					} else
-						continue;
-				} else
-					break;
-			}
-			if( out )
-				break;
+	function nameMatch( descriptors : String, event : String ) {
+		for( desc in descriptors.split(" ") ) {
+			if( desc == "*" || desc == event ) return true;
+			if( desc.substr(-2) == ".*" )
+				desc = desc.substr(0, -2);
+			else if( desc.substr(-1) == "." )
+				desc = desc.substr(0, -1);
+			if( event.indexOf(desc) == 0 && (event.length == desc.length || event.charAt(desc.length) == ".") )
+				return true;
 		}
-		return out;
+		return false;
 	}
 	
 	function conditionMatch( transition : Node ) : Bool {
