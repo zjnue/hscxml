@@ -251,6 +251,9 @@ class HScriptModel extends Model {
 	}
 	
 	function eval( expr : String ) : Dynamic {
+		var r = ~/_ioprocessors\['(.*)'\]/;
+		while( r.match(expr) )
+			expr = 	r.matchedLeft() + "_ioprocessors." + haxe.BaseCode.encode( r.matched(1), BASE64_CHARS ) + r.matchedRight();
 		var program = hparse.parseString(expr);
 		var bytes = hscript.Bytes.encode(program);
 		program = hscript.Bytes.decode(bytes);
