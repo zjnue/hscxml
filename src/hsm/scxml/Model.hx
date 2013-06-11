@@ -8,9 +8,6 @@ import hsm.scxml.Types;
 
 #if haxe3
 private typedef Hash<T> = haxe.ds.StringMap<T>;
-private typedef Md5 = haxe.crypto.Md5;
-#else
-private typedef Md5 = haxe.Md5;
 #end
 
 typedef TEvtProc = {location:String};
@@ -173,6 +170,8 @@ class XPathModel extends Model {
 
 class HScriptModel extends Model {
 
+	inline static var BASE64_CHARS : String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
+	
 	var hparse : hscript.Parser;
 	var hinterp : hscript.Interp;
 	
@@ -197,8 +196,7 @@ class HScriptModel extends Model {
 		hinterp.variables.set("_name", _name);
 		hinterp.variables.set("Std", Std);
 		hinterp.variables.set("Type", Type);
-		var _ioprocessors = new Hash<TEvtProc>();
-		hinterp.variables.set("_ioprocessors", _ioprocessors);
+		hinterp.variables.set("_ioprocessors", {});
 		setIoProc("http://www.w3.org/TR/scxml/#SCXMLEventProcessor", {location : "default"});
 		
 		illegalExpr = ["continue", "return"];
@@ -217,21 +215,21 @@ class HScriptModel extends Model {
 	}
 	
 	override public function hasIoProc( key : String ) {
-		var md5Key = Md5.encode(key);
-		var procs : Hash<TEvtProc> = hinterp.variables.get("_ioprocessors");
-		return procs.exists( md5Key );
+		var encKey = haxe.BaseCode.encode( key, BASE64_CHARS );
+		var procs : {} = hinterp.variables.get("_ioprocessors");
+		return Reflect.hasField( procs, encKey );
 	}
 	
 	override public function getIoProc( key : String ) {
-		var md5Key = Md5.encode(key);
-		var procs : Hash<TEvtProc> = hinterp.variables.get("_ioprocessors");
-		return procs.exists( md5Key ) ? procs.get( md5Key ) : null;
+		var encKey = haxe.BaseCode.encode( key, BASE64_CHARS );
+		var procs : {} = hinterp.variables.get("_ioprocessors");
+		return Reflect.hasField(procs, encKey) ? Reflect.field(procs, encKey) : null;
 	}
 	
 	override public function setIoProc( key : String, value : TEvtProc ) {
-		var md5Key = Md5.encode(key);
-		var procs : Hash<TEvtProc> = hinterp.variables.get("_ioprocessors");
-		procs.set( md5Key , value );
+		var encKey = haxe.BaseCode.encode( key, BASE64_CHARS );
+		var procs : {} = hinterp.variables.get("_ioprocessors");
+		Reflect.setField( procs, encKey, value );
 	}
 	
 	override public function get( key : String ) : Dynamic {
