@@ -193,9 +193,9 @@ class Interp {
 				var id = d.get("id");
 				if( setValsToNull )
 					datamodel.set(id, null);
-				else if( d.exists("src") ) {
+				else if( d.exists("src") )
 					setFromSrc(id, d.get("src"));
-				} else {
+				else {
 					var val = "";
 					if( d.exists("expr") )
 						val = d.get("expr");
@@ -207,8 +207,8 @@ class Interp {
 						datamodel.set(id, null);
 						raise( new Event("error.execution") );
 					}
+				}
 			}
-		}
 	}
 	
 	function mainEventLoop() {
@@ -624,7 +624,7 @@ class Interp {
 		var data = doneData; // FIXME make a copy
 		
 		if( invokeId == null )
-			"No invoke id specified.";
+			throw "No invoke id specified.";
 		
 		var evt = new Event( "done.invoke." + invokeId );
 		evt.invokeid = invokeId;
@@ -845,9 +845,9 @@ class Interp {
 									
 								case "#_parent":
 									if( parentEventHandler == null )
-										"No parent event handler defined.";
+										throw "No parent event handler defined.";
 									if( invokeId == null )
-										"No invokeId specified and trying to communicate with parent.";
+										throw "No invokeId specified and trying to communicate with parent.";
 									evt.invokeid = invokeId;
 									cb = parentEventHandler;
 									
