@@ -1011,13 +1011,18 @@ class Interp {
 			var name = param.get("name");
 			var expr = param.exists("expr") ? datamodel.doVal(param.get("expr")) : null;
 			var location = null;
-			if( param.exists("location") ) {
-				if( expr != null )
-					throw "check";
-				location = datamodel.doLoc(param.get("location"));
-			} else {
-				if( expr == null )
-					throw "check";
+			try {
+				if( param.exists("location") ) {
+					if( expr != null )
+						throw "check";
+					location = datamodel.doLoc(param.get("location"));
+				} else {
+					if( expr == null )
+						throw "check";
+				}
+			} catch( e:Dynamic ) {
+				raise( new Event("error.execution") );
+				continue;
 			}
 			data.push({key:name, value:((expr != null) ? expr : location)});
 		}
