@@ -45,7 +45,7 @@ class Compiler {
 			for( child in x.elements() )
 				n.addNode( compile(child, n, data, ++pos).node );
 		for( att in x.attributes() )
-			n.set(att, x.get(att));
+			n.set(att, StringTools.htmlUnescape(x.get(att)));
 		return { node : n, data : data };
 	}
 	

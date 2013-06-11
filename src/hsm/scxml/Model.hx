@@ -263,9 +263,6 @@ class HScriptModel extends Model {
 		if( expr == "")
 			return true;
 		expr = expr.split("===").join("==");
-		expr = expr.split("&lt;").join("<");
-		expr = expr.split("&gt;").join(">");
-		expr = expr.split("&amp;").join("&");
 		expr = expr.split("String(").join("Std.string(");
 		expr = expr.split(".slice(").join(".substr(");
 		expr = expr.split("'undefined'").join("null");
