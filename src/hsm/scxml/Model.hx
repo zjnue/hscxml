@@ -132,7 +132,7 @@ class NullModel extends Model {
 		supportsCond = true;
 		h = new Hash();
 		var _sessionId = getSessionId();
-		var _name = doc.exists("name") ? doc.get("name") : _sessionId;
+		var _name = doc.exists("name") ? doc.get("name") : null;
 		h.set("_sessionid", _sessionId);
 		h.set("_name", _name);
 		h.set("_ioprocessors", new Hash<TEvtProc>());
@@ -191,7 +191,7 @@ class HScriptModel extends Model {
 		hinterp = new hscript.Interp();
 		
 		var _sessionId = getSessionId();
-		var _name = doc.exists("name") ? doc.get("name") : _sessionId;
+		var _name = doc.exists("name") ? doc.get("name") : null;
 		hinterp.variables.set("_sessionid", _sessionId);
 		hinterp.variables.set("_name", _name);
 		hinterp.variables.set("Std", Std);
