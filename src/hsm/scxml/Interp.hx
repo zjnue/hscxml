@@ -1000,7 +1000,7 @@ class Interp {
 			}
 		} catch( e:Dynamic ) {
 			raise( new Event("error.execution") );
-			contentVal = null;
+			contentVal = "";
 		}
 		return contentVal;
 	}
