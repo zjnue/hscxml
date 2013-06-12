@@ -252,6 +252,12 @@ class HScriptModel extends Model {
 		var r = ~/_ioprocessors\['(.*)'\]/;
 		while( r.match(expr) )
 			expr = 	r.matchedLeft() + "_ioprocessors." + encProcKey(r.matched(1)) + r.matchedRight();
+		
+		// [].concat(Var1, [4]) becomes Var1.concat([4])
+		var r2 = ~/\[\].concat\((.+),[ ]*(.+)[ ]*\)/;
+		while( r2.match(expr) )
+			expr = 	r2.matchedLeft() + r2.matched(1) + ".concat(" + r2.matched(2) + ")" + r2.matchedRight();
+		
 		var program = hparse.parseString(expr);
 		var bytes = hscript.Bytes.encode(program);
 		program = hscript.Bytes.decode(bytes);
