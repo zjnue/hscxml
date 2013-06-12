@@ -170,8 +170,6 @@ class XPathModel extends Model {
 
 class HScriptModel extends Model {
 
-	inline static var BASE64_CHARS : String = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
-	
 	var hparse : hscript.Parser;
 	var hinterp : hscript.Interp;
 	
@@ -215,21 +213,21 @@ class HScriptModel extends Model {
 	}
 	
 	override public function hasIoProc( key : String ) {
-		var encKey = haxe.BaseCode.encode( key, BASE64_CHARS );
-		var procs : {} = hinterp.variables.get("_ioprocessors");
-		return Reflect.hasField( procs, encKey );
+		return Reflect.hasField( hinterp.variables.get("_ioprocessors"), encProcKey(key) );
 	}
 	
 	override public function getIoProc( key : String ) {
-		var encKey = haxe.BaseCode.encode( key, BASE64_CHARS );
+		var encKey = encProcKey(key);
 		var procs : {} = hinterp.variables.get("_ioprocessors");
 		return Reflect.hasField(procs, encKey) ? Reflect.field(procs, encKey) : null;
 	}
 	
 	override public function setIoProc( key : String, value : TEvtProc ) {
-		var encKey = haxe.BaseCode.encode( key, BASE64_CHARS );
-		var procs : {} = hinterp.variables.get("_ioprocessors");
-		Reflect.setField( procs, encKey, value );
+		Reflect.setField( hinterp.variables.get("_ioprocessors"), encProcKey(key), value );
+	}
+	
+	inline function encProcKey( key : String ) : String {
+		return haxe.BaseCode.encode( key, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789__" );
 	}
 	
 	override public function get( key : String ) : Dynamic {
@@ -253,7 +251,7 @@ class HScriptModel extends Model {
 	function eval( expr : String ) : Dynamic {
 		var r = ~/_ioprocessors\['(.*)'\]/;
 		while( r.match(expr) )
-			expr = 	r.matchedLeft() + "_ioprocessors." + haxe.BaseCode.encode( r.matched(1), BASE64_CHARS ) + r.matchedRight();
+			expr = 	r.matchedLeft() + "_ioprocessors." + encProcKey(r.matched(1)) + r.matchedRight();
 		var program = hparse.parseString(expr);
 		var bytes = hscript.Bytes.encode(program);
 		program = hscript.Bytes.decode(bytes);
