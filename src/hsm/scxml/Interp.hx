@@ -744,24 +744,33 @@ class Interp {
 				if( !datamodel.supportsVal && datamodel.supportsLoc )
 					return;
 				
-				var errorEvt : Event = null;
-				
 				var data : Array<{key:String, value:Dynamic}> = [];
 				var event = getAltProp( c, "event", "eventexpr" );
 				var target = getAltProp( c, "target", "targetexpr" );
 				
+				var id = c.exists("id") ? c.get("id") : null;
+				var idlocation = c.exists("idlocation") ? c.get("idlocation") : null;
+				if( id != null && idlocation != null )
+					throw "check";
+					
+				var sendid = null;
+				if( id != null ) sendid = id;
+				if( idlocation != null ) sendid = datamodel.get(idlocation);
+				
+				var evtType = target == "#_internal" ? "internal" : "external";
+				
 				if( target != null && !isValidAndSupportedSendTarget(target) ) {
 					if( target.indexOf("#_scxml_") == 0 ) {
-						raise( new Event("error.communication") );
+						raise( new Event("error.communication", null, sendid, evtType) );
 						return;
-					} else if( errorEvt == null )
-						errorEvt = new Event("error.execution");
+					}
+					raise( new Event("error.execution", null, sendid, evtType) );
 					throw "check";
 				}
 				var type = getAltProp( c, "type", "typeexpr" );
 				
 				if( type == "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor" && !ioProcessorSupportsPost() ) {
-					raise( new Event("error.communication") );
+					raise( new Event("error.communication", null, sendid, evtType) );
 					return;
 				}
 				
@@ -770,7 +779,7 @@ class Interp {
 				if( type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" && event == null )
 					throw "check";
 				if( !isValidAndSupportedSendType(type) ) {
-					raise( new Event("error.execution") );
+					raise( new Event("error.execution", null, sendid, evtType) );
 					return;
 				}
 				if( ioProcessorSupportsPost() && type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" )
@@ -780,10 +789,6 @@ class Interp {
 				if( delay != null && target == "_internal" )
 					throw "check";
 					
-				var id = c.exists("id") ? c.get("id") : null;
-				var idlocation = c.exists("idlocation") ? c.get("idlocation") : null;
-				if( id != null && idlocation != null )
-					throw "check";
 				if( idlocation != null )
 					datamodel.set(idlocation, getLocationId());
 				
@@ -820,22 +825,14 @@ class Interp {
 							
 							evt.name = event;
 							evt.origin = datamodel.getIoProc(type).location;
-							evt.type = "internal";
-							
-							var sendid = null;
-							if( id != null ) sendid = id;
-							if( idlocation != null ) sendid = datamodel.get(idlocation);
-							if( sendid != null )
-								evt.sendid = sendid;
+							evt.type = evtType;
+							evt.sendid = sendid;
 							evt.origintype = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";
 							
 							if( content.length > 0 )
 								Reflect.setField(evt, "data", contentVal);
 							else
 								setEventData(evt.data, data.copy());
-							
-							if( errorEvt != null )
-								errorEvt.sendid = sendid;
 							
 							var cb = addToExternalQueue;
 
@@ -865,11 +862,6 @@ class Interp {
 									
 									}
 							}
-							
-							if( target == null )
-								evt.type = "external";
-							if( errorEvt != null )
-								raise(errorEvt);
 							
 							sendEvent( evt, Std.int(duration * 1000), cb );
 							

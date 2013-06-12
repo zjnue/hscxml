@@ -32,10 +32,11 @@ class Event {
 	// ?
 	public var raw : String;
 	
-	public function new( name : String, ?data : Dynamic ) {
+	public function new( name : String, data : Dynamic = null, sendid : String = null, type : String = "platform" ) {
 		this.name = name;
 		this.data = data == null ? {} : data;
-		this.type = "platform";
+		this.sendid = sendid;
+		this.type = type;
 		this.raw = "";
 	}
 	public function toString() {
