@@ -696,7 +696,7 @@ class Interp {
 		if( n.exists(att0) )
 			prop = n.get(att0);
 		if( n.exists(att1) ) {
-			if( prop != null ) throw "check";
+			if( prop != null ) throw "Property specification for '" + att0 + "' and '" + att1 + "' should be mutually exclusive.";
 			prop = datamodel.doVal( n.get(att1) );
 		}
 		return prop;
@@ -751,7 +751,7 @@ class Interp {
 				var id = c.exists("id") ? c.get("id") : null;
 				var idlocation = c.exists("idlocation") ? c.get("idlocation") : null;
 				if( id != null && idlocation != null )
-					throw "check";
+					throw "Send properties 'id' and 'idlocation' should be mutually exclusive.";
 					
 				var sendid = null;
 				if( id != null ) sendid = id;
@@ -765,7 +765,7 @@ class Interp {
 						return;
 					}
 					raise( new Event("error.execution", null, sendid, evtType) );
-					throw "check";
+					throw "Invalid send target: " + target;
 				}
 				var type = getAltProp( c, "type", "typeexpr" );
 				
@@ -777,7 +777,7 @@ class Interp {
 				if( type == null )
 					type = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";
 				if( type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" && event == null )
-					throw "check";
+					throw "Send type http://www.w3.org/TR/scxml/#SCXMLEventProcessor requires either 'event' or 'eventexpr' to be defined.";
 				if( !isValidAndSupportedSendType(type) ) {
 					raise( new Event("error.execution", null, sendid, evtType) );
 					return;
@@ -787,7 +787,7 @@ class Interp {
 				
 				var delay = getAltProp( c, "delay", "delayexpr" );
 				if( delay != null && target == "_internal" )
-					throw "check";
+					throw "Send properties 'delay' or 'delayexpr' may not be specified when target is '_internal'.";
 					
 				if( idlocation != null )
 					datamodel.set(idlocation, getLocationId());
@@ -804,13 +804,14 @@ class Interp {
 						content.push(child);
 				}
 				
+//				if( (content.length == 0 && event == null) || (content.length > 0 && event != null) )
+//					throw "Send must specify excatly one of 'event', 'eventexpr' or <content>.";
 				if( content.length > 0 && (namelist != null || params.length > 0) )
-					throw "check";
+					throw "Send must not specify 'namelist' or <param> with <content>.";
 				if( content.length > 1 )
-					throw "Send may contain only one content child.";
+					throw "Send may contain only one <content> child.";
 				
 				var contentVal = parseContent(content);
-				
 				var paramsData = parseParams(params);
 				data = data.concat(paramsData);
 				
@@ -869,9 +870,9 @@ class Interp {
 							sendEvent( evt, duration, cb );
 							
 						case "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor":
-							
 							// FIXME
-							
+						case "http://www.w3.org/TR/scxml/#DOMEventProcessor":
+							// FIXME
 					}
 
 				}
