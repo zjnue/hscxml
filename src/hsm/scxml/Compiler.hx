@@ -24,7 +24,7 @@ class Compiler {
 			case "onentry":		n = new OnEntry(parent);
 			case "onexit":		n = new OnExit(parent);
 			case "transition":	n = new Transition(parent);
-			case "datamodel":	var d = new DataModel(parent); data.add(d); n = d;
+			case "datamodel":	n = new DataModel(parent); data.add(cast n);
 			case "data":		n = new Data(parent); if( !x.exists("expr") ) setContent(cast(n, Data), x); addChildren = false;
 			case "send":		n = new Send(parent);
 			case "invoke":		n = new Invoke(parent);
