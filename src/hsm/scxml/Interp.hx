@@ -1063,6 +1063,9 @@ class Interp {
 			var type = getAltProp( inv, "type", "typeexpr" );
 			if( type != null && !invokeTypeAccepted(type) )
 				throw "Bad invoke type: " + type;
+			// TODO check spec
+			if( type == null )
+				type = "scxml";
 			
 			var src = getAltProp( inv, "src", "srcexpr" );
 			
