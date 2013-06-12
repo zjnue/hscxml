@@ -551,8 +551,10 @@ class Interp {
 		var id = inv.exists("id") ? inv.get("id") : null;
 		if( id == null ) {
 			var idlocation = inv.exists("idlocation") ? inv.get("idlocation") : null;
-			if( idlocation == null )
-				throw "No id or idlocation specified";
+			if( idlocation == null ) {
+				log("Warning, tried to cancel invoke with no 'id' or 'idlocation' specified.");
+				return;
+			}
 			id = datamodel.get(idlocation);
 		}
 		if( hasInvokedData(id) ) {
@@ -560,7 +562,7 @@ class Interp {
 			data.instance.running = false;
 			data.instance.parentEventHandler = function( evt : Event ) {};
 		} else {
-			log("no invoke data found for id: " + id);
+			log("Warning, cancel invoke data missing for id: " + id);
 		}
 	}
 	
@@ -751,7 +753,7 @@ class Interp {
 				var id = c.exists("id") ? c.get("id") : null;
 				var idlocation = c.exists("idlocation") ? c.get("idlocation") : null;
 				if( id != null && idlocation != null )
-					throw "Send properties 'id' and 'idlocation' should be mutually exclusive.";
+					throw "Send properties 'id' and 'idlocation' are mutually exclusive.";
 					
 				var sendid = null;
 				if( id != null ) sendid = id;
@@ -1067,7 +1069,7 @@ class Interp {
 			var id = inv.exists("id") ? inv.get("id") : null;
 			var idlocation = inv.exists("idlocation") ? inv.get("idlocation") : null;
 			if( id != null && idlocation != null )
-				throw "check";
+				throw "Invoke properties 'id' and 'idlocation' are mutually exclusive.";
 			var invokeid = id;
 			if( idlocation != null ) {
 				invokeid = getInvokeId(inv);
@@ -1105,13 +1107,13 @@ class Interp {
 			}
 			
 			if( content.length > 0 && src != null )
-				throw "check";
+				throw "Invoke properties 'src' or 'srcexpr' must not occur with <content>.";
 			if( content.length > 1 )
-				throw "check";
+				throw "Invoke must not have more than one <content> child.";
 			if( finalize.length > 1 )
-				throw "check";
+				throw "Invoke must not have more than one <finalize> child.";
 			if( params.length > 0 && namelist != null )
-				throw "check";
+				throw "Invoke property 'namelist' must not be specified with <param>.";
 			
 			var contentVal = null;
 			var params = parseParams(params);
