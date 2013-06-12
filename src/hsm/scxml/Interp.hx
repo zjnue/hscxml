@@ -644,11 +644,11 @@ class Interp {
 		datamodel.setEvent(evt);
 	}
 	
-	function sendEvent( evt : Event, delayMs : Int = 0, addEvent : Event -> Void ) {
-		if( delayMs == 0 )
+	function sendEvent( evt : Event, delaySec : Float = 0, addEvent : Event -> Void ) {
+		if( delaySec == 0 )
 			addEvent(evt);
 		else
-			timerThread.addTimer(delayMs/1000, function() {
+			timerThread.addTimer(delaySec, function() {
 				if( !isCancelEvent(evt) )
 					addEvent(evt);
 			});
@@ -863,7 +863,7 @@ class Interp {
 									}
 							}
 							
-							sendEvent( evt, Std.int(duration * 1000), cb );
+							sendEvent( evt, duration, cb );
 							
 						case "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor":
 							
