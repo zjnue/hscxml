@@ -104,7 +104,6 @@ class TimerThread {
 	var queueLock : Lock;
 	var queue : Array<TTimerData>;
 	var running : Bool;
-	
 	public function new() {
 		queue = [];
 		queueLock = new Lock();
@@ -112,19 +111,16 @@ class TimerThread {
 		running = true;
 		Thread.create( mainLoop );
 	}
-	
-	function sortEventData( e0 : TTimerData, e1 : TTimerData ) {
-		return Std.int((e0.time - e1.time) * 1000);
-	}
-	
 	public function addTimer( delaySec : Float, cb : Void -> Void ) {
 		mutex.acquire();
-		queue.push( { time : Timer.stamp() + delaySec, func : cb } );
-		queue.sort(sortEventData);
+		var time = Timer.stamp() + delaySec;
+		var index = 0;
+		while( index < queue.length && time >= queue[index].time )
+			index++;
+		queue.insert(index, { time : time, func : cb });
 		mutex.release();
 		queueLock.release();
 	}
-	
 	public function quit( ?cb : Void -> Void ) {
 		var me = this;
 		addTimer( 0, function() {
@@ -133,21 +129,19 @@ class TimerThread {
 				cb();
 		} );
 	}
-	
 	function mainLoop() {
 		while( running ) {
 			var wake : Null<Float> = null;
 			var now = Timer.stamp();
 			var ready = new Array<TTimerData>();
 			mutex.acquire();
-			while( queue.length > 0 ) {
+			while( queue.length > 0 )
 				if( queue[0].time <= now )
 					ready.push(queue.shift());
 				else {
 					wake = queue[0].time;
 					break;
 				}
-			}
 			mutex.release();
 			for( d in ready ) {
 				d.func();
