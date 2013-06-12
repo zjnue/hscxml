@@ -824,10 +824,13 @@ class Interp {
 							var evt = new Event(event);
 							
 							evt.name = event;
-							evt.origin = datamodel.getIoProc(type).location;
 							evt.type = evtType;
 							evt.sendid = sendid;
-							evt.origintype = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";
+							
+							if( evtType == "external" ) {
+								evt.origin = ( invokeId != null ) ? "#_" + invokeId : "#_internal";
+								evt.origintype = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";
+							}
 							
 							if( content.length > 0 )
 								Reflect.setField(evt, "data", contentVal);
