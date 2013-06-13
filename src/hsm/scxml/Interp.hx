@@ -204,7 +204,7 @@ class Interp {
 					if( d.exists("expr") )
 						val = d.get("expr");
 					else
-						val = cast(d, Data).content; // FIXME check spec - try to evaluate content for different types..
+						val = getTypedDataStr( cast(d, Data).content );
 					try {
 						datamodel.set(id, datamodel.doVal(val));
 					} catch( e:Dynamic ) {
@@ -734,6 +734,8 @@ class Interp {
 	}
 	
 	function getTypedDataStr( content : String, doXml : Bool = true ) : String {
+		if( content == null || content == "" )
+			return content;
 		// is content a number?
 		var isNum = Std.parseInt(content) != null;
 		if( !isNum ) isNum = !Math.isNaN( Std.parseFloat(content) );
@@ -750,10 +752,16 @@ class Interp {
 			var isXml = false;
 			try {
 				var tmp = Xml.parse(content);
-				isXml = Std.is( tmp, Xml );
+				isXml = Std.is( tmp.firstElement(), Xml );
 			} catch( e:Dynamic ) { isXml = false; }
 			if( isXml ) return "Xml.parse( '" + content + "' )";
 		}
+		var isArray = false;
+		try {
+			var tmp = datamodel.doVal(content);
+			isArray = Std.is( tmp, Array );
+		} catch( e:Dynamic ) { isArray = false; }
+		if( isArray ) return content;
 		// else (default to string representation)
 		return "'" + content + "'";
 	}
@@ -910,7 +918,7 @@ class Interp {
 				
 			case "log":
 				if( datamodel.supportsVal )
-					log("<log> label: " + c.get("label") + " val: " + Std.string( datamodel.doVal(c.get("expr")) ) );
+					log(c.get("label") + ": " + Std.string( datamodel.doVal(c.get("expr")) ) );
 			case "raise":
 				var evt = new Event(c.get("event"));
 				evt.type = "internal";
@@ -1238,7 +1246,7 @@ class Interp {
 	function setFromSrc( id : String, src : String ) {
 		var val = null;
 		if( src.indexOf("file:") >= 0 )
-			val = getFileContent(src);
+			val = getTypedDataStr( getFileContent(src) );
 		try {
 			datamodel.set(id, datamodel.doVal(val));
 		} catch( e:Dynamic ) {
