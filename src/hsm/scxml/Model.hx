@@ -200,8 +200,8 @@ class HScriptModel extends Model {
 		hinterp.variables.set("Xml", Xml);
 		hinterp.variables.set("Lambda", Lambda);
 		hinterp.variables.set("_ioprocessors", {});
-		setIoProc("http://www.w3.org/TR/scxml/#SCXMLEventProcessor", {location : "default"});
-		setIoProc("scxml", {location : "default"});
+		setIoProc("http://www.w3.org/TR/scxml/#SCXMLEventProcessor", {location : "#_internal"});
+		setIoProc("scxml", {location : "#_internal"});
 		
 		illegalExpr = ["continue", "return"];
 		illegalLhs = ["_sessionid", "_name", "_ioprocessors", "_event"];
@@ -260,9 +260,9 @@ class HScriptModel extends Model {
 			expr = 	r.matchedLeft() + "_ioprocessors." + encProcKey(r.matched(1)) + r.matchedRight();
 		
 		// [].concat(Var1, [4]) becomes Var1.concat([4])
-		var r2 = ~/\[\].concat\((.+),[ ]*(.+)[ ]*\)/;
-		while( r2.match(expr) )
-			expr = 	r2.matchedLeft() + r2.matched(1) + ".concat(" + r2.matched(2) + ")" + r2.matchedRight();
+		var r = ~/\[\].concat\((.+),[ ]*(.+)[ ]*\)/;
+		while( r.match(expr) )
+			expr = 	r.matchedLeft() + r.matched(1) + ".concat(" + r.matched(2) + ")" + r.matchedRight();
 		
 		expr = expr.split("===").join("==");
 		expr = expr.split("String(").join("Std.string(");
@@ -278,14 +278,14 @@ class HScriptModel extends Model {
 				expr = r.matchedLeft() + "(try Type.getClassName(Type.getClass(" + r.matched(1) + ")) catch(e:Dynamic) null) " + r.matchedRight();
 		
 		// for obj['Var'] access
-		var r2 = ~/([a-zA-Z0-9\._]+)\['(.*)'\]/;
-		while( r2.match(expr) )
-			expr = 	r2.matchedLeft() + r2.matched(1) + "." + r2.matched(2) + r2.matchedRight();
+		var r = ~/([a-zA-Z0-9\._]+)\['(.*)'\]/;
+		while( r.match(expr) )
+			expr = 	r.matchedLeft() + r.matched(1) + "." + r.matched(2) + r.matchedRight();
 		
 		// converts _event.data.getElementsByTagName('book')[1].getAttribute('title') etc
-		var r3 = ~/[ ]*([a-zA-Z0-9\._]+).getElementsByTagName\((.*)\)\[(.*)\]/;
-		while( r3.match(expr) )
-			expr = 	r3.matchedLeft() + "Lambda.array({iterator:function() return " + r3.matched(1) + ".elementsNamed(" + r3.matched(2) + ")})[" + r3.matched(3) + "]" + r3.matchedRight();
+		var r = ~/[ ]*([a-zA-Z0-9\._]+).getElementsByTagName\((.*)\)\[(.*)\]/;
+		while( r.match(expr) )
+			expr = 	r.matchedLeft() + "Lambda.array({iterator:function() return " + r.matched(1) + ".elementsNamed(" + r.matched(2) + ")})[" + r.matched(3) + "]" + r.matchedRight();
 		expr = expr.split("getAttribute").join("get");
 		
 		var program = hparse.parseString(expr);
