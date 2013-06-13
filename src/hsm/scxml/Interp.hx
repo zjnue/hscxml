@@ -733,13 +733,15 @@ class Interp {
 		}
 	}
 	
-	function getTypedDataStr( content : String, doXml : Bool = true ) : String {
+	function getTypedDataStr( content : String, checkNum : Bool = true ) : String {
 		if( content == null || content == "" )
 			return content;
-		// is content a number?
-		var isNum = Std.parseInt(content) != null;
-		if( !isNum ) isNum = !Math.isNaN( Std.parseFloat(content) );
-		if( isNum ) return content;
+		if( checkNum ) {
+			// is content a number?
+			var isNum = Std.parseInt(content) != null;
+			if( !isNum ) isNum = !Math.isNaN( Std.parseFloat(content) );
+			if( isNum ) return content;
+		}
 		// is content an object?
 		var isObj = false;
 		try {
@@ -747,15 +749,13 @@ class Interp {
 			isObj = Std.is( tmp, {} );
 		} catch( e:Dynamic ) { isObj = false; }
 		if( isObj ) return content;
-		if( doXml ) {
-			// is content xml?
-			var isXml = false;
-			try {
-				var tmp = Xml.parse(content);
-				isXml = Std.is( tmp.firstElement(), Xml );
-			} catch( e:Dynamic ) { isXml = false; }
-			if( isXml ) return "Xml.parse( '" + content + "' )";
-		}
+		// is content xml?
+		var isXml = false;
+		try {
+			var tmp = Xml.parse(content);
+			isXml = Std.is( tmp.firstElement(), Xml );
+		} catch( e:Dynamic ) { isXml = false; }
+		if( isXml ) return "Xml.parse( '" + content.split("'").join("\\'") + "' ).firstElement()";
 		var isArray = false;
 		try {
 			var tmp = datamodel.doVal(content);
@@ -763,7 +763,7 @@ class Interp {
 		} catch( e:Dynamic ) { isArray = false; }
 		if( isArray ) return content;
 		// else (default to string representation)
-		return "'" + content + "'";
+		return "'" + content.split("'").join("\\'") + "'";
 	}
 	
 	var cancelledSendIds : Hash<Bool>;
@@ -850,9 +850,18 @@ class Interp {
 				if( content.length > 1 )
 					throw "Send may contain only one <content> child.";
 				
-				var contentVal = parseContent(content);
-				var paramsData = parseParams(params);
-				data = data.concat(paramsData);
+				var contentVal = null;
+				var paramsData = null;
+				if( content.length > 0 ) {
+					contentVal = parseContent(content);
+					if( !content[0].exists("expr") ) {
+						// TODO report test 179 (worked around here), where 123 should be '123' for consistent evaluation
+						contentVal = datamodel.doVal( getTypedDataStr(contentVal, false) );
+					}
+				} else {
+					paramsData = parseParams(params);
+					data = data.concat(paramsData);
+				}
 				
 				if( event != null ) {
 				

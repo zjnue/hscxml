@@ -7,7 +7,10 @@ import hsm.scxml.Node;
 import hsm.scxml.Types;
 
 #if haxe3
+import haxe.crypto.BaseCode;
 private typedef Hash<T> = haxe.ds.StringMap<T>;
+#else
+import haxe.BaseCode;
 #end
 
 typedef TEvtProc = {location:String};
@@ -195,6 +198,7 @@ class HScriptModel extends Model {
 		hinterp.variables.set("Std", Std);
 		hinterp.variables.set("Type", Type);
 		hinterp.variables.set("Xml", Xml);
+		hinterp.variables.set("Lambda", Lambda);
 		hinterp.variables.set("_ioprocessors", {});
 		setIoProc("http://www.w3.org/TR/scxml/#SCXMLEventProcessor", {location : "default"});
 		
@@ -228,7 +232,7 @@ class HScriptModel extends Model {
 	}
 	
 	inline function encProcKey( key : String ) : String {
-		return haxe.BaseCode.encode( key, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789__" );
+		return BaseCode.encode( key, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789__" );
 	}
 	
 	override public function get( key : String ) : Dynamic {
@@ -279,12 +283,18 @@ class HScriptModel extends Model {
 			if( !exists(r.matched(1)) )
 				expr = r.matchedLeft() + "null " + r.matchedRight();
 			else
-				expr = r.matchedLeft() + "Type.getClassName(Type.getClass(" + r.matched(1) + ")) " + r.matchedRight();
+				expr = r.matchedLeft() + "(try Type.getClassName(Type.getClass(" + r.matched(1) + ")) catch(e:Dynamic) null) " + r.matchedRight();
 		
 		// for obj['Var'] access
 		var r2 = ~/([a-zA-Z0-9\._]+)\['(.*)'\]/;
 		while( r2.match(expr) )
 			expr = 	r2.matchedLeft() + r2.matched(1) + "." + r2.matched(2) + r2.matchedRight();
+		
+		// converts _event.data.getElementsByTagName('book')[1].getAttribute('title') etc
+		var r3 = ~/[ ]*([a-zA-Z0-9\._]+).getElementsByTagName\((.*)\)\[(.*)\]/;
+		while( r3.match(expr) )
+			expr = 	r3.matchedLeft() + "Lambda.array({iterator:function() return " + r3.matched(1) + ".elementsNamed(" + r3.matched(2) + ")})[" + r3.matched(3) + "]" + r3.matchedRight();
+		expr = expr.split("getAttribute").join("get");
 		
 		var val = null;
 		if( Lambda.has(illegalExpr, expr) )
