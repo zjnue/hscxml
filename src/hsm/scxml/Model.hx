@@ -194,6 +194,7 @@ class HScriptModel extends Model {
 		hinterp.variables.set("_name", _name);
 		hinterp.variables.set("Std", Std);
 		hinterp.variables.set("Type", Type);
+		hinterp.variables.set("Xml", Xml);
 		hinterp.variables.set("_ioprocessors", {});
 		setIoProc("http://www.w3.org/TR/scxml/#SCXMLEventProcessor", {location : "default"});
 		

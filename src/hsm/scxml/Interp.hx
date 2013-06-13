@@ -150,9 +150,13 @@ class Interp {
 		throw "failWithError";
 	}
 	
+	static var genStateId : Int = 0;
+	
 	function expandScxmlSource( x : Xml ) {
 		if( x.nodeType != Xml.Element )
 			return;
+		if( Lambda.has(["state", "parallel", "final"], x.nodeName) && !x.exists("id") )
+			x.set("id", "__gen_id__"+genStateId++);
 		var hasInitial = false;
 		for( el in x.elements() ) {
 			if( el.nodeName == "initial" )
@@ -729,6 +733,31 @@ class Interp {
 		}
 	}
 	
+	function getTypedDataStr( content : String, doXml : Bool = true ) : String {
+		// is content a number?
+		var isNum = Std.parseInt(content) != null;
+		if( !isNum ) isNum = !Math.isNaN( Std.parseFloat(content) );
+		if( isNum ) return content;
+		// is content an object?
+		var isObj = false;
+		try {
+			var tmp = datamodel.doVal(content);
+			isObj = Std.is( tmp, {} );
+		} catch( e:Dynamic ) { isObj = false; }
+		if( isObj ) return content;
+		if( doXml ) {
+			// is content xml?
+			var isXml = false;
+			try {
+				var tmp = Xml.parse(content);
+				isXml = Std.is( tmp, Xml );
+			} catch( e:Dynamic ) { isXml = false; }
+			if( isXml ) return "Xml.parse( '" + content + "' )";
+		}
+		// else (default to string representation)
+		return "'" + content + "'";
+	}
+	
 	var cancelledSendIds : Hash<Bool>;
 	
 	function executeContent( c : Node ) {
@@ -892,7 +921,7 @@ class Interp {
 				if( c.exists("expr") )
 					datamodel.doAssign(c.get("location"), c.get("expr"));
 				else
-					datamodel.doAssign(c.get("location"), cast(c, Assign).content);
+					datamodel.doAssign(c.get("location"), getTypedDataStr(cast(c, Assign).content));
 			case "if":
 				if( !datamodel.supportsCond )
 					return;
@@ -987,7 +1016,7 @@ class Interp {
 	}
 	
 	function parseContent( content : Array<Node> ) {
-		var contentVal = null;
+		var contentVal : Dynamic = null;
 		try {
 			if( content.length > 0 ) {
 				var cnode = content[0];
@@ -1130,7 +1159,7 @@ class Interp {
 				//var http = new haxe.Http(src);
 			
 			} else {
-				contentVal = parseContent(content);
+				contentVal = Std.string( parseContent(content) );
 			}
 			
 			switch( stripEndSlash(type) ) {
