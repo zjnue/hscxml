@@ -201,6 +201,7 @@ class HScriptModel extends Model {
 		hinterp.variables.set("Lambda", Lambda);
 		hinterp.variables.set("_ioprocessors", {});
 		setIoProc("http://www.w3.org/TR/scxml/#SCXMLEventProcessor", {location : "default"});
+		setIoProc("scxml", {location : "default"});
 		
 		illegalExpr = ["continue", "return"];
 		illegalLhs = ["_sessionid", "_name", "_ioprocessors", "_event"];
@@ -263,15 +264,6 @@ class HScriptModel extends Model {
 		while( r2.match(expr) )
 			expr = 	r2.matchedLeft() + r2.matched(1) + ".concat(" + r2.matched(2) + ")" + r2.matchedRight();
 		
-		var program = hparse.parseString(expr);
-		var bytes = hscript.Bytes.encode(program);
-		program = hscript.Bytes.decode(bytes);
-		return hinterp.execute(program);
-	}
-	
-	override public function doCond( expr : String ) : Bool {
-		if( expr == "")
-			return true;
 		expr = expr.split("===").join("==");
 		expr = expr.split("String(").join("Std.string(");
 		expr = expr.split(".slice(").join(".substr(");
@@ -296,6 +288,15 @@ class HScriptModel extends Model {
 			expr = 	r3.matchedLeft() + "Lambda.array({iterator:function() return " + r3.matched(1) + ".elementsNamed(" + r3.matched(2) + ")})[" + r3.matched(3) + "]" + r3.matchedRight();
 		expr = expr.split("getAttribute").join("get");
 		
+		var program = hparse.parseString(expr);
+		var bytes = hscript.Bytes.encode(program);
+		program = hscript.Bytes.decode(bytes);
+		return hinterp.execute(program);
+	}
+	
+	override public function doCond( expr : String ) : Bool {
+		if( expr == "")
+			return true;
 		var val = null;
 		if( Lambda.has(illegalExpr, expr) )
 			throw "Illegal expr used in cond: " + expr;
