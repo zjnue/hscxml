@@ -746,7 +746,7 @@ class Interp {
 		var isObj = false;
 		try {
 			var tmp = datamodel.doVal(content);
-			isObj = Std.is( tmp, {} );
+			isObj = Reflect.isObject(tmp);
 		} catch( e:Dynamic ) { isObj = false; }
 		if( isObj ) return content;
 		// is content xml?
