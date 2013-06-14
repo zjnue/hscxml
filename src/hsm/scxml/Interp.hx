@@ -259,7 +259,6 @@ class Interp {
 			if( !enabledTransitions.isEmpty() )
 				microstep(enabledTransitions.toList());
 		}
-		//log("mainEventLoop: exitInterpreter");
 		exitInterpreter();
 		main.sendMessage("done");
 	}
@@ -757,6 +756,7 @@ class Interp {
 			isXml = Std.is( tmp.firstElement(), Xml );
 		} catch( e:Dynamic ) { isXml = false; }
 		if( isXml ) return "Xml.parse( '" + content.split("'").join("\\'") + "' ).firstElement()";
+		// is content an array?
 		var isArray = false;
 		try {
 			var tmp = datamodel.doVal(content);
@@ -1102,9 +1102,7 @@ class Interp {
 			return;
 		
 		try {
-		
 			//log("invoke(): inv.id = " + inv.get("id"));
-		
 			var type = getAltProp( inv, "type", "typeexpr" );
 			if( type != null && !invokeTypeAccepted(type) )
 				throw "Bad invoke type: " + type;
@@ -1124,22 +1122,17 @@ class Interp {
 				datamodel.doAssign(idlocation, "'" + invokeid + "'");
 			}
 			
-			// FIXME what do we do here if invokeid is still null?
-			// this can be the case if neither id nor idlocation are set on inv
-			// going by the tests, it seems we need to generate and set a new id for inv is it is still null here - check with spec
+			// FIXME get confirmation on setting these two inv atts (see test 234 for instance)
 			if( invokeid == null ) {
 				id = getInvokeId(inv);
 				inv.set("id", id);
 				invokeid = id;
 			}
-			// TODO check this (see test 234)
 			inv.set("invokeid", invokeid);
 			
 			var data = [];
-			
 			var namelist = inv.exists("namelist") ? inv.get("namelist") : null;
 			data = data.concat( getNamelistData(namelist) );
-			
 			var autoforward = inv.exists("autoforward") ? inv.get("autoforward") : "false";
 			
 			var params = [];
@@ -1167,16 +1160,11 @@ class Interp {
 			var params = parseParams(params);
 			data = data.concat( params );
 			
-			if( src != null ) {
-				
+			if( src != null )
 				if( src.indexOf("file:") >= 0 )
 					contentVal = getFileContent(src);
-				
-				//var http = new haxe.Http(src);
-			
-			} else {
+			else
 				contentVal = Std.string( parseContent(content) );
-			}
 			
 			switch( stripEndSlash(type) ) {
 				
@@ -1199,8 +1187,7 @@ class Interp {
 			}
 			
 		} catch( e : Dynamic ) {
-			// cancel
-			// raise error
+			raise( new Event("error.execution") );
 		}
 	}
 	
