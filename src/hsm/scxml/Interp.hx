@@ -565,6 +565,7 @@ class Interp {
 			var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(id);
 			data.instance.running = false;
 			data.instance.parentEventHandler = function( evt : Event ) {};
+			data.instance.exitInterpreter();
 		} else {
 			log("Warning, cancel invoke data missing for id: " + id);
 		}
@@ -927,7 +928,7 @@ class Interp {
 				
 			case "log":
 				if( datamodel.supportsVal )
-					log(c.get("label") + ": " + Std.string( datamodel.doVal(c.get("expr")) ) );
+					log((c.exists("label") ? c.get("label") + ": " : "") + Std.string( datamodel.doVal(c.get("expr")) ) );
 			case "raise":
 				var evt = new Event(c.get("event"));
 				evt.type = "internal";
@@ -1073,8 +1074,6 @@ class Interp {
 		return data;
 	}
 	
-	static var hackInvId : Int = 0;
-	
 	function setInvokedData(id:String, data:Dynamic) {
 		invokedDataMutex.acquire();
 		invokedData.set(id, data);
@@ -1129,7 +1128,7 @@ class Interp {
 			// this can be the case if neither id nor idlocation are set on inv
 			// going by the tests, it seems we need to generate and set a new id for inv is it is still null here - check with spec
 			if( invokeid == null ) {
-				id = "hackInvId_" + (hackInvId++);
+				id = getInvokeId(inv);
 				inv.set("id", id);
 				invokeid = id;
 			}
@@ -1187,10 +1186,14 @@ class Interp {
 						throw "Invoke id already exists: " + invokeid;
 					
 					var c = Thread.create(createChildInterp);
+					c.sendMessage(Thread.current());
 					c.sendMessage(contentVal);
 					c.sendMessage(data);
 					c.sendMessage(invokeid);
 					c.sendMessage(type);
+					Thread.readMessage(true);
+					
+					Sys.sleep(0.2); // FIXME erm, for now give new instance 'some time' to stabilize (see test 250)
 					
 				default:
 			}
@@ -1202,6 +1205,7 @@ class Interp {
 	}
 	
 	function createChildInterp() {
+		var main = Thread.readMessage(true);
 		var xmlStr = Thread.readMessage(true);
 		var data : Array<{key:String,value:Dynamic}> = Thread.readMessage(true);
 		var invokeid = Thread.readMessage(true);
@@ -1232,6 +1236,8 @@ class Interp {
 			type : type,
 			instance : inst
 		});
+		
+		main.sendMessage("please continue..");
 		
 		inst.interpret( xml );
 	}
