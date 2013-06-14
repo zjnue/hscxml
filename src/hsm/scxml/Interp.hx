@@ -1160,10 +1160,10 @@ class Interp {
 			var params = parseParams(params);
 			data = data.concat( params );
 			
-			if( src != null )
+			if( src != null ) {
 				if( src.indexOf("file:") >= 0 )
 					contentVal = getFileContent(src);
-			else
+			} else
 				contentVal = Std.string( parseContent(content) );
 			
 			switch( stripEndSlash(type) ) {
