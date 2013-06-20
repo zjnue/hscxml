@@ -1,17 +1,31 @@
-# example usage: neko convert.n ecma
+# example usage:
+#  neko convert.n ecma
 -main Convert
 -neko convert.n
 
 --next
 
-# example usage: neko run.n ecma
+# example usage:
+#  nekotools server
+#  http://localhost:2000/?type=ecma&first=test144.scxml
 -cp ../src
 -main Run
--lib hscript:1.8
+-lib hscript
+-neko index.n
+-D web
+
+--next
+
+# example usage:
+#  neko run.n ecma
+-cp ../src
+-main Run
+-lib hscript
 -neko run.n
 
 --next
 
-# example usage: neko prettify.n file.xml
+# example usage:
+#  neko prettify.n file.xml
 -main PrettyScxml
 -neko prettify.n

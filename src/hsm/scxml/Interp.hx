@@ -626,12 +626,7 @@ class Interp {
 	function returnDoneEvent( doneData : Dynamic ) : Void {
 		if( parentEventHandler == null )
 			return;
-		
 		var data = doneData; // FIXME make a copy
-		
-		if( invokeId == null )
-			throw "No invoke id specified.";
-		
 		var evt = new Event( "done.invoke." + invokeId );
 		evt.invokeid = invokeId;
 		parentEventHandler(evt);
@@ -646,7 +641,6 @@ class Interp {
 	}
 	
 	inline function setEvent( evt : Event ) {
-		evt.raw = evt.toString();
 		datamodel.setEvent(evt);
 	}
 	
@@ -719,7 +713,8 @@ class Interp {
 		}
 	}
 	
-	function setEventData( evtData : {}, fromData : Array<{key:String, value:Dynamic}> ) {
+	// TODO move to helper class?
+	public static function setEventData( evtData : {}, fromData : Array<{key:String, value:Dynamic}> ) {
 		for( item in fromData ) {
 			if( Reflect.hasField(evtData, item.key) ) {
 				var val = Reflect.field(evtData, item.key);
@@ -792,14 +787,16 @@ class Interp {
 				var idlocation = c.exists("idlocation") ? c.get("idlocation") : null;
 				if( id != null && idlocation != null )
 					throw "Send properties 'id' and 'idlocation' are mutually exclusive.";
-					
+				
 				var sendid = null;
 				if( id != null ) sendid = id;
 				if( idlocation != null ) sendid = datamodel.get(idlocation);
 				
 				var evtType = target == "#_internal" ? "internal" : "external";
 				
-				if( target != null && !isValidAndSupportedSendTarget(target) ) {
+				var type = getAltProp( c, "type", "typeexpr" );
+				
+				if( type != "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor" && target != null && !isValidAndSupportedSendTarget(target) ) {
 					if( target.indexOf("#_scxml_") == 0 ) {
 						raise( new Event("error.communication", null, sendid, evtType) );
 						return;
@@ -807,9 +804,8 @@ class Interp {
 					raise( new Event("error.execution", null, sendid, evtType) );
 					throw "Invalid send target: " + target;
 				}
-				var type = getAltProp( c, "type", "typeexpr" );
 				
-				if( type == "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor" && !ioProcessorSupportsPost() ) {
+				if( type == "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor" && (!ioProcessorSupportsPost() || target == null) ) {
 					raise( new Event("error.communication", null, sendid, evtType) );
 					return;
 				}
@@ -822,9 +818,9 @@ class Interp {
 					raise( new Event("error.execution", null, sendid, evtType) );
 					return;
 				}
-				if( ioProcessorSupportsPost() && type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" )
-					type = "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor";
-				
+//				if( ioProcessorSupportsPost() && type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" )
+//					type = "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor";
+
 				var delay = getAltProp( c, "delay", "delayexpr" );
 				if( delay != null && target == "_internal" )
 					throw "Send properties 'delay' or 'delayexpr' may not be specified when target is '_internal'.";
@@ -864,66 +860,86 @@ class Interp {
 					data = data.concat(paramsData);
 				}
 				
-				if( event != null ) {
-				
-					switch( type ) {
+				switch( type ) {
+					
+					case "http://www.w3.org/TR/scxml/#SCXMLEventProcessor":
 						
-						case "http://www.w3.org/TR/scxml/#SCXMLEventProcessor":
+						// TODO check
+						if( event == null ) return;
 						
-							var duration = getDuration(delay);
-							var evt = new Event(event);
-							
-							evt.name = event;
-							evt.type = evtType;
-							evt.sendid = sendid;
-							
-							if( evtType == "external" ) {
-								evt.origin = ( invokeId != null ) ? "#_" + invokeId : "#_internal";
-								evt.origintype = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";
-							}
-							
-							if( content.length > 0 )
-								Reflect.setField(evt, "data", contentVal);
-							else
-								setEventData(evt.data, data.copy());
-							
-							var cb = addToExternalQueue;
+						var duration = getDuration(delay);
+						var evt = new Event(event);
+						
+						evt.name = event;
+						evt.type = evtType;
+						evt.sendid = sendid;
+						
+						if( evtType == "external" ) {
+							evt.origin = ( invokeId != null ) ? "#_" + invokeId : "#_internal";
+							evt.origintype = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";
+						}
+						
+						if( content.length > 0 )
+							Reflect.setField(evt, "data", contentVal);
+						else
+							setEventData(evt.data, data.copy());
+						
+						var cb = addToExternalQueue;
 
-							switch( target ) {
-								case "#_internal":
-									cb = raise;
-									
-								case "#_parent":
-									if( parentEventHandler == null )
-										throw "No parent event handler defined.";
-									if( invokeId == null )
-										throw "No invokeId specified and trying to communicate with parent.";
-									evt.invokeid = invokeId;
-									cb = parentEventHandler;
-									
-								default:
+						switch( target ) {
+							case "#_internal":
+								cb = raise;
 								
-									if( target != null && target.length > 2 ) {
-										
-										if( target.indexOf("#_") == 0 ) {
-											var sub = target.substr(2);
-											if( hasInvokedData(sub) ) {
-												var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(sub);
-												data.instance.postEvent(evt);
-											}
-										}
+							case "#_parent":
+								if( parentEventHandler == null )
+									throw "No parent event handler defined.";
+								if( invokeId == null )
+									throw "No invokeId specified and trying to communicate with parent.";
+								evt.invokeid = invokeId;
+								cb = parentEventHandler;
+								
+							default:
+							
+								if( target != null && target.length > 2 ) {
 									
+									if( target.indexOf("#_") == 0 ) {
+										var sub = target.substr(2);
+										if( hasInvokedData(sub) ) {
+											var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(sub);
+											data.instance.postEvent(evt);
+										}
 									}
-							}
-							
-							sendEvent( evt, duration, cb );
-							
-						case "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor":
-							// FIXME
-						case "http://www.w3.org/TR/scxml/#DOMEventProcessor":
-							// FIXME
-					}
+								
+								}
+						}
+						
+						sendEvent( evt, duration, cb );
+						
+					case "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor":
 
+						var h = new haxe.Http(target);
+						
+						// TODO content specification a bit vague in general - can it specify multi params here for instance?
+						if( contentVal != null ) {
+							var tmp = contentVal.split("=");
+							if( tmp[0] == "_scxmleventname" )
+								h.setParameter("_scxmleventname", tmp[1]);
+							else
+								h.setParameter("__data__", contentVal);
+						} else {
+							for( d in data ) {
+								h.setParameter(d.key, haxe.Serializer.run(d.value));
+							}
+						}
+						if( event != null )
+							h.setParameter("_scxmleventname", event);
+						if( c.exists("httpResponse") )
+							h.setParameter("httpResponse", c.get("httpResponse"));
+						
+						h.request(true);
+						
+					case "http://www.w3.org/TR/scxml/#DOMEventProcessor":
+						// FIXME
 				}
 				
 			case "log":

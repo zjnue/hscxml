@@ -4,25 +4,68 @@ import hsm.scxml.Interp;
 import hsm.scxml.Types;
 import hsm.scxml.tools.DrawTools;
 
+#if neko
+import neko.vm.Thread;
+#elseif cpp
+import cpp.vm.Thread;
+#end
+
+import sys.FileSystem;
+
 class Scxml {
 	var interp : Interp;
 	
-	public var data( default, set_data ) : String;
-	public var onInit( get_onInit, set_onInit ) : Void -> Void;
-	public var log( get_log, set_log ) : String -> Void;
+	public var onInit : Void -> Void;
+	public var log : String -> Void;
+	public var parentEventHandler : Event -> Void;
+
+	var content : String;
+	var data : Array<{key:String, value:Dynamic}>;
 	
-	public function new( ?_data : String ) {
-		if (_data != null) data = _data;
-		interp = new Interp();
+	public function new( src : String = null, content : String = null, data : Array<{key:String, value:Dynamic}> = null ) {
+		if( src != null ) {
+			if( !FileSystem.exists(src) ) src = FileSystem.fullPath(src);
+			if( !FileSystem.exists(src) ) throw "Invalid path: " + src;	
+			content = sys.io.File.getContent(src);
+		}
+		this.content = content;
+		this.data = data;
 	}
 	
-	public function init( ?_data : String, ?_onInit : Void -> Void ) {
-		if (_data == null) _data = data;
-		if (_data == null) throw "No data set";
-		if (_onInit == null && onInit == null) throw "No onInit function set";
-		if (_onInit != null) onInit = _onInit;
-		var scxml = Xml.parse(_data).firstElement();
-		interp.interpret(scxml);
+	public function init( content : String = null, onInit : Void -> Void = null, log : String -> Void = null ) {
+		if( content == null ) content = this.content;
+		if( content == null ) throw "No content set";
+		if( onInit == null && this.onInit == null ) throw "No onInit function set";
+		if( onInit != null ) this.onInit = onInit;
+		if( log == null ) log = this.log;
+		
+		var scxml = Xml.parse(content).firstElement();
+		
+		var c = Thread.create(createInterp);
+		c.sendMessage(scxml);
+		c.sendMessage(onInit);
+		c.sendMessage(log);
+		c.sendMessage(parentEventHandler);
+	}
+	
+	function createInterp() {
+		var scxml = Thread.readMessage(true);
+		var onInit = Thread.readMessage(true);
+		var log = Thread.readMessage(true);
+		var parentEventHandler = Thread.readMessage(true);
+		var me = this;
+		
+		interp = new hsm.scxml.Interp();
+		interp.onInit = onInit;
+		if( log != null ) interp.log = log;
+		if( parentEventHandler != null ) interp.parentEventHandler = parentEventHandler;
+		
+		try {
+			interp.interpret( scxml );
+		} catch( e:Dynamic ) {
+			log("ERROR: e = " + Std.string(e));
+			parentEventHandler( new Event("done.invoke") );
+		}
 	}
 	
 	inline public function getDot() {
@@ -37,28 +80,10 @@ class Scxml {
 		interp.stop();
 	}
 	
-	inline public function postEvent( str : String ) {
-		interp.postEvent( new Event(str) );
+	public function postEvent( evt : Event ) {
+		if( interp != null ) {
+			interp.postEvent( evt );
+		}
 	}
 	
-	inline function set_data( value : String ) {
-		return data = value;
-	}
-	
-	inline function get_onInit() : Void -> Void {
-		return interp.onInit;
-	}
-	
-	inline function set_onInit( value : Void -> Void ) {
-		return interp.onInit = value;
-	}
-	
-	inline function get_log() : String -> Void {
-		return interp.log;
-	}
-	
-	inline function set_log( value : String -> Void ) {
-		return interp.log = value;
-	}
-
 }

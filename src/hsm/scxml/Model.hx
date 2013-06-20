@@ -202,6 +202,8 @@ class HScriptModel extends Model {
 		hinterp.variables.set("_ioprocessors", {});
 		setIoProc("http://www.w3.org/TR/scxml/#SCXMLEventProcessor", {location : "#_internal"});
 		setIoProc("scxml", {location : "#_internal"});
+		setIoProc("http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor", {location : "http://localhost:2000"});
+		setIoProc("basichttp", {location : "http://localhost:2000"});
 		
 		illegalExpr = ["continue", "return"];
 		illegalLhs = ["_sessionid", "_name", "_ioprocessors", "_event"];
@@ -255,7 +257,7 @@ class HScriptModel extends Model {
 	}
 	
 	function eval( expr : String ) : Dynamic {
-		var r = ~/_ioprocessors\['(.*)'\]/;
+		var r = ~/_ioprocessors\['([:\/\.a-zA-Z0-9#]+)'\]/;
 		while( r.match(expr) )
 			expr = 	r.matchedLeft() + "_ioprocessors." + encProcKey(r.matched(1)) + r.matchedRight();
 		
@@ -264,11 +266,24 @@ class HScriptModel extends Model {
 		while( r.match(expr) )
 			expr = 	r.matchedLeft() + r.matched(1) + ".concat(" + r.matched(2) + ")" + r.matchedRight();
 		
+		expr = expr.split("!==").join("!=");
 		expr = expr.split("===").join("==");
 		expr = expr.split("String(").join("Std.string(");
 		expr = expr.split(".slice(").join(".substr(");
 		expr = expr.split("'undefined'").join("null");
 		expr = expr.split("undefined").join("null");
+		
+		// _event.raw.search(/Var1=2/) or _event.raw.search(/Varparam1=1/)
+		var r = ~/search\(\/(.*)\/\)/;
+		while( r.match(expr) ) {
+			var matched = r.matched(1);
+			if( matched.indexOf("Var") == 0 ) {
+				var tmp = r.matched(1).substr(3).split("=");
+				if( ~/^[a-zA-Z_][a-zA-Z0-9_]*/.match(tmp[0]) )
+					matched = tmp[0] + "=" + tmp[1];
+			}
+			expr = r.matchedLeft() + "search('" + matched + "')" + r.matchedRight();
+		}
 		
 		var r = ~/typeof ([a-zA-Z0-9\._]+) /;
 		while( r.match(expr) )

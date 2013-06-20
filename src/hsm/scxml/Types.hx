@@ -21,7 +21,6 @@ private typedef Hash<T> = haxe.ds.StringMap<T>;
 #end
 
 class Event {
-	// see 5.10.1 The Internal Structure of Events
 	public var name : String;
 	public var type : String;
 	public var sendid : String;
@@ -29,25 +28,33 @@ class Event {
 	public var origintype : String;
 	public var invokeid : String;
 	public var data : Dynamic;
-	// ?
-	public var raw : String;
-	
+	public var raw : RawEvent;
 	public function new( name : String, data : Dynamic = null, sendid : String = null, type : String = "platform" ) {
 		this.name = name;
 		this.data = data == null ? {} : data;
 		this.sendid = sendid;
 		this.type = type;
-		this.raw = "";
+		this.raw = new RawEvent(this);
 	}
-	public function toString() {
+	public function toString( sep : String = " = " ) {
+		return getString(" = ");
+	}
+	public function getString( sep : String = " = " ) {
 		var out = "[Event: " + name + " data: ";
-		if( Std.is(data, {}) )
+		if( Std.is(data, {}) || Std.is(data, Dynamic) )
 			for( field in Reflect.fields(data) )
-				out += "\n\t" + field + " = " + Std.string(Reflect.field(data, field));
+				out += "\n\t" + field + sep + Std.string(Reflect.field(data, field));
 		else
 			out += "\n\t" + Std.string(data);
 		return out + "\n]";
 	}
+}
+
+class RawEvent {
+	var event : Event;
+	public function new( event : Event ) { this.event = event; }
+	inline public function search( str : String ) { return toString().indexOf(str); }
+	public function toString() { return event.getString("="); }
 }
 
 class Set<T> {
