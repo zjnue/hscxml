@@ -938,7 +938,7 @@ class Interp #if js extends js.WorkerScript #end {
 				
 				var type = getAltProp( c, "type", "typeexpr" );
 				
-				if( type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" && target != null && !isValidAndSupportedSendTarget(target) ) {
+				if( (type == null || type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor") && target != null && !isValidAndSupportedSendTarget(target) ) {
 					if( target.indexOf("#_scxml_") == 0 ) {
 						raise( new Event("error.communication", null, sendid, evtType) );
 						return;
