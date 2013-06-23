@@ -94,18 +94,38 @@ class Queue<T> {
 	}
 }
 
+#if js
+class BlockingQueue<T> {
+	var l : List<T>;
+	public function new() { l = new List<T>(); callOnNewContent = false; }
+	public var callOnNewContent : Bool;
+	public var onNewContent : Void -> Void;
+	public inline function enqueue( i : T ) {
+		l.add( i );
+		if (callOnNewContent) {
+			callOnNewContent = false;
+			onNewContent();
+		}
+	}
+	public function dequeue() {
+		return l.pop();
+	}
+}
+#else
 class BlockingQueue<T> {
 	var dq : Deque<T>;
 	public function new() { dq = new Deque<T>(); }
 	public inline function enqueue( i : T ) { dq.add( i ); }
 	public inline function dequeue() { return dq.pop(true); }
 }
+#end
 
 typedef TTimerData = {
 	time : Float,
 	func : Void->Void	
 }
 
+#if !js
 class TimerThread {
 	var mutex : Mutex;
 	var queueLock : Lock;
@@ -167,3 +187,4 @@ class TimerThread {
 		}
 	}
 }
+#end

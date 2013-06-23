@@ -29,3 +29,32 @@
 #  neko prettify.n file.xml
 -main PrettyScxml
 -neko prettify.n
+
+--next
+
+# this is our worker script for the js target
+-main hsm.scxml.Interp
+-js js/interp.js
+-lib hscript
+-cp ../src
+
+--next
+
+# js
+-main TestJs
+-js js/test.js
+-lib hscript
+-cp ../src
+#-resource ecma/test144.scxml@scxmlStr
+#-resource ecma/test152.scxml@scxmlStr
+#-resource ecma/test179.scxml@scxmlStr
+#testing delayed events
+#-resource ecma/test185.scxml@scxmlStr
+#testing invoke
+#-resource ecma/test187.scxml@scxmlStr
+#-resource ecma/test191.scxml@scxmlStr
+-resource ecma/test192.scxml@scxmlStr
+#-resource ecma/test207.scxml@scxmlStr
+#-resource ecma/test215.scxml@scxmlStr
+# this is expected to fail - todo js file access
+#-resource ecma/test216.scxml@scxmlStr

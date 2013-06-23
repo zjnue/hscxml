@@ -10,6 +10,11 @@ using hsm.scxml.tools.ArrayTools;
 using hsm.scxml.tools.ListTools;
 using hsm.scxml.tools.NodeTools;
 
+#if js
+import js.Worker;
+using js.WorkerScript;
+#end
+
 #if neko
 import neko.vm.Thread;
 import neko.vm.Mutex;
@@ -22,20 +27,47 @@ import cpp.vm.Mutex;
 private typedef Hash<T> = haxe.ds.StringMap<T>;
 #end
 
-class Interp {
+class Interp #if js extends js.WorkerScript #end {
+
+	#if js
+	public static function main() {
+		new Interp().export();
+	}
+	
+	override public function onMessage(e) {
+		var msg = haxe.Unserializer.run(e.data);
+		switch( msg.cmd ) {
+			case "postEvent": postEvent( cast(msg.args[0], Event) );
+			case "interpret": interpret( Xml.parse(msg.args[0]).firstElement() );
+			case "start": start();
+			case "stop": stop();
+			case "killParentHandler": parentEventHandler = function( evt : Event ) {};
+			case "exitInterpreter": exitInterpreter();
+			case "invokeId": invokeId = msg.args[0];
+		}
+	}
+	
+	dynamic function parentEventHandler( evt : Event ) { post("postEvent", [evt]); }
+	function onInit() { post("onInit", []); }
+	function log( msg : String ) { post("log", [msg]); }
+	#else
+	public var parentEventHandler : Event -> Void;
+	public var onInit : Void -> Void;
+	public var log : String -> Void;
+	#end
 	
 	var d : Node;
 	
 	public function new() {
+		#if js
+		super();
+		haxe.Serializer.USE_CACHE = true;
+		#else
 		log = function(msg:String) trace(msg);
+		#end
 	}
 	
-	// invoke related
-	public var parentEventHandler : Event -> Void;
 	public var invokeId : String;
-	
-	public var onInit : Void -> Void;
-	public var log : String -> Void;
 	public var topNode( get_topNode, never ) : Node;
 	
 	function get_topNode() { return d; }
@@ -44,18 +76,25 @@ class Interp {
 		externalQueue.enqueue( evt );
 	}
 	
+	#if !js
 	var invokedDataMutex:Mutex;
 	var timerThread : TimerThread;
 	var mainThread : Thread;
+	#else
+	var timers : Array<haxe.Timer>;
+	#end
 	
 	public function start() {
-		
+		#if js
+		mainEventLoop();
+		#else
 		mainThread = Thread.create(mainEventLoop);
 		mainThread.sendMessage(Thread.current());
 		Thread.readMessage(true);
 		
 		// TODO check if timer needs to stop earlier
 		timerThread.quit();
+		#end
 	}
 	
 	public function stop() {
@@ -98,6 +137,9 @@ class Interp {
 		statesToInvoke = new Set();
 		internalQueue = new Queue();
 		externalQueue = new BlockingQueue();
+		#if js
+		externalQueue.onNewContent = checkBlockingQueue;
+		#end
 		historyValue = new Hash();
 		
 		extraInit();
@@ -125,7 +167,11 @@ class Interp {
 		binding = d.exists("binding") ? d.get("binding") : "early";
 		initializeDatamodel( datamodel, result.data, (binding != "early") );
 		
+		#if js
+		timers = [];
+		#else
 		timerThread = new TimerThread();
+		#end
 		running = true;
 		executeGlobalScriptElements(d);
 		
@@ -137,7 +183,9 @@ class Interp {
 	function extraInit() {
 		cancelledSendIds = new Hash();
 		invokedData = new Hash();
+		#if !js
 		invokedDataMutex = new Mutex();
+		#end
 	}
 	
 	function valid( doc : Xml ) {
@@ -215,6 +263,75 @@ class Interp {
 			}
 	}
 	
+	#if js
+	
+	function mainEventLoop() {
+		if( running ) {
+			var enabledTransitions : Set<Node> = null;
+			var macrostepDone = false;
+			while( running && !macrostepDone ) {
+				enabledTransitions = selectEventlessTransitions();
+				if( enabledTransitions.isEmpty() ) {
+					if( internalQueue.isEmpty() )
+						macrostepDone = true;
+					else {
+						var internalEvent = internalQueue.dequeue();
+						setEvent(internalEvent);
+						enabledTransitions = selectTransitions(internalEvent);
+					}
+				}
+				if( !enabledTransitions.isEmpty() )
+					microstep(enabledTransitions.toList());
+			}
+			if( !running ) {
+				mainEventLoop();
+				return;
+			}
+			for( state in statesToInvoke )
+				for( inv in state.invoke() )
+					invoke(inv);
+			statesToInvoke.clear();
+			if( !internalQueue.isEmpty() ) {
+				mainEventLoop();
+				return;
+			}
+			checkBlockingQueue();
+		} else {
+			exitInterpreter();
+			for( t in timers )
+				t.stop();
+		}
+	}
+	
+	function checkBlockingQueue() {
+		var externalEvent = externalQueue.dequeue();
+		if( externalEvent != null ) {
+			if( isCancelEvent(externalEvent) ) {
+				running = false;
+				mainEventLoop();
+				return;
+			}
+			setEvent(externalEvent);
+			for( state in configuration )
+				for( inv in state.invoke() ) {
+					if( inv.get("invokeid") == externalEvent.invokeid )
+						applyFinalize(inv, externalEvent);
+					if( inv.exists("autoforward") && inv.get("autoforward") == "true" )
+						send(inv.get("id"), externalEvent);
+				}
+			var enabledTransitions = selectTransitions(externalEvent);
+			if( !enabledTransitions.isEmpty() )
+				microstep(enabledTransitions.toList());
+			mainEventLoop();
+		}
+		else if( running ) 
+			externalQueue.callOnNewContent = true;
+		else
+			log("checkBlockingQueue: externalEvent = " + Std.string(externalEvent) + " running = " + Std.string(running));
+	}
+	
+	#else
+	
 	function mainEventLoop() {
 		var main = Thread.readMessage(true);
 		while( running ) {
@@ -262,6 +379,8 @@ class Interp {
 		exitInterpreter();
 		main.sendMessage("done");
 	}
+	
+	#end
 	
 	function isCancelEvent( evt : Event ) {
 		return (evt.sendid != null && cancelledSendIds.exists(evt.sendid));
@@ -561,10 +680,17 @@ class Interp {
 			id = datamodel.get(idlocation);
 		}
 		if( hasInvokedData(id) ) {
+			#if js
+			var data : {type:String, instance:Worker} = getInvokedData(id);
+			postToWorker(id, "stop", []);
+			postToWorker(id, "killParentHandler", []);
+			postToWorker(id, "exitInterpreter", []);
+			#else
 			var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(id);
 			data.instance.running = false;
 			data.instance.parentEventHandler = function( evt : Event ) {};
 			data.instance.exitInterpreter();
+			#end
 		} else {
 			log("Warning, cancel invoke data missing for id: " + id);
 		}
@@ -584,8 +710,12 @@ class Interp {
 		if( !isScxmlInvokeType(invData.type) )
 			throw "Invoke type currently not supported: " + invData.type;
 		
+		#if js
+		postToWorker(invokeid, "postEvent", [evt]);
+		#else
 		var inst = cast( invData.instance, hsm.scxml.Interp );
 		inst.postEvent(evt);
+		#end
 	}
 	
 	inline function isScxmlInvokeType( type : String ) {
@@ -647,11 +777,20 @@ class Interp {
 	function sendEvent( evt : Event, delaySec : Float = 0, addEvent : Event -> Void ) {
 		if( delaySec == 0 )
 			addEvent(evt);
-		else
+		else {
+			#if js
+			var t = haxe.Timer.delay(function() {
+				if( !isCancelEvent(evt) )
+					addEvent(evt);
+			}, Std.int(delaySec * 1000));
+			timers.push(t);
+			#else
 			timerThread.addTimer(delaySec, function() {
 				if( !isCancelEvent(evt) )
 					addEvent(evt);
 			});
+			#end
+		}
 	}
 	
 	inline function getDuration( delay : String ) {
@@ -905,8 +1044,12 @@ class Interp {
 									if( target.indexOf("#_") == 0 ) {
 										var sub = target.substr(2);
 										if( hasInvokedData(sub) ) {
+											#if js
+											postToWorker(sub, "postEvent", [evt]);
+											#else
 											var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(sub);
 											data.instance.postEvent(evt);
+											#end
 										}
 									}
 								
@@ -1090,6 +1233,17 @@ class Interp {
 		return data;
 	}
 	
+	#if js
+	inline function setInvokedData(id:String, data:Dynamic) {
+		invokedData.set(id, data);
+	}
+	inline function getInvokedData(id:String) {
+		return invokedData.get(id);
+	}
+	inline function hasInvokedData(id:String) {
+		return invokedData.exists(id);
+	}
+	#else
 	function setInvokedData(id:String, data:Dynamic) {
 		invokedDataMutex.acquire();
 		invokedData.set(id, data);
@@ -1111,6 +1265,7 @@ class Interp {
 		invokedDataMutex.release();
 		return has;
 	}
+	#end
 	
 	function invoke( inv : Node ) {
 		
@@ -1189,6 +1344,37 @@ class Interp {
 					if( hasInvokedData(invokeid) )
 						throw "Invoke id already exists: " + invokeid;
 					
+					#if js
+					
+					var xml = Xml.parse(contentVal).firstElement();
+					setSubInstData( xml, data );
+					var xmlStr = xml.toString();
+					
+					var worker = new Worker("interp.js");
+					setInvokedData(invokeid, {type : type, instance : worker});
+					worker.addEventListener("message", function(e) {
+						var msg = haxe.Unserializer.run(e.data);
+						switch( msg.cmd ) {
+							case "log": if( log != null ) log("log-from-child: " + msg.args[0]);
+							case "onInit": postToWorker(invokeid, "start", []);
+							case "postEvent": addToExternalQueue( cast(msg.args[0], Event) );
+							default:
+								log("Interp: sub worker msg received: msg.cmd = " + msg.cmd + " msg.args = " + Std.string(msg.args));
+						}
+						
+					});
+					worker.addEventListener("error", function(e) {
+						log("sub worker error: " + e.message);
+					});
+					
+					try {
+						postToWorker(invokeid, "invokeId", [invokeid]);
+						postToWorker(invokeid, "interpret", [xmlStr]);
+					} catch( e:Dynamic ) {
+						log("ERROR: sub worker: e = " + Std.string(e));
+					}
+					
+					#else
 					var c = Thread.create(createChildInterp);
 					c.sendMessage(Thread.current());
 					c.sendMessage(contentVal);
@@ -1198,6 +1384,7 @@ class Interp {
 					Thread.readMessage(true);
 					
 					Sys.sleep(0.2); // FIXME erm, for now give new instance 'some time' to stabilize (see test 250)
+					#end
 					
 				default:
 			}
@@ -1207,14 +1394,7 @@ class Interp {
 		}
 	}
 	
-	function createChildInterp() {
-		var main = Thread.readMessage(true);
-		var xmlStr = Thread.readMessage(true);
-		var data : Array<{key:String,value:Dynamic}> = Thread.readMessage(true);
-		var invokeid = Thread.readMessage(true);
-		var type = Thread.readMessage(true);
-		
-		var xml = Xml.parse(xmlStr).firstElement();
+	function setSubInstData( xml : Xml, data : Array<{key:String,value:Dynamic}> ) {
 		var models = xml.elementsNamed("datamodel");
 		if( models.hasNext() )
 			for( dataNode in models.next().elementsNamed("data") ) {
@@ -1225,6 +1405,25 @@ class Interp {
 						break;
 					}
 			}
+	}
+	
+	#if js
+	
+	function postToWorker( invokeId : String, cmd : String, args : Array<Dynamic> ) {
+		var worker = getInvokedData(invokeId).instance;//, {type : type, instance : worker});
+		worker.postMessage( haxe.Serializer.run({cmd:cmd, args:args}) );
+	}
+	
+	#else
+	function createChildInterp() {
+		var main = Thread.readMessage(true);
+		var xmlStr = Thread.readMessage(true);
+		var data : Array<{key:String,value:Dynamic}> = Thread.readMessage(true);
+		var invokeid = Thread.readMessage(true);
+		var type = Thread.readMessage(true);
+		
+		var xml = Xml.parse(xmlStr).firstElement();
+		setSubInstData( xml, data );
 		
 		var me = this;
 		var inst = new hsm.scxml.Interp();
@@ -1244,6 +1443,7 @@ class Interp {
 		
 		inst.interpret( xml );
 	}
+	#end
 	
 	function invokeTypeAccepted( type : String ) {
 		switch( stripEndSlash(type) ) {
@@ -1274,9 +1474,13 @@ class Interp {
 	}
 	
 	inline function getFileContent( src : String ) {
+		#if js
+		return null;
+		#else		
 		var file = src.substr(5);
 		var path = Sys.getCwd() + "ecma/"; // FIXME tmp hack (relative urls..)
 		return trim( sys.io.File.getContent(path+file) );
+		#end
 	}
 	
 	// TODO find better place
