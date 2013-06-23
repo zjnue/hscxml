@@ -64,6 +64,9 @@ class Scxml {
 						log("parentEventHandler: " + Std.string(msg.args[0]));
 						parentEventHandler( cast(msg.args[0], Event) );
 					}
+				case "sendDomEvent":
+					var args : Array<Dynamic> = msg.args;
+					sendDomEvent(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
 				default:
 					trace("worker msg received: msg.cmd = " + msg.cmd + " msg.args = " + Std.string(msg.args));
 			}
@@ -94,6 +97,47 @@ class Scxml {
 	
 	public function post( cmd : String, args : Array<Dynamic> ) : Void {
 		worker.postMessage( haxe.Serializer.run({cmd:cmd, args:args}) );
+	}
+	
+	function sendDomEvent( fromInvokeId : String, target : String, iface : String, domEvtType : String, 
+		cancelable : Bool, bubbles : Bool, contentVal : String, data : Array<{key:String, value:Dynamic}> ) {
+
+		if( iface != "CustomEvent" ) {
+			log("sendDomEvent type not yet implemented: " + domEvtType);
+			post("sendDomEventFailed", [fromInvokeId]);
+			return;
+		}
+		
+		var nodes : Array<js.html.Element> = null;
+		var detail : Dynamic = null;
+		var event : js.CustomEvent = null;
+		
+		try {
+			nodes = new js.JQuery(target).get();
+			if( nodes.length == 0 ) {
+				log("sendDomEvent target not found: " + target);
+				return;
+			}
+			detail = contentVal;
+			if( detail == null ) {
+				detail = {};
+				Interp.setEventData(detail, data);
+			}
+			var initObj  = {
+				bubbles : bubbles,
+				cancelable : cancelable,
+				detail : detail
+			};
+			event = new js.CustomEvent( domEvtType, initObj );
+			
+		} catch( e:Dynamic ) {
+			log("sendDomEvent failed for target: " + target);
+			post("sendDomEventFailed", [fromInvokeId]);
+			return;
+		}
+		
+		for( node in nodes )
+			node.dispatchEvent( cast event );
 	}
 	
 	#else

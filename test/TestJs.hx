@@ -1,4 +1,9 @@
+import hsm.scxml.Types;
+
+@:expose
 class TestJs {
+	
+	static var s : hsm.Scxml;
 	
 	public static function main() {
 		
@@ -10,11 +15,20 @@ class TestJs {
 		var scxmlStr = haxe.Resource.getString("scxmlStr");
 		trace(scxmlStr);
 		
-		var s = new hsm.Scxml(null, scxmlStr);
+		s = new hsm.Scxml(null, scxmlStr);
 		s.log = function(msg) trace(msg);
 		s.init(null, function() {
 			s.start();
 		});
 		
+	}
+	
+	public static function sendEvent( event : js.html.MouseEvent ) {
+		trace("\nTestJs sendEvent called..");
+		
+		var scxmlEvent = new hsm.scxml.Event( event.type );
+		scxmlEvent.data = event.detail;
+		
+		s.postEvent( scxmlEvent );
 	}
 }

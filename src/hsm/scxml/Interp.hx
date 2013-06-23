@@ -44,6 +44,10 @@ class Interp #if js extends js.WorkerScript #end {
 			case "killParentHandler": parentEventHandler = function( evt : Event ) {};
 			case "exitInterpreter": exitInterpreter();
 			case "invokeId": invokeId = msg.args[0];
+			case "sendDomEventFailed":
+				var fromInvokeId = msg.args[0];
+				if( fromInvokeId == invokeId ) raise( new Event("error.communication") );
+				else if( fromInvokeId != null ) postToWorker(fromInvokeId, "sendDomEventFailed", [fromInvokeId]);
 		}
 	}
 	
@@ -681,7 +685,6 @@ class Interp #if js extends js.WorkerScript #end {
 		}
 		if( hasInvokedData(id) ) {
 			#if js
-			var data : {type:String, instance:Worker} = getInvokedData(id);
 			postToWorker(id, "stop", []);
 			postToWorker(id, "killParentHandler", []);
 			postToWorker(id, "exitInterpreter", []);
@@ -935,7 +938,7 @@ class Interp #if js extends js.WorkerScript #end {
 				
 				var type = getAltProp( c, "type", "typeexpr" );
 				
-				if( type != "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor" && target != null && !isValidAndSupportedSendTarget(target) ) {
+				if( type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" && target != null && !isValidAndSupportedSendTarget(target) ) {
 					if( target.indexOf("#_scxml_") == 0 ) {
 						raise( new Event("error.communication", null, sendid, evtType) );
 						return;
@@ -1082,7 +1085,15 @@ class Interp #if js extends js.WorkerScript #end {
 						h.request(true);
 						
 					case "http://www.w3.org/TR/scxml/#DOMEventProcessor":
-						// FIXME
+					
+						#if js
+						var iface = c.exists("interface") ? c.get("interface") : "CustomEvent";
+						var domEvtType = event;
+						var cancelable = c.exists("cancelable") ? c.get("cancelable") == "true" : false;
+						var bubbles = c.exists("bubbles") ? c.get("bubbles") == "true" : true;
+						
+						post("sendDomEvent", [invokeId, target, iface, domEvtType, cancelable, bubbles, contentVal, data]);
+						#end
 				}
 				
 			case "log":
@@ -1358,6 +1369,7 @@ class Interp #if js extends js.WorkerScript #end {
 							case "log": if( log != null ) log("log-from-child: " + msg.args[0]);
 							case "onInit": postToWorker(invokeid, "start", []);
 							case "postEvent": addToExternalQueue( cast(msg.args[0], Event) );
+							case "sendDomEvent": post(msg.cmd, msg.args);
 							default:
 								log("Interp: sub worker msg received: msg.cmd = " + msg.cmd + " msg.args = " + Std.string(msg.args));
 						}

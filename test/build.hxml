@@ -53,8 +53,10 @@
 #testing invoke
 #-resource ecma/test187.scxml@scxmlStr
 #-resource ecma/test191.scxml@scxmlStr
--resource ecma/test192.scxml@scxmlStr
+#-resource ecma/test192.scxml@scxmlStr
 #-resource ecma/test207.scxml@scxmlStr
 #-resource ecma/test215.scxml@scxmlStr
 # this is expected to fail - todo js file access
 #-resource ecma/test216.scxml@scxmlStr
+#testing dom events
+-resource js/testdom001.scxml@scxmlStr

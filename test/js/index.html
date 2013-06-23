@@ -1,6 +1,36 @@
 <html>
 <head><title>hscxml js</title></head>
 <body>
+	<script type="text/javascript">
+	    document.write("\<script src='http://code.jquery.com/jquery-latest.min.js' type='text/javascript'>\<\/script>");
+	</script>
+	<p>
+		<button type="button" onclick="sendEvent(event);">Send event to SCXML!</button>
+	</p>
+	<p>
+		&lt;div id="targetNode"&gt;
+		<div id="targetNode">initial content</div><br/>
+		&lt;/div"&gt;
+	</p>
+	<script type="text/javascript">
+	
+		function sendEvent(event) {
+			event.preventDefault();
+			TestJs.sendEvent(event);
+		}
+	
+		var node = document.getElementById('targetNode');
+		
+		node.addEventListener('showalert', function(event) {
+			alert('showalert: event.detail = ' + event.detail);
+		}, false);
+		
+		node.addEventListener('setcontent', function(event) {
+			alert('setcontent: event.detail = ' + event.detail);
+			node.innerHTML = event.detail;
+		}, false);
+	
+	</script>
 	<div id="haxe:trace"></div>
 	<script src="test.js"></script>
 </body>

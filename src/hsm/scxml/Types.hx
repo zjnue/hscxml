@@ -48,6 +48,24 @@ class Event {
 			out += "\n\t" + Std.string(data);
 		return out + "\n]";
 	}
+	function hxSerialize( s : haxe.Serializer ) {
+        s.serialize(name);
+        s.serialize(type);
+        s.serialize(sendid);
+        s.serialize(origin);
+        s.serialize(origintype);
+        s.serialize(invokeid);
+        s.serialize(data);
+    }
+    function hxUnserialize( s : haxe.Unserializer ) {
+        name = s.unserialize();
+        type = s.unserialize();
+        sendid = s.unserialize();
+        origin = s.unserialize();
+        origintype = s.unserialize();
+        invokeid = s.unserialize();
+        data = s.unserialize();
+    }
 }
 
 class RawEvent {

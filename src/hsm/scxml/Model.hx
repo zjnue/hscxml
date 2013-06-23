@@ -204,6 +204,8 @@ class HScriptModel extends Model {
 		setIoProc("scxml", {location : "#_internal"});
 		setIoProc("http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor", {location : "http://localhost:2000"});
 		setIoProc("basichttp", {location : "http://localhost:2000"});
+		setIoProc("http://www.w3.org/TR/scxml/#DOMEventProcessor", {location : "#_internal"});
+		setIoProc("dom", {location : "#_internal"});
 		
 		illegalExpr = ["continue", "return"];
 		illegalLhs = ["_sessionid", "_name", "_ioprocessors", "_event"];
