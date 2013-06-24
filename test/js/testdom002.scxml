@@ -1,0 +1,43 @@
+<scxml
+	initial="s0" 
+	xmlns="http://www.w3.org/2005/07/scxml" 
+	version="1.0" 
+	xmlns:conf="http://www.w3.org/2005/scxml-conformance" 
+	datamodel="ecmascript" >
+	
+	<state id="s0" >
+		<onentry>
+			<send delay="5s" event="timeout" />
+		</onentry>
+		<invoke type="scxml" >
+			<content>
+				<scxml initial="sub0" version="1.0" datamodel="ecmascript" >
+					<state id="sub0" >
+						<onentry>
+							<send type="http://www.w3.org/TR/scxml/#DOMEventProcessor" target="#targetNode" event="setcontent" interface="invalid" >
+								<content expr="'this is new content'"/>
+							</send>
+						</onentry>
+						<transition event="error.communication" >
+							<send event="caught" target="#_parent" />
+						</transition>
+					</state>
+				</scxml>
+			</content>
+		</invoke>
+		<transition event="caught" target="pass" />
+		<transition event="timeout" target="fail" />
+	</state>
+	
+	<final id="pass" >
+		<onentry>
+			<log expr="'pass'" label="Outcome" />
+		</onentry>
+	</final>
+
+	<final id="fail" >
+		<onentry>
+			<log expr="'fail'" label="Outcome" />
+		</onentry>
+	</final>
+</scxml>

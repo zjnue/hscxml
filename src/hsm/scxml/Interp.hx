@@ -45,9 +45,15 @@ class Interp #if js extends js.WorkerScript #end {
 			case "exitInterpreter": exitInterpreter();
 			case "invokeId": invokeId = msg.args[0];
 			case "sendDomEventFailed":
-				var fromInvokeId = msg.args[0];
-				if( fromInvokeId == invokeId ) raise( new Event("error.communication") );
-				else if( fromInvokeId != null ) postToWorker(fromInvokeId, "sendDomEventFailed", [fromInvokeId]);
+				if( msg.args[0] == null || msg.args[0] == "" ) {
+					postEvent( new Event("error.communication") );
+					return;
+				}
+				var parts = msg.args[0].split(",");
+				var fromInvokeId = parts.pop();
+				if( fromInvokeId == null || fromInvokeId == "undefined" )
+					fromInvokeId = parts.pop();
+				postToWorker(fromInvokeId, "sendDomEventFailed", [parts.join(",")]);
 		}
 	}
 	
@@ -1369,7 +1375,7 @@ class Interp #if js extends js.WorkerScript #end {
 							case "log": if( log != null ) log("log-from-child: " + msg.args[0]);
 							case "onInit": postToWorker(invokeid, "start", []);
 							case "postEvent": addToExternalQueue( cast(msg.args[0], Event) );
-							case "sendDomEvent": post(msg.cmd, msg.args);
+							case "sendDomEvent": msg.args[0] += "," + invokeId; post(msg.cmd, msg.args);
 							default:
 								log("Interp: sub worker msg received: msg.cmd = " + msg.cmd + " msg.args = " + Std.string(msg.args));
 						}

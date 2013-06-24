@@ -103,7 +103,7 @@ class Scxml {
 		cancelable : Bool, bubbles : Bool, contentVal : String, data : Array<{key:String, value:Dynamic}> ) {
 
 		if( iface != "CustomEvent" ) {
-			log("sendDomEvent type not yet implemented: " + domEvtType);
+			log("sendDomEvent interface not yet implemented: " + iface);
 			post("sendDomEventFailed", [fromInvokeId]);
 			return;
 		}
