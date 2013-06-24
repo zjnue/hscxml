@@ -37,7 +37,7 @@ class Event {
 		this.raw = new RawEvent(this);
 	}
 	public function toString( sep : String = " = " ) {
-		return getString(" = ");
+		return getString(sep);
 	}
 	public function getString( sep : String = " = " ) {
 		var out = "[Event: " + name + " data: ";
@@ -48,31 +48,15 @@ class Event {
 			out += "\n\t" + Std.string(data);
 		return out + "\n]";
 	}
-	function hxSerialize( s : haxe.Serializer ) {
-        s.serialize(name);
-        s.serialize(type);
-        s.serialize(sendid);
-        s.serialize(origin);
-        s.serialize(origintype);
-        s.serialize(invokeid);
-        s.serialize(data);
-    }
-    function hxUnserialize( s : haxe.Unserializer ) {
-        name = s.unserialize();
-        type = s.unserialize();
-        sendid = s.unserialize();
-        origin = s.unserialize();
-        origintype = s.unserialize();
-        invokeid = s.unserialize();
-        data = s.unserialize();
-    }
 }
 
 class RawEvent {
 	var event : Event;
 	public function new( event : Event ) { this.event = event; }
-	inline public function search( str : String ) { return toString().indexOf(str); }
+	public inline function search( str : String ) { return toString().indexOf(str); }
 	public function toString() { return event.getString("="); }
+	function hxSerialize( s : haxe.Serializer ) {} // TODO fix raw serialization
+	function hxUnserialize( s : haxe.Unserializer ) {}
 }
 
 class Set<T> {
@@ -107,7 +91,7 @@ class Queue<T> {
 	public inline function isEmpty() { return l.isEmpty(); }
 	public function toString() {
 		var out = "";
-		for ( item in l ) out += Std.string(item) + "\n";
+		for( item in l ) out += Std.string(item) + "\n";
 		return out;
 	}
 }
@@ -120,7 +104,7 @@ class BlockingQueue<T> {
 	public var onNewContent : Void -> Void;
 	public inline function enqueue( i : T ) {
 		l.add( i );
-		if (callOnNewContent) {
+		if( callOnNewContent ) {
 			callOnNewContent = false;
 			onNewContent();
 		}
