@@ -12,7 +12,12 @@ using hsm.scxml.tools.NodeTools;
 
 #if js
 import js.Worker;
-using js.WorkerScript;
+using hsm.scxml.WorkerScript;
+#elseif flash
+import flash.system.Worker;
+import flash.system.WorkerDomain;
+import flash.system.MessageChannel;
+import hsm.scxml.WorkerScript;
 #end
 
 #if neko
@@ -27,15 +32,19 @@ import cpp.vm.Mutex;
 private typedef Hash<T> = haxe.ds.StringMap<T>;
 #end
 
-class Interp #if js extends js.WorkerScript #end {
+class Interp #if (js || flash) extends WorkerScript #end {
 
-	#if js
+	#if (js || flash)
 	public static function main() {
+		#if js
 		new Interp().export();
+		#else
+		new Interp();
+		#end
 	}
 	
-	override public function onMessage(e) {
-		var msg = haxe.Unserializer.run(e.data);
+	override public function handleOnMessage(data) {
+		var msg = haxe.Unserializer.run(data);
 		switch( msg.cmd ) {
 			case "postEvent": postEvent( cast(msg.args[0], Event) );
 			case "interpret": interpret( Xml.parse(msg.args[0]).firstElement() );
@@ -69,7 +78,7 @@ class Interp #if js extends js.WorkerScript #end {
 	var d : Node;
 	
 	public function new() {
-		#if js
+		#if (js || flash)
 		super();
 		haxe.Serializer.USE_CACHE = true;
 		#else
@@ -86,7 +95,7 @@ class Interp #if js extends js.WorkerScript #end {
 		externalQueue.enqueue( evt );
 	}
 	
-	#if !js
+	#if !(js || flash)
 	var invokedDataMutex:Mutex;
 	var timerThread : TimerThread;
 	var mainThread : Thread;
@@ -95,7 +104,7 @@ class Interp #if js extends js.WorkerScript #end {
 	#end
 	
 	public function start() {
-		#if js
+		#if (js || flash)
 		mainEventLoop();
 		#else
 		mainThread = Thread.create(mainEventLoop);
@@ -147,7 +156,7 @@ class Interp #if js extends js.WorkerScript #end {
 		statesToInvoke = new Set();
 		internalQueue = new Queue();
 		externalQueue = new BlockingQueue();
-		#if js
+		#if (js || flash)
 		externalQueue.onNewContent = checkBlockingQueue;
 		#end
 		historyValue = new Hash();
@@ -177,7 +186,7 @@ class Interp #if js extends js.WorkerScript #end {
 		binding = d.exists("binding") ? d.get("binding") : "early";
 		initializeDatamodel( datamodel, result.data, (binding != "early") );
 		
-		#if js
+		#if (js || flash)
 		timers = [];
 		#else
 		timerThread = new TimerThread();
@@ -193,7 +202,7 @@ class Interp #if js extends js.WorkerScript #end {
 	function extraInit() {
 		cancelledSendIds = new Hash();
 		invokedData = new Hash();
-		#if !js
+		#if !(js || flash)
 		invokedDataMutex = new Mutex();
 		#end
 	}
@@ -273,7 +282,7 @@ class Interp #if js extends js.WorkerScript #end {
 			}
 	}
 	
-	#if js
+	#if (js || flash)
 	
 	function mainEventLoop() {
 		if( running ) {
@@ -690,7 +699,7 @@ class Interp #if js extends js.WorkerScript #end {
 			id = datamodel.get(idlocation);
 		}
 		if( hasInvokedData(id) ) {
-			#if js
+			#if (js || flash)
 			postToWorker(id, "stop", []);
 			postToWorker(id, "killParentHandler", []);
 			postToWorker(id, "exitInterpreter", []);
@@ -719,7 +728,7 @@ class Interp #if js extends js.WorkerScript #end {
 		if( !isScxmlInvokeType(invData.type) )
 			throw "Invoke type currently not supported: " + invData.type;
 		
-		#if js
+		#if (js || flash)
 		postToWorker(invokeid, "postEvent", [evt]);
 		#else
 		var inst = cast( invData.instance, hsm.scxml.Interp );
@@ -787,7 +796,7 @@ class Interp #if js extends js.WorkerScript #end {
 		if( delaySec == 0 )
 			addEvent(evt);
 		else {
-			#if js
+			#if (js || flash)
 			var t = haxe.Timer.delay(function() {
 				if( !isCancelEvent(evt) )
 					addEvent(evt);
@@ -1053,7 +1062,7 @@ class Interp #if js extends js.WorkerScript #end {
 									if( target.indexOf("#_") == 0 ) {
 										var sub = target.substr(2);
 										if( hasInvokedData(sub) ) {
-											#if js
+											#if (js || flash)
 											postToWorker(sub, "postEvent", [evt]);
 											#else
 											var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(sub);
@@ -1092,7 +1101,7 @@ class Interp #if js extends js.WorkerScript #end {
 						
 					case "http://www.w3.org/TR/scxml/#DOMEventProcessor":
 					
-						#if js
+						#if (js || flash)
 						var iface = c.exists("interface") ? c.get("interface") : "CustomEvent";
 						var domEvtType = event;
 						var cancelable = c.exists("cancelable") ? c.get("cancelable") == "true" : false;
@@ -1250,7 +1259,7 @@ class Interp #if js extends js.WorkerScript #end {
 		return data;
 	}
 	
-	#if js
+	#if (js || flash)
 	inline function setInvokedData(id:String, data:Dynamic) {
 		invokedData.set(id, data);
 	}
@@ -1361,29 +1370,32 @@ class Interp #if js extends js.WorkerScript #end {
 					if( hasInvokedData(invokeid) )
 						throw "Invoke id already exists: " + invokeid;
 					
-					#if js
+					#if (js || flash)
 					
 					var xml = Xml.parse(contentVal).firstElement();
 					setSubInstData( xml, data );
 					var xmlStr = xml.toString();
 					
+					#if js
 					var worker = new Worker("interp.js");
 					setInvokedData(invokeid, {type : type, instance : worker});
-					worker.addEventListener("message", function(e) {
-						var msg = haxe.Unserializer.run(e.data);
-						switch( msg.cmd ) {
-							case "log": if( log != null ) log("log-from-child: " + msg.args[0]);
-							case "onInit": postToWorker(invokeid, "start", []);
-							case "postEvent": addToExternalQueue( cast(msg.args[0], Event) );
-							case "sendDomEvent": msg.args[0] += "," + invokeId; post(msg.cmd, msg.args);
-							default:
-								log("Interp: sub worker msg received: msg.cmd = " + msg.cmd + " msg.args = " + Std.string(msg.args));
+					worker.addEventListener("message", function(e) { handleWorkerMessage(e.data, invokeid); } );
+					worker.addEventListener("error", function(e) { handleWorkerError(e.message); } );
+					#else
+					var worker = WorkerDomain.current.createWorker( flash.Lib.current.loaderInfo.bytes );
+					var outgoingChannel = Worker.current.createMessageChannel(worker);
+					var incomingChannel = worker.createMessageChannel(Worker.current);
+					worker.setSharedProperty(WorkerScript.TO_SUB, outgoingChannel);
+					worker.setSharedProperty(WorkerScript.FROM_SUB, incomingChannel);
+					incomingChannel.addEventListener(flash.events.Event.CHANNEL_MESSAGE, function(e) {
+						while ( incomingChannel.messageAvailable ) {
+							var data = incomingChannel.receive();
+							handleWorkerMessage( data, invokeid );
 						}
-						
 					});
-					worker.addEventListener("error", function(e) {
-						log("sub worker error: " + e.message);
-					});
+					setInvokedData(invokeid, {type : type, instance : worker, incomingChannel : incomingChannel, outgoingChannel : outgoingChannel});
+					worker.start();
+					#end
 					
 					try {
 						postToWorker(invokeid, "invokeId", [invokeid]);
@@ -1425,11 +1437,32 @@ class Interp #if js extends js.WorkerScript #end {
 			}
 	}
 	
-	#if js
+	#if (js || flash)
+	
+	function handleWorkerMessage( data : Dynamic, invokeid : String ) {
+		var msg = haxe.Unserializer.run(data);
+		switch( msg.cmd ) {
+			case "log": if( log != null ) log("log-from-child: " + msg.args[0]);
+			case "onInit": postToWorker(invokeid, "start", []);
+			case "postEvent": addToExternalQueue( cast(msg.args[0], Event) );
+			case "sendDomEvent": msg.args[0] += "," + invokeId; post(msg.cmd, msg.args);
+			default:
+				log("Interp: sub worker msg received: msg.cmd = " + msg.cmd + " msg.args = " + Std.string(msg.args));
+		}
+	}
+	
+	function handleWorkerError( msg : String ) {
+		trace("worker error: " + msg);
+	}
 	
 	function postToWorker( invokeId : String, cmd : String, args : Array<Dynamic> ) {
-		var worker = getInvokedData(invokeId).instance;//, {type : type, instance : worker});
+		#if js
+		var worker = getInvokedData(invokeId).instance;
 		worker.postMessage( haxe.Serializer.run({cmd:cmd, args:args}) );
+		#else
+		var outgoingChannel = getInvokedData(invokeId).outgoingChannel;
+		outgoingChannel.send( haxe.Serializer.run({cmd:cmd, args:args}) );
+		#end
 	}
 	
 	#else
@@ -1492,7 +1525,7 @@ class Interp #if js extends js.WorkerScript #end {
 	}
 	
 	inline function getFileContent( src : String ) {
-		#if js
+		#if (js || flash)
 		return null;
 		#else		
 		var file = src.substr(5);

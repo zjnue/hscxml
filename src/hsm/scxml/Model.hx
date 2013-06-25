@@ -314,7 +314,7 @@ class HScriptModel extends Model {
 	override public function doCond( expr : String ) : Bool {
 		if( expr == "")
 			return true;
-		var val = null;
+		var val : Dynamic = null;
 		if( Lambda.has(illegalExpr, expr) )
 			throw "Illegal expr used in cond: " + expr;
 		try {

@@ -10,17 +10,36 @@ import neko.vm.Thread;
 import cpp.vm.Thread;
 #end
 
-#if js
-import js.Worker;
+#if flash
+import flash.system.Worker;
+import flash.system.WorkerDomain;
+import flash.system.MessageChannel;
+#end
+
+#if (js || flash)
+import hsm.scxml.WorkerScript;
 #else
 import sys.FileSystem;
 #end
 
+#if js
+import js.Worker;
+#end
+
+#if flash
+@:file("swf/Interp.swf") class InterpByteArray extends flash.utils.ByteArray {}
+#end
+
 class Scxml {
-	#if js
+	#if (js || flash)
 	var worker : Worker;
 	#else
 	var interp : Interp;
+	#end
+	
+	#if flash
+	var outgoingChannel : MessageChannel;
+	var incomingChannel : MessageChannel;
 	#end
 	
 	public var onInit : Void -> Void;
@@ -31,7 +50,7 @@ class Scxml {
 	var data : Array<{key:String, value:Dynamic}>;
 	
 	public function new( src : String = null, content : String = null, data : Array<{key:String, value:Dynamic}> = null ) {
-		#if !js
+		#if !(js || flash)
 		if( src != null ) {
 			if( !FileSystem.exists(src) ) src = FileSystem.fullPath(src);
 			if( !FileSystem.exists(src) ) throw "Invalid path: " + src;	
@@ -51,30 +70,26 @@ class Scxml {
 		
 		var scxml = Xml.parse(content).firstElement();
 		
-		#if js
+		#if (js || flash)
 		
+		#if js
 		worker = new Worker("interp.js");
-		worker.addEventListener("message", function(e) {
-			var msg = haxe.Unserializer.run(e.data);
-			switch( msg.cmd ) {
-				case "log": if( log != null ) log(msg.args[0]);
-				case "onInit": onInit();
-				case "postEvent":
-					if( parentEventHandler != null ) {
-						log("parentEventHandler: " + Std.string(msg.args[0]));
-						parentEventHandler( cast(msg.args[0], Event) );
-					}
-				case "sendDomEvent":
-					var args : Array<Dynamic> = msg.args;
-					sendDomEvent(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
-				default:
-					trace("worker msg received: msg.cmd = " + msg.cmd + " msg.args = " + Std.string(msg.args));
+		worker.addEventListener("message", function(e) { handleWorkerMessage( e.data ); } );
+		worker.addEventListener("error", function(e) { handleWorkerError( e.message ); });
+		#else
+		worker = WorkerDomain.current.createWorker( new InterpByteArray() );
+		outgoingChannel = Worker.current.createMessageChannel(worker);
+		incomingChannel = worker.createMessageChannel(Worker.current);
+		worker.setSharedProperty(WorkerScript.TO_SUB, outgoingChannel);
+		worker.setSharedProperty(WorkerScript.FROM_SUB, incomingChannel);
+		incomingChannel.addEventListener(flash.events.Event.CHANNEL_MESSAGE, function(e) {
+			while ( incomingChannel.messageAvailable ) {
+				var data = incomingChannel.receive();
+				handleWorkerMessage( data );
 			}
-			
 		});
-		worker.addEventListener("error", function(e) {
-			trace("worker error: " + e.message);
-		});
+		worker.start();
+		#end
 		
 		try {
 			post("interpret", [content]);
@@ -93,10 +108,36 @@ class Scxml {
 		#end
 	}
 	
-	#if js
+	#if (js || flash)
+	
+	function handleWorkerMessage( data : Dynamic ) {
+		var msg = haxe.Unserializer.run(data);
+		switch( msg.cmd ) {
+			case "log": if( log != null ) log(msg.args[0]);
+			case "onInit": onInit();
+			case "postEvent":
+				if( parentEventHandler != null ) {
+					log("parentEventHandler: " + Std.string(msg.args[0]));
+					parentEventHandler( cast(msg.args[0], Event) );
+				}
+			case "sendDomEvent":
+				var args : Array<Dynamic> = msg.args;
+				sendDomEvent(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+			default:
+				trace("worker msg received: msg.cmd = " + msg.cmd + " msg.args = " + Std.string(msg.args));
+		}
+	}
+	
+	function handleWorkerError( msg : String ) {
+		trace("worker error: " + msg);
+	}
 	
 	public function post( cmd : String, args : Array<Dynamic> ) : Void {
+		#if js
 		worker.postMessage( haxe.Serializer.run({cmd:cmd, args:args}) );
+		#else
+		outgoingChannel.send( haxe.Serializer.run({cmd:cmd, args:args}) );
+		#end
 	}
 	
 	function sendDomEvent( fromInvokeId : String, target : String, iface : String, domEvtType : String, 
@@ -108,6 +149,7 @@ class Scxml {
 			return;
 		}
 		
+		#if js
 		var nodes : Array<js.html.Element> = null;
 		var detail : Dynamic = null;
 		var event : js.CustomEvent = null;
@@ -138,6 +180,7 @@ class Scxml {
 		
 		for( node in nodes )
 			node.dispatchEvent( cast event );
+		#end
 	}
 	
 	#else
@@ -162,13 +205,13 @@ class Scxml {
 	#end
 	
 	inline public function getDot() {
-		#if !js
+		#if !(js || flash)
 		return DrawTools.getDot(interp.topNode);
 		#end
 	}
 	
 	inline public function start() {
-		#if js
+		#if (js || flash)
 		post("start", []);
 		#else
 		interp.start();
@@ -176,7 +219,7 @@ class Scxml {
 	}
 	
 	inline public function stop() {
-		#if js
+		#if (js || flash)
 		post("stop", []);
 		#else
 		interp.stop();
@@ -184,7 +227,7 @@ class Scxml {
 	}
 	
 	public function postEvent( evt : Event ) {
-		#if js
+		#if (js || flash)
 		post("postEvent", [evt]);
 		#else
 		if( interp != null ) {

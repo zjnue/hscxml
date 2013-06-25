@@ -1,12 +1,45 @@
-package js;
+package hsm.scxml;
+
+#if flash
+import flash.system.Worker;
+import flash.system.WorkerDomain;
+import flash.system.MessageChannel;
+#end
 
 class WorkerScript {
-	public function new() {}
-	public function onMessage( e : Dynamic ) : Void {}
+	#if flash
+	public static inline var TO_SUB = "toSub";
+	public static inline var FROM_SUB = "fromSub";
+	var outgoingChannel : MessageChannel;
+	var incomingChannel : MessageChannel;
+	#end
+	public function new() {
+		#if flash
+		incomingChannel = Worker.current.getSharedProperty(TO_SUB);
+		outgoingChannel = Worker.current.getSharedProperty(FROM_SUB);
+		incomingChannel.addEventListener(flash.events.Event.CHANNEL_MESSAGE, onMessage);
+		#end
+	}
+	public function handleOnMessage( data : Dynamic ) : Void {}
+	public function onMessage( e : Dynamic ) : Void {
+		#if js
+		handleOnMessage( e.data );
+		#else
+		while ( incomingChannel.messageAvailable ) {
+			var data = incomingChannel.receive();
+			handleOnMessage( data );
+		}
+		#end
+	}
 	public function onError( e : Dynamic ) : Void {}
 	public function post( cmd : String, args : Array<Dynamic> ) : Void {
+		#if js
 		postMessage( haxe.Serializer.run({cmd:cmd, args:args}) );
+		#else
+		outgoingChannel.send( haxe.Serializer.run({cmd:cmd, args:args}) );
+		#end
 	}
+	#if js
 	public function postMessage( msg : Dynamic ) : Void {
 		untyped __js__("self.postMessage( msg )");
 	}
@@ -16,6 +49,9 @@ class WorkerScript {
 		untyped __js__("self.onmessage = script.onMessage");
 		untyped __js__("self.onerror = script.onError");
 		untyped __js__("self.post = script.post");
+		untyped __js__("self.handleOnMessage = script.handleOnMessage");
+		untyped __js__("self.handleWorkerMessage = script.handleWorkerMessage");
+		untyped __js__("self.handleWorkerError = script.handleWorkerError");
 		// props
 		untyped __js__("self.d = script.d");
 		untyped __js__("self.parentEventHandler = script.parentEventHandler");
@@ -115,4 +151,5 @@ class WorkerScript {
 		untyped __js__("self.getTargetStates = script.getTargetStates");
 		untyped __js__("self.getTargetState = script.getTargetState");
 	}
+	#end
 }

@@ -96,7 +96,7 @@ class Queue<T> {
 	}
 }
 
-#if js
+#if (js || flash)
 class BlockingQueue<T> {
 	var l : List<T>;
 	public function new() { l = new List<T>(); callOnNewContent = false; }
@@ -127,7 +127,7 @@ typedef TTimerData = {
 	func : Void->Void	
 }
 
-#if !js
+#if !(js || flash)
 class TimerThread {
 	var mutex : Mutex;
 	var queueLock : Lock;
