@@ -5,10 +5,12 @@ import hsm.scxml.Node;
 import hsm.scxml.Compiler;
 import hsm.scxml.Model;
 import hsm.scxml.tools.NodeTools;
+import hsm.scxml.tools.DataTools;
 
 using hsm.scxml.tools.ArrayTools;
 using hsm.scxml.tools.ListTools;
 using hsm.scxml.tools.NodeTools;
+using hsm.scxml.tools.DataTools;
 
 #if js
 import js.Worker;
@@ -129,11 +131,11 @@ class Interp #if (js || flash) extends WorkerScript #end {
 	var running : Bool;
 	var binding : String;
 	
-	function entryOrder( s0 : Node, s1 : Node ) {
+	inline function entryOrder( s0 : Node, s1 : Node ) {
 		return documentOrder(s0, s1);
 	}
 	
-	function exitOrder( s0 : Node, s1 : Node ) {
+	inline function exitOrder( s0 : Node, s1 : Node ) {
 		return documentOrder(s1, s0);
 	}
 	
@@ -761,8 +763,7 @@ class Interp #if (js || flash) extends WorkerScript #end {
 				val = parseContent(content);
 			else {
 				try {
-					val = {};
-					setEventData(val, parseParams(params));
+					val = DataTools.copyFrom( {}, parseParams(params) );
 				} catch( e:Dynamic ) {
 					raise( new Event("error.execution") );
 				}
@@ -867,21 +868,6 @@ class Interp #if (js || flash) extends WorkerScript #end {
 				raise( new Event("error.execution") );
 				break;
 			}
-		}
-	}
-	
-	// TODO move to helper class?
-	public static function setEventData( evtData : {}, fromData : Array<{key:String, value:Dynamic}> ) {
-		for( item in fromData ) {
-			if( Reflect.hasField(evtData, item.key) ) {
-				var val = Reflect.field(evtData, item.key);
-				if( Std.is(val, Array) ) {
-					val.push(item.value);
-				} else {
-					Reflect.setField(evtData, item.key, [val, item.value]);
-				}
-			} else
-				Reflect.setField(evtData, item.key, item.value);
 		}
 	}
 	
@@ -1039,7 +1025,7 @@ class Interp #if (js || flash) extends WorkerScript #end {
 						if( content.length > 0 )
 							Reflect.setField(evt, "data", contentVal);
 						else
-							setEventData(evt.data, data.copy());
+							DataTools.copyFrom( evt.data, data, true );
 						
 						var cb = addToExternalQueue;
 
@@ -1363,7 +1349,7 @@ class Interp #if (js || flash) extends WorkerScript #end {
 			} else
 				contentVal = Std.string( parseContent(content) );
 			
-			switch( stripEndSlash(type) ) {
+			switch( type.stripEndSlash() ) {
 				
 				case "http://www.w3.org/TR/scxml", "scxml":
 				
@@ -1372,9 +1358,7 @@ class Interp #if (js || flash) extends WorkerScript #end {
 					
 					#if (js || flash)
 					
-					var xml = Xml.parse(contentVal).firstElement();
-					setSubInstData( xml, data );
-					var xmlStr = xml.toString();
+					var xml = Xml.parse(contentVal).firstElement().setSubInstData(data);
 					
 					#if js
 					var worker = new Worker("interp.js");
@@ -1383,15 +1367,15 @@ class Interp #if (js || flash) extends WorkerScript #end {
 					worker.addEventListener("error", function(e) { handleWorkerError(e.message); } );
 					#else
 					var worker = WorkerDomain.current.createWorker( flash.Lib.current.loaderInfo.bytes );
-					var outgoingChannel = Worker.current.createMessageChannel(worker);
-					var incomingChannel = worker.createMessageChannel(Worker.current);
-					worker.setSharedProperty(WorkerScript.TO_SUB, outgoingChannel);
-					worker.setSharedProperty(WorkerScript.FROM_SUB, incomingChannel);
-					incomingChannel.addEventListener(flash.events.Event.CHANNEL_MESSAGE, function(e) {
-						while ( incomingChannel.messageAvailable ) {
-							var data = incomingChannel.receive();
-							handleWorkerMessage( data, invokeid );
-						}
+					var outgoingChannel = Worker.current.createMessageChannel( worker );
+					var incomingChannel = worker.createMessageChannel( Worker.current );
+					
+					worker.setSharedProperty( WorkerScript.TO_SUB, outgoingChannel );
+					worker.setSharedProperty( WorkerScript.FROM_SUB, incomingChannel );
+					
+					incomingChannel.addEventListener( flash.events.Event.CHANNEL_MESSAGE, function(e) {
+						while( incomingChannel.messageAvailable )
+							handleWorkerMessage( incomingChannel.receive(), invokeid );
 					});
 					setInvokedData(invokeid, {type : type, instance : worker, incomingChannel : incomingChannel, outgoingChannel : outgoingChannel});
 					worker.start();
@@ -1399,7 +1383,7 @@ class Interp #if (js || flash) extends WorkerScript #end {
 					
 					try {
 						postToWorker(invokeid, "invokeId", [invokeid]);
-						postToWorker(invokeid, "interpret", [xmlStr]);
+						postToWorker(invokeid, "interpret", [xml.toString()]);
 					} catch( e:Dynamic ) {
 						log("ERROR: sub worker: e = " + Std.string(e));
 					}
@@ -1422,19 +1406,6 @@ class Interp #if (js || flash) extends WorkerScript #end {
 		} catch( e : Dynamic ) {
 			raise( new Event("error.execution") );
 		}
-	}
-	
-	function setSubInstData( xml : Xml, data : Array<{key:String,value:Dynamic}> ) {
-		var models = xml.elementsNamed("datamodel");
-		if( models.hasNext() )
-			for( dataNode in models.next().elementsNamed("data") ) {
-				var nodeId = dataNode.get("id");
-				for( d in data )
-					if( d.key == nodeId ) {
-						dataNode.set("expr", Std.string(d.value));
-						break;
-					}
-			}
 	}
 	
 	#if (js || flash)
@@ -1473,8 +1444,7 @@ class Interp #if (js || flash) extends WorkerScript #end {
 		var invokeid = Thread.readMessage(true);
 		var type = Thread.readMessage(true);
 		
-		var xml = Xml.parse(xmlStr).firstElement();
-		setSubInstData( xml, data );
+		var xml = Xml.parse(xmlStr).firstElement().setSubInstData(data);
 		
 		var me = this;
 		var inst = new hsm.scxml.Interp();
@@ -1497,7 +1467,7 @@ class Interp #if (js || flash) extends WorkerScript #end {
 	#end
 	
 	function invokeTypeAccepted( type : String ) {
-		switch( stripEndSlash(type) ) {
+		switch( type.stripEndSlash() ) {
 			case
 				"http://www.w3.org/TR/scxml", "scxml": return true;//,
 //				"http://www.w3.org/TR/ccxml/", "ccxml",
@@ -1506,10 +1476,6 @@ class Interp #if (js || flash) extends WorkerScript #end {
 			default:
 				return false;
 		}
-	}
-	
-	inline function stripEndSlash( str : String ) {
-		return (str.substr(-1) == "/") ? str.substr(0,str.length-1) : str;
 	}
 	
 	function setFromSrc( id : String, src : String ) {
@@ -1530,14 +1496,8 @@ class Interp #if (js || flash) extends WorkerScript #end {
 		#else		
 		var file = src.substr(5);
 		var path = Sys.getCwd() + "ecma/"; // FIXME tmp hack (relative urls..)
-		return trim( sys.io.File.getContent(path+file) );
+		return DataTools.trim( sys.io.File.getContent(path+file) );
 		#end
-	}
-	
-	// TODO find better place
-	inline function trim( str : String ) {
-		var r = ~/[ \n\r\t]+/g;
-		return StringTools.trim(r.replace(str, " "));
 	}
 	
 	/** node here is the transition to pass in **/

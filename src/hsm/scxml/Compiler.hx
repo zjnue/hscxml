@@ -2,6 +2,7 @@ package hsm.scxml;
 
 import hsm.scxml.Node;
 import hsm.scxml.Types;
+import hsm.scxml.tools.DataTools;
 
 class Compiler {
 	
@@ -53,12 +54,6 @@ class Compiler {
 		var buf = new StringBuf();
 		for( child in xml )
 			buf.add( child.toString() );
-		contentNode.content = trim(buf.toString());
+		contentNode.content = DataTools.trim(buf.toString());
 	}
-	
-	inline function trim( str : String ) {
-		var r = ~/[ \n\r\t]+/g;
-		return StringTools.trim(r.replace(str, " "));
-	}
-	
 }

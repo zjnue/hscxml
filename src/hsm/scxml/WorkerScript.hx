@@ -131,7 +131,6 @@ class WorkerScript {
 		untyped __js__("self.getInvokeId = script.getInvokeId");
 		untyped __js__("self.getAltProp = script.getAltProp");
 		untyped __js__("self.executeBlock = script.executeBlock");
-		untyped __js__("self.setEventData = script.setEventData");
 		untyped __js__("self.getTypedDataStr = script.getTypedDataStr");
 		untyped __js__("self.executeContent = script.executeContent");
 		untyped __js__("self.getNamelistData = script.getNamelistData");
@@ -141,13 +140,10 @@ class WorkerScript {
 		untyped __js__("self.getInvokedData = script.getInvokedData");
 		untyped __js__("self.hasInvokedData = script.hasInvokedData");
 		untyped __js__("self.invoke = script.invoke");
-		untyped __js__("self.setSubInstData = script.setSubInstData");
 		untyped __js__("self.postToWorker = script.postToWorker");
 		untyped __js__("self.invokeTypeAccepted = script.invokeTypeAccepted");
-		untyped __js__("self.stripEndSlash = script.stripEndSlash");
 		untyped __js__("self.setFromSrc = script.setFromSrc");
 		untyped __js__("self.getFileContent = script.getFileContent");
-		untyped __js__("self.trim = script.trim");
 		untyped __js__("self.getTargetStates = script.getTargetStates");
 		untyped __js__("self.getTargetState = script.getTargetState");
 	}

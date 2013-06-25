@@ -1,5 +1,6 @@
 import hsm.scxml.Types;
 import hsm.scxml.Interp;
+import hsm.scxml.tools.DataTools;
 
 class Run {
 
@@ -62,7 +63,7 @@ class Run {
 				
 				evt = new Event( name );
 				if( contentVal == null )
-					Interp.setEventData( evt.data, data );
+					DataTools.copyFrom( evt.data, data );
 				else
 					evt.data = contentVal;
 			}

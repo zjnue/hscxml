@@ -3,6 +3,7 @@ package hsm;
 import hsm.scxml.Interp;
 import hsm.scxml.Types;
 import hsm.scxml.tools.DrawTools;
+import hsm.scxml.tools.DataTools;
 
 #if neko
 import neko.vm.Thread;
@@ -78,15 +79,15 @@ class Scxml {
 		worker.addEventListener("error", function(e) { handleWorkerError( e.message ); });
 		#else
 		worker = WorkerDomain.current.createWorker( new InterpByteArray() );
-		outgoingChannel = Worker.current.createMessageChannel(worker);
-		incomingChannel = worker.createMessageChannel(Worker.current);
-		worker.setSharedProperty(WorkerScript.TO_SUB, outgoingChannel);
-		worker.setSharedProperty(WorkerScript.FROM_SUB, incomingChannel);
-		incomingChannel.addEventListener(flash.events.Event.CHANNEL_MESSAGE, function(e) {
-			while ( incomingChannel.messageAvailable ) {
-				var data = incomingChannel.receive();
-				handleWorkerMessage( data );
-			}
+		outgoingChannel = Worker.current.createMessageChannel( worker );
+		incomingChannel = worker.createMessageChannel( Worker.current );
+		
+		worker.setSharedProperty( WorkerScript.TO_SUB, outgoingChannel );
+		worker.setSharedProperty( WorkerScript.FROM_SUB, incomingChannel );
+		
+		incomingChannel.addEventListener( flash.events.Event.CHANNEL_MESSAGE, function(e) {
+			while ( incomingChannel.messageAvailable )
+				handleWorkerMessage( incomingChannel.receive() );
 		});
 		worker.start();
 		#end
@@ -162,8 +163,7 @@ class Scxml {
 			}
 			detail = contentVal;
 			if( detail == null ) {
-				detail = {};
-				Interp.setEventData(detail, data);
+				detail = DataTools.copyFrom( {}, data );
 			}
 			var initObj  = {
 				bubbles : bubbles,
