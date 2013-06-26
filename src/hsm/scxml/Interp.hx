@@ -4,106 +4,28 @@ import hsm.scxml.Types;
 import hsm.scxml.Node;
 import hsm.scxml.Compiler;
 import hsm.scxml.Model;
-import hsm.scxml.tools.NodeTools;
-import hsm.scxml.tools.DataTools;
+import hsm.scxml.Base;
 
 using hsm.scxml.tools.ArrayTools;
 using hsm.scxml.tools.ListTools;
 using hsm.scxml.tools.NodeTools;
 using hsm.scxml.tools.DataTools;
 
-#if js
-import js.Worker;
-using hsm.scxml.WorkerScript;
-#elseif flash
-import flash.system.Worker;
-import flash.system.WorkerDomain;
-import flash.system.MessageChannel;
-import hsm.scxml.WorkerScript;
-#end
-
 #if neko
 import neko.vm.Thread;
-import neko.vm.Mutex;
 #elseif cpp
 import cpp.vm.Thread;
-import cpp.vm.Mutex;
 #end
 
 #if haxe3
 private typedef Hash<T> = haxe.ds.StringMap<T>;
 #end
 
-class Interp #if (js || flash) extends WorkerScript #end {
-
-	#if (js || flash)
-	public static function main() {
-		#if js
-		new Interp().export();
-		#else
-		new Interp();
-		#end
-	}
-	
-	override public function handleOnMessage(data) {
-		var msg = haxe.Unserializer.run(data);
-		switch( msg.cmd ) {
-			case "postEvent": postEvent( cast(msg.args[0], Event) );
-			case "interpret": interpret( Xml.parse(msg.args[0]).firstElement() );
-			case "start": start();
-			case "stop": stop();
-			case "killParentHandler": parentEventHandler = function( evt : Event ) {};
-			case "exitInterpreter": exitInterpreter();
-			case "invokeId": invokeId = msg.args[0];
-			case "sendDomEventFailed":
-				if( msg.args[0] == null || msg.args[0] == "" ) {
-					postEvent( new Event("error.communication") );
-					return;
-				}
-				var parts = msg.args[0].split(",");
-				var fromInvokeId = parts.pop();
-				if( fromInvokeId == null || fromInvokeId == "undefined" )
-					fromInvokeId = parts.pop();
-				postToWorker(fromInvokeId, "sendDomEventFailed", [parts.join(",")]);
-		}
-	}
-	
-	dynamic function parentEventHandler( evt : Event ) { post("postEvent", [evt]); }
-	function onInit() { post("onInit", []); }
-	function log( msg : String ) { post("log", [msg]); }
-	#else
-	public var parentEventHandler : Event -> Void;
-	public var onInit : Void -> Void;
-	public var log : String -> Void;
-	#end
-	
-	var d : Node;
+class Interp extends Base {
 	
 	public function new() {
-		#if (js || flash)
 		super();
-		haxe.Serializer.USE_CACHE = true;
-		#else
-		log = function(msg:String) trace(msg);
-		#end
 	}
-	
-	public var invokeId : String;
-	public var topNode( get_topNode, never ) : Node;
-	
-	function get_topNode() { return d; }
-	
-	public function postEvent( evt : Event ) {
-		externalQueue.enqueue( evt );
-	}
-	
-	#if !(js || flash)
-	var invokedDataMutex:Mutex;
-	var timerThread : TimerThread;
-	var mainThread : Thread;
-	#else
-	var timers : Array<haxe.Timer>;
-	#end
 	
 	public function start() {
 		#if (js || flash)
@@ -121,15 +43,6 @@ class Interp #if (js || flash) extends WorkerScript #end {
 	public function stop() {
 		running = false;
 	}
-	
-	var configuration : Set<Node>;
-	var statesToInvoke : Set<Node>;
-	var datamodel : Model;
-	var internalQueue : Queue<Event>;
-	var externalQueue : BlockingQueue<Event>;
-	var historyValue : Hash<List<Node>>;
-	var running : Bool;
-	var binding : String;
 	
 	inline function entryOrder( s0 : Node, s1 : Node ) {
 		return documentOrder(s0, s1);
@@ -188,25 +101,13 @@ class Interp #if (js || flash) extends WorkerScript #end {
 		binding = d.exists("binding") ? d.get("binding") : "early";
 		initializeDatamodel( datamodel, result.data, (binding != "early") );
 		
-		#if (js || flash)
-		timers = [];
-		#else
-		timerThread = new TimerThread();
-		#end
+		initTimer();
 		running = true;
 		executeGlobalScriptElements(d);
 		
 		enterStates( [d.initial().next().transition().next()].toList() );
 		if( onInit != null )
 			onInit();
-	}
-	
-	function extraInit() {
-		cancelledSendIds = new Hash();
-		invokedData = new Hash();
-		#if !(js || flash)
-		invokedDataMutex = new Mutex();
-		#end
 	}
 	
 	function valid( doc : Xml ) {
@@ -217,39 +118,6 @@ class Interp #if (js || flash) extends WorkerScript #end {
 	inline function failWithError() {
 		// FIXME
 		throw "failWithError";
-	}
-	
-	static var genStateId : Int = 0;
-	
-	function expandScxmlSource( x : Xml ) {
-		if( x.nodeType != Xml.Element )
-			return;
-		if( Lambda.has(["state", "parallel", "final"], x.nodeName) && !x.exists("id") )
-			x.set("id", "__gen_id__"+genStateId++);
-		var hasInitial = false;
-		for( el in x.elements() ) {
-			if( el.nodeName == "initial" )
-				hasInitial = true;
-			expandScxmlSource(el);
-		}
-		if( x.exists("initial") || (!x.exists("initial") && Lambda.has(["scxml", "state"], x.nodeName) && !hasInitial) ) {
-			var ins = Xml.createElement("initial");
-			var trans = Xml.createElement("transition");
-			var tval = x.exists("initial") ? x.get("initial") : null;
-			if( tval == null ) {
-				for( el in x.elements() )
-					if( Lambda.has(["state", "parallel", "final"], el.nodeName) ) {
-						tval = el.get("id");
-						break;
-					}
-			}
-			if( tval == null )
-				return;
-			trans.set("target", tval);
-			ins.insertChild(trans, 0);
-			x.insertChild(ins, 0);
-			x.remove("initial");
-		}
 	}
 	
 	function executeGlobalScriptElements( doc : Node ) {
@@ -688,8 +556,6 @@ class Interp #if (js || flash) extends WorkerScript #end {
 			return childStates.iterator().next();
 	}
 	
-	var invokedData : Hash<Dynamic>;
-	
 	function cancelInvoke( inv : Node ) {
 		var id = inv.exists("id") ? inv.get("id") : null;
 		if( id == null ) {
@@ -702,9 +568,9 @@ class Interp #if (js || flash) extends WorkerScript #end {
 		}
 		if( hasInvokedData(id) ) {
 			#if (js || flash)
-			postToWorker(id, "stop", []);
-			postToWorker(id, "killParentHandler", []);
-			postToWorker(id, "exitInterpreter", []);
+			postToWorker( id, "stop" );
+			postToWorker( id, "killParentHandler" );
+			postToWorker( id, "exitInterpreter" );
 			#else
 			var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(id);
 			data.instance.running = false;
@@ -731,10 +597,9 @@ class Interp #if (js || flash) extends WorkerScript #end {
 			throw "Invoke type currently not supported: " + invData.type;
 		
 		#if (js || flash)
-		postToWorker(invokeid, "postEvent", [evt]);
+		postToWorker( invokeid, "postEvent", [evt] );
 		#else
-		var inst = cast( invData.instance, hsm.scxml.Interp );
-		inst.postEvent(evt);
+		invData.instance.postEvent( evt );
 		#end
 	}
 	
@@ -760,7 +625,7 @@ class Interp #if (js || flash) extends WorkerScript #end {
 			if( content.length > 1 )
 				throw "Send may contain only one content child.";
 			if( content.length > 0 )
-				val = parseContent(content);
+				val = parseContent( content );
 			else {
 				try {
 					val = DataTools.copyFrom( {}, parseParams(params) );
@@ -779,18 +644,6 @@ class Interp #if (js || flash) extends WorkerScript #end {
 		var evt = new Event( "done.invoke." + invokeId );
 		evt.invokeid = invokeId;
 		parentEventHandler(evt);
-	}
-	
-	inline function raise( evt : Event ) {
-		internalQueue.enqueue(evt);
-	}
-	
-	inline function addToExternalQueue( evt : Event ) {
-		externalQueue.enqueue(evt);
-	}
-	
-	inline function setEvent( evt : Event ) {
-		datamodel.setEvent(evt);
 	}
 	
 	function sendEvent( evt : Event, delaySec : Float = 0, addEvent : Event -> Void ) {
@@ -812,10 +665,6 @@ class Interp #if (js || flash) extends WorkerScript #end {
 		}
 	}
 	
-	inline function getDuration( delay : String ) {
-		return ( delay == null || delay == "" ) ? 0 : Std.parseFloat(delay.split("s").join("")); // FIXME
-	}
-	
 	inline function isValidAndSupportedSendTarget( target : String ) {
 		return if( Lambda.has(["#_internal", "#_parent", "#_scxml_" + datamodel.get("_sessionid")], target ) ||
 					(invokedData != null && hasInvokedData(target.substr(2))) )
@@ -832,34 +681,6 @@ class Interp #if (js || flash) extends WorkerScript #end {
 		return isValidAndSupportedSendType("http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor");
 	}
 	
-	static var locId : Int = 0;
-	inline function getLocationId() {
-		return "locId_" + locId++;
-	}
-	
-	static var platformId : Int = 0;
-	inline function getPlatformId() {
-		return "platformId_" + platformId++;
-	}
-	
-	function getInvokeId( inv : Node ) {
-		var node = inv.parent;
-		while( !node.isState() && node.parent != null )
-			node = node.parent;
-		return node.get("id") + "." + getPlatformId();
-	}
-	
-	function getAltProp( n : Node, att0 : String, att1 : String ) {
-		var prop = null;
-		if( n.exists(att0) )
-			prop = n.get(att0);
-		if( n.exists(att1) ) {
-			if( prop != null ) throw "Property specification for '" + att0 + "' and '" + att1 + "' should be mutually exclusive.";
-			prop = datamodel.doVal( n.get(att1) );
-		}
-		return prop;
-	}
-	
 	function executeBlock( it : Iterable<Node> ) {
 		for( i in it ) {
 			try {
@@ -870,42 +691,6 @@ class Interp #if (js || flash) extends WorkerScript #end {
 			}
 		}
 	}
-	
-	function getTypedDataStr( content : String, checkNum : Bool = true ) : String {
-		if( content == null || content == "" )
-			return content;
-		if( checkNum ) {
-			// is content a number?
-			var isNum = Std.parseInt(content) != null;
-			if( !isNum ) isNum = !Math.isNaN( Std.parseFloat(content) );
-			if( isNum ) return content;
-		}
-		// is content an object?
-		var isObj = false;
-		try {
-			var tmp = datamodel.doVal(content);
-			isObj = Reflect.isObject(tmp);
-		} catch( e:Dynamic ) { isObj = false; }
-		if( isObj ) return content;
-		// is content xml?
-		var isXml = false;
-		try {
-			var tmp = Xml.parse(content);
-			isXml = Std.is( tmp.firstElement(), Xml );
-		} catch( e:Dynamic ) { isXml = false; }
-		if( isXml ) return "Xml.parse( '" + content.split("'").join("\\'") + "' ).firstElement()";
-		// is content an array?
-		var isArray = false;
-		try {
-			var tmp = datamodel.doVal(content);
-			isArray = Std.is( tmp, Array );
-		} catch( e:Dynamic ) { isArray = false; }
-		if( isArray ) return content;
-		// else (default to string representation)
-		return "'" + content.split("'").join("\\'") + "'";
-	}
-	
-	var cancelledSendIds : Hash<Bool>;
 	
 	function executeContent( c : Node ) {
 		switch( c.name ) {
@@ -993,10 +778,10 @@ class Interp #if (js || flash) extends WorkerScript #end {
 				var contentVal = null;
 				var paramsData = null;
 				if( content.length > 0 ) {
-					contentVal = parseContent(content);
+					contentVal = parseContent( content );
 					if( !content[0].exists("expr") ) {
 						// TODO report test 179 (worked around here), where 123 should be '123' for consistent evaluation
-						contentVal = datamodel.doVal( getTypedDataStr(contentVal, false) );
+						contentVal = datamodel.doVal( getTypedDataStr( contentVal, false ) );
 					}
 				} else {
 					paramsData = parseParams(params);
@@ -1010,7 +795,7 @@ class Interp #if (js || flash) extends WorkerScript #end {
 						// TODO check
 						if( event == null ) return;
 						
-						var duration = getDuration(delay);
+						var duration = delay.getDuration();
 						var evt = new Event(event);
 						
 						evt.name = event;
@@ -1049,7 +834,7 @@ class Interp #if (js || flash) extends WorkerScript #end {
 										var sub = target.substr(2);
 										if( hasInvokedData(sub) ) {
 											#if (js || flash)
-											postToWorker(sub, "postEvent", [evt]);
+											postToWorker( sub, "postEvent", [evt] );
 											#else
 											var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(sub);
 											data.instance.postEvent(evt);
@@ -1099,7 +884,7 @@ class Interp #if (js || flash) extends WorkerScript #end {
 				
 			case "log":
 				if( datamodel.supportsVal )
-					log((c.exists("label") ? c.get("label") + ": " : "") + Std.string( datamodel.doVal(c.get("expr")) ) );
+					log( (c.exists("label") ? c.get("label") + ": " : "") + Std.string( datamodel.doVal(c.get("expr")) ) );
 			case "raise":
 				var evt = new Event(c.get("event"));
 				evt.type = "internal";
@@ -1108,9 +893,9 @@ class Interp #if (js || flash) extends WorkerScript #end {
 				if( !datamodel.supportsAssign )
 					return;
 				if( c.exists("expr") )
-					datamodel.doAssign(c.get("location"), c.get("expr"));
+					datamodel.doAssign( c.get("location"), c.get("expr") );
 				else
-					datamodel.doAssign(c.get("location"), getTypedDataStr(cast(c, Assign).content));
+					datamodel.doAssign( c.get("location"), getTypedDataStr( cast(c, Assign).content ) );
 			case "if":
 				if( !datamodel.supportsCond )
 					return;
@@ -1194,91 +979,6 @@ class Interp #if (js || flash) extends WorkerScript #end {
 		}
 	}
 	
-	function getNamelistData( namelist : String ) {
-		var data = [];
-		if( namelist != null ) {
-			var names = namelist.split(" ");
-			for( name in names )
-				data.push({key:name, value:datamodel.doLoc(name)});
-		}
-		return data;
-	}
-	
-	function parseContent( content : Array<Node> ) {
-		var contentVal : Dynamic = null;
-		try {
-			if( content.length > 0 ) {
-				var cnode = content[0];
-				if( cnode.exists("expr") )
-					contentVal = datamodel.doVal(cnode.get("expr"));
-				else
-					contentVal = StringTools.trim(cast(cnode, Content).content);
-			}
-		} catch( e:Dynamic ) {
-			raise( new Event("error.execution") );
-			contentVal = "";
-		}
-		return contentVal;
-	}
-	
-	function parseParams( params : Array<Node> ) {
-		var data = [];
-		for( param in params ) {
-			var name = param.get("name");
-			var expr = param.exists("expr") ? datamodel.doVal(param.get("expr")) : null;
-			var location = null;
-			try {
-				if( param.exists("location") ) {
-					if( expr != null )
-						throw "check";
-					location = datamodel.doLoc(param.get("location"));
-				} else {
-					if( expr == null )
-						throw "check";
-				}
-			} catch( e:Dynamic ) {
-				raise( new Event("error.execution") );
-				continue;
-			}
-			data.push({key:name, value:((expr != null) ? expr : location)});
-		}
-		return data;
-	}
-	
-	#if (js || flash)
-	inline function setInvokedData(id:String, data:Dynamic) {
-		invokedData.set(id, data);
-	}
-	inline function getInvokedData(id:String) {
-		return invokedData.get(id);
-	}
-	inline function hasInvokedData(id:String) {
-		return invokedData.exists(id);
-	}
-	#else
-	function setInvokedData(id:String, data:Dynamic) {
-		invokedDataMutex.acquire();
-		invokedData.set(id, data);
-		invokedDataMutex.release();
-	}
-	
-	function getInvokedData(id:String) {
-		var data : Dynamic = null;
-		invokedDataMutex.acquire();
-		data = invokedData.get(id);
-		invokedDataMutex.release();
-		return data;
-	}
-	
-	function hasInvokedData(id:String) {
-		var has = false;
-		invokedDataMutex.acquire();
-		has = invokedData.exists(id);
-		invokedDataMutex.release();
-		return has;
-	}
-	#end
-	
 	function invoke( inv : Node ) {
 		
 		if( !(datamodel.supportsVal && datamodel.supportsLoc) )
@@ -1356,49 +1056,7 @@ class Interp #if (js || flash) extends WorkerScript #end {
 					if( hasInvokedData(invokeid) )
 						throw "Invoke id already exists: " + invokeid;
 					
-					#if (js || flash)
-					
-					var xml = Xml.parse(contentVal).firstElement().setSubInstData(data);
-					
-					#if js
-					var worker = new Worker("interp.js");
-					setInvokedData(invokeid, {type : type, instance : worker});
-					worker.addEventListener("message", function(e) { handleWorkerMessage(e.data, invokeid); } );
-					worker.addEventListener("error", function(e) { handleWorkerError(e.message); } );
-					#else
-					var worker = WorkerDomain.current.createWorker( flash.Lib.current.loaderInfo.bytes );
-					var outgoingChannel = Worker.current.createMessageChannel( worker );
-					var incomingChannel = worker.createMessageChannel( Worker.current );
-					
-					worker.setSharedProperty( WorkerScript.TO_SUB, outgoingChannel );
-					worker.setSharedProperty( WorkerScript.FROM_SUB, incomingChannel );
-					
-					incomingChannel.addEventListener( flash.events.Event.CHANNEL_MESSAGE, function(e) {
-						while( incomingChannel.messageAvailable )
-							handleWorkerMessage( incomingChannel.receive(), invokeid );
-					});
-					setInvokedData(invokeid, {type : type, instance : worker, incomingChannel : incomingChannel, outgoingChannel : outgoingChannel});
-					worker.start();
-					#end
-					
-					try {
-						postToWorker(invokeid, "invokeId", [invokeid]);
-						postToWorker(invokeid, "interpret", [xml.toString()]);
-					} catch( e:Dynamic ) {
-						log("ERROR: sub worker: e = " + Std.string(e));
-					}
-					
-					#else
-					var c = Thread.create(createChildInterp);
-					c.sendMessage(Thread.current());
-					c.sendMessage(contentVal);
-					c.sendMessage(data);
-					c.sendMessage(invokeid);
-					c.sendMessage(type);
-					Thread.readMessage(true);
-					
-					Sys.sleep(0.2); // FIXME erm, for now give new instance 'some time' to stabilize (see test 250)
-					#end
+					createSubInst( contentVal, data, invokeid, type );
 					
 				default:
 			}
@@ -1407,64 +1065,6 @@ class Interp #if (js || flash) extends WorkerScript #end {
 			raise( new Event("error.execution") );
 		}
 	}
-	
-	#if (js || flash)
-	
-	function handleWorkerMessage( data : Dynamic, invokeid : String ) {
-		var msg = haxe.Unserializer.run(data);
-		switch( msg.cmd ) {
-			case "log": if( log != null ) log("log-from-child: " + msg.args[0]);
-			case "onInit": postToWorker(invokeid, "start", []);
-			case "postEvent": addToExternalQueue( cast(msg.args[0], Event) );
-			case "sendDomEvent": msg.args[0] += "," + invokeId; post(msg.cmd, msg.args);
-			default:
-				log("Interp: sub worker msg received: msg.cmd = " + msg.cmd + " msg.args = " + Std.string(msg.args));
-		}
-	}
-	
-	function handleWorkerError( msg : String ) {
-		trace("worker error: " + msg);
-	}
-	
-	function postToWorker( invokeId : String, cmd : String, args : Array<Dynamic> ) {
-		#if js
-		var worker = getInvokedData(invokeId).instance;
-		worker.postMessage( haxe.Serializer.run({cmd:cmd, args:args}) );
-		#else
-		var outgoingChannel = getInvokedData(invokeId).outgoingChannel;
-		outgoingChannel.send( haxe.Serializer.run({cmd:cmd, args:args}) );
-		#end
-	}
-	
-	#else
-	function createChildInterp() {
-		var main = Thread.readMessage(true);
-		var xmlStr = Thread.readMessage(true);
-		var data : Array<{key:String,value:Dynamic}> = Thread.readMessage(true);
-		var invokeid = Thread.readMessage(true);
-		var type = Thread.readMessage(true);
-		
-		var xml = Xml.parse(xmlStr).firstElement().setSubInstData(data);
-		
-		var me = this;
-		var inst = new hsm.scxml.Interp();
-		inst.invokeId = invokeid;
-		inst.parentEventHandler = function( evt : Event ) {
-			me.addToExternalQueue(evt);
-		};
-		inst.log = function(msg) { log("log-from-child: " + msg); };
-		inst.onInit = function() { inst.start(); };
-		
-		setInvokedData(invokeid, {
-			type : type,
-			instance : inst
-		});
-		
-		main.sendMessage("please continue..");
-		
-		inst.interpret( xml );
-	}
-	#end
 	
 	function invokeTypeAccepted( type : String ) {
 		switch( type.stripEndSlash() ) {
@@ -1490,7 +1090,7 @@ class Interp #if (js || flash) extends WorkerScript #end {
 		}
 	}
 	
-	inline function getFileContent( src : String ) {
+	inline function getFileContent( src : String ) : String {
 		#if (js || flash)
 		return null;
 		#else		
@@ -1537,4 +1137,35 @@ class Interp #if (js || flash) extends WorkerScript #end {
 		}
 		return null;
 	}
+	
+	#if (js || flash)
+	public static function main() {
+		var i = new Interp();
+		#if js i.export(); #end
+	}
+	
+	override public function handleOnMessage(data) {
+		var msg = haxe.Unserializer.run(data);
+		switch( msg.cmd ) {
+			case "postEvent": postEvent( cast(msg.args[0], Event) );
+			case "interpret": interpret( Xml.parse(msg.args[0]).firstElement() );
+			case "start": start();
+			case "stop": stop();
+			case "killParentHandler": parentEventHandler = function( evt : Event ) {};
+			case "exitInterpreter": exitInterpreter();
+			case "invokeId": invokeId = msg.args[0];
+			case "sendDomEventFailed":
+				if( msg.args[0] == null || msg.args[0] == "" ) {
+					postEvent( new Event("error.communication") );
+					return;
+				}
+				var parts = msg.args[0].split(",");
+				var fromInvokeId = parts.pop();
+				if( fromInvokeId == null || fromInvokeId == "undefined" )
+					fromInvokeId = parts.pop();
+				postToWorker( fromInvokeId, "sendDomEventFailed", [parts.join(",")] );
+		}
+	}
+	#end
+	
 }

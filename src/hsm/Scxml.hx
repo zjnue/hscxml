@@ -15,16 +15,14 @@ import cpp.vm.Thread;
 import flash.system.Worker;
 import flash.system.WorkerDomain;
 import flash.system.MessageChannel;
+#elseif js
+import js.Worker;
 #end
 
 #if (js || flash)
-import hsm.scxml.WorkerScript;
+import hsm.scxml.Base;
 #else
 import sys.FileSystem;
-#end
-
-#if js
-import js.Worker;
 #end
 
 #if flash
@@ -74,9 +72,9 @@ class Scxml {
 		#if (js || flash)
 		
 		#if js
-		worker = new Worker("interp.js");
-		worker.addEventListener("message", function(e) { handleWorkerMessage( e.data ); } );
-		worker.addEventListener("error", function(e) { handleWorkerError( e.message ); });
+		worker = new Worker( "interp.js" );
+		worker.addEventListener( "message", function(e) { handleWorkerMessage( e.data ); } );
+		worker.addEventListener( "error", function(e) { handleWorkerError( e.message ); } );
 		#else
 		worker = WorkerDomain.current.createWorker( new InterpByteArray() );
 		outgoingChannel = Worker.current.createMessageChannel( worker );
@@ -86,14 +84,14 @@ class Scxml {
 		worker.setSharedProperty( WorkerScript.FROM_SUB, incomingChannel );
 		
 		incomingChannel.addEventListener( flash.events.Event.CHANNEL_MESSAGE, function(e) {
-			while ( incomingChannel.messageAvailable )
+			while( incomingChannel.messageAvailable )
 				handleWorkerMessage( incomingChannel.receive() );
 		});
 		worker.start();
 		#end
 		
 		try {
-			post("interpret", [content]);
+			postToWorker( "interpret", [content] );
 		} catch( e:Dynamic ) {
 			log("ERROR: worker: e = " + Std.string(e));
 			if( parentEventHandler != null )
@@ -101,11 +99,13 @@ class Scxml {
 		}
 		
 		#else
+		
 		var c = Thread.create(createInterp);
 		c.sendMessage(scxml);
 		c.sendMessage(onInit);
 		c.sendMessage(log);
 		c.sendMessage(parentEventHandler);
+		
 		#end
 	}
 	
@@ -123,17 +123,18 @@ class Scxml {
 				}
 			case "sendDomEvent":
 				var args : Array<Dynamic> = msg.args;
-				sendDomEvent(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+				sendDomEvent( args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7] );
 			default:
-				trace("worker msg received: msg.cmd = " + msg.cmd + " msg.args = " + Std.string(msg.args));
+				log("worker msg received: msg.cmd = " + msg.cmd + " msg.args = " + Std.string(msg.args));
 		}
 	}
 	
 	function handleWorkerError( msg : String ) {
-		trace("worker error: " + msg);
+		log("worker error: " + msg);
 	}
 	
-	public function post( cmd : String, args : Array<Dynamic> ) : Void {
+	public function postToWorker( cmd : String, ?args : Array<Dynamic> ) : Void {
+		if( args == null ) args = [];
 		#if js
 		worker.postMessage( haxe.Serializer.run({cmd:cmd, args:args}) );
 		#else
@@ -146,7 +147,7 @@ class Scxml {
 
 		if( iface != "CustomEvent" ) {
 			log("sendDomEvent interface not yet implemented: " + iface);
-			post("sendDomEventFailed", [fromInvokeId]);
+			postToWorker( "sendDomEventFailed", [fromInvokeId] );
 			return;
 		}
 		
@@ -161,20 +162,12 @@ class Scxml {
 				log("sendDomEvent target not found: " + target);
 				return;
 			}
-			detail = contentVal;
-			if( detail == null ) {
-				detail = DataTools.copyFrom( {}, data );
-			}
-			var initObj  = {
-				bubbles : bubbles,
-				cancelable : cancelable,
-				detail : detail
-			};
-			event = new js.CustomEvent( domEvtType, initObj );
+			detail = contentVal != null ? contentVal : DataTools.copyFrom( {}, data );
+			event = new js.CustomEvent( domEvtType, { bubbles : bubbles, cancelable : cancelable, detail : detail } );
 			
 		} catch( e:Dynamic ) {
 			log("sendDomEvent failed for target: " + target);
-			post("sendDomEventFailed", [fromInvokeId]);
+			postToWorker( "sendDomEventFailed", [fromInvokeId] );
 			return;
 		}
 		
@@ -212,7 +205,7 @@ class Scxml {
 	
 	inline public function start() {
 		#if (js || flash)
-		post("start", []);
+		postToWorker( "start" );
 		#else
 		interp.start();
 		#end
@@ -220,19 +213,17 @@ class Scxml {
 	
 	inline public function stop() {
 		#if (js || flash)
-		post("stop", []);
+		postToWorker( "stop" );
 		#else
 		interp.stop();
 		#end
 	}
 	
-	public function postEvent( evt : Event ) {
+	inline public function postEvent( evt : Event ) {
 		#if (js || flash)
-		post("postEvent", [evt]);
+		postToWorker( "postEvent", [evt] );
 		#else
-		if( interp != null ) {
-			interp.postEvent( evt );
-		}
+		if( interp != null ) interp.postEvent( evt );
 		#end
 	}
 }
