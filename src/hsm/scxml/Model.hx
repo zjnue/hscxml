@@ -361,3 +361,4 @@ class HScriptModel extends Model {
 		return "[HScriptModel: " + Std.string(hinterp.variables) + "]";
 	}
 }
+

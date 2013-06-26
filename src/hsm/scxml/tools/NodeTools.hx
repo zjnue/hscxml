@@ -78,3 +78,4 @@ class NodeTools {
 	public static inline function onentry( n : Node ) { return Lambda.filter( n, onEntryFilter ).iterator(); }
 	public static inline function onexit( n : Node ) { return Lambda.filter( n, onExitFilter ).iterator(); }
 }
+
