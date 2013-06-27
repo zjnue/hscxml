@@ -200,12 +200,13 @@ class HScriptModel extends Model {
 		hinterp.variables.set("Xml", Xml);
 		hinterp.variables.set("Lambda", Lambda);
 		hinterp.variables.set("_ioprocessors", {});
-		setIoProc("http://www.w3.org/TR/scxml/#SCXMLEventProcessor", {location : "#_internal"});
-		setIoProc("scxml", {location : "#_internal"});
-		setIoProc("http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor", {location : "http://localhost:2000"});
-		setIoProc("basichttp", {location : "http://localhost:2000"});
-		setIoProc("http://www.w3.org/TR/scxml/#DOMEventProcessor", {location : "#_internal"});
-		setIoProc("dom", {location : "#_internal"});
+		
+		setIoProc( Const.IOPROC_SCXML, {location : "#_internal"} );
+		setIoProc( Const.IOPROC_SCXML_SHORT, {location : "#_internal"} );
+		setIoProc( Const.IOPROC_BASICHTTP, {location : "http://localhost:2000"} );
+		setIoProc( Const.IOPROC_BASICHTTP_SHORT, {location : "http://localhost:2000"} );
+		setIoProc( Const.IOPROC_DOM, {location : "#_internal"} );
+		setIoProc( Const.IOPROC_DOM_SHORT, {location : "#_internal"} );
 		
 		illegalExpr = ["continue", "return"];
 		illegalLhs = ["_sessionid", "_name", "_ioprocessors", "_event"];

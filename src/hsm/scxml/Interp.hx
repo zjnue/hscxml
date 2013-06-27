@@ -10,6 +10,7 @@ using hsm.scxml.tools.ArrayTools;
 using hsm.scxml.tools.ListTools;
 using hsm.scxml.tools.NodeTools;
 using hsm.scxml.tools.DataTools;
+using hsm.scxml.Const;
 
 #if neko
 import neko.vm.Thread;
@@ -593,7 +594,7 @@ class Interp extends Base {
 			throw "check";
 			
 		var invData = getInvokedData(invokeid);
-		if( !isScxmlInvokeType(invData.type) )
+		if( !invData.type.isScxmlInvokeType() )
 			throw "Invoke type currently not supported: " + invData.type;
 		
 		#if (js || flash)
@@ -601,10 +602,6 @@ class Interp extends Base {
 		#else
 		invData.instance.postEvent( evt );
 		#end
-	}
-	
-	inline function isScxmlInvokeType( type : String ) {
-		return (type == "http://www.w3.org/TR/scxml/" || type == "scxml");
 	}
 	
 	function getDoneData( n : Node ) {
@@ -678,7 +675,7 @@ class Interp extends Base {
 	}
 	
 	inline function ioProcessorSupportsPost() {
-		return isValidAndSupportedSendType("http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor");
+		return isValidAndSupportedSendType( Const.IOPROC_BASICHTTP );
 	}
 	
 	function executeBlock( it : Iterable<Node> ) {
@@ -724,7 +721,7 @@ class Interp extends Base {
 				
 				var type = getAltProp( c, "type", "typeexpr" );
 				
-				if( (type == null || type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor") && target != null && !isValidAndSupportedSendTarget(target) ) {
+				if( (type == null || type.isIoProcScxml()) && target != null && !isValidAndSupportedSendTarget(target) ) {
 					if( target.indexOf("#_scxml_") == 0 ) {
 						raise( new Event("error.communication", null, sendid, evtType) );
 						return;
@@ -733,15 +730,15 @@ class Interp extends Base {
 					throw "Invalid send target: " + target;
 				}
 				
-				if( type == "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor" && (!ioProcessorSupportsPost() || target == null) ) {
+				if( type.isIoProcBasicHttp() && (!ioProcessorSupportsPost() || target == null) ) {
 					raise( new Event("error.communication", null, sendid, evtType) );
 					return;
 				}
 				
 				if( type == null )
-					type = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";
-				if( type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" && event == null )
-					throw "Send type http://www.w3.org/TR/scxml/#SCXMLEventProcessor requires either 'event' or 'eventexpr' to be defined.";
+					type = Const.IOPROC_SCXML;
+				if( type.isIoProcScxml() && event == null )
+					throw "Send type " + type + " + requires either 'event' or 'eventexpr' to be defined.";
 				if( !isValidAndSupportedSendType(type) ) {
 					raise( new Event("error.execution", null, sendid, evtType) );
 					return;
@@ -790,7 +787,7 @@ class Interp extends Base {
 				
 				switch( type ) {
 					
-					case "http://www.w3.org/TR/scxml/#SCXMLEventProcessor":
+					case Const.IOPROC_SCXML, Const.IOPROC_SCXML_SHORT:
 						
 						// TODO check
 						if( event == null ) return;
@@ -804,7 +801,7 @@ class Interp extends Base {
 						
 						if( evtType == "external" ) {
 							evt.origin = ( invokeId != null ) ? "#_" + invokeId : "#_internal";
-							evt.origintype = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";
+							evt.origintype = type;
 						}
 						
 						if( content.length > 0 )
@@ -847,7 +844,7 @@ class Interp extends Base {
 						
 						sendEvent( evt, duration, cb );
 						
-					case "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor":
+					case Const.IOPROC_BASICHTTP, Const.IOPROC_BASICHTTP_SHORT:
 
 						var h = new haxe.Http(target);
 						
@@ -870,7 +867,7 @@ class Interp extends Base {
 						
 						h.request(true);
 						
-					case "http://www.w3.org/TR/scxml/#DOMEventProcessor":
+					case Const.IOPROC_DOM, Const.IOPROC_DOM_SHORT:
 					
 						#if (js || flash)
 						var iface = c.exists("interface") ? c.get("interface") : "CustomEvent";
@@ -987,11 +984,11 @@ class Interp extends Base {
 		try {
 			//log("invoke(): inv.id = " + inv.get("id"));
 			var type = getAltProp( inv, "type", "typeexpr" );
-			if( type != null && !invokeTypeAccepted(type) )
+			if( type != null && !type.isAcceptedInvokeType() )
 				throw "Bad invoke type: " + type;
 			// TODO check spec
 			if( type == null )
-				type = "scxml";
+				type = Const.INV_TYPE_SCXML_SHORT;
 			
 			var src = getAltProp( inv, "src", "srcexpr" );
 			
@@ -1051,7 +1048,7 @@ class Interp extends Base {
 			
 			switch( type.stripEndSlash() ) {
 				
-				case "http://www.w3.org/TR/scxml", "scxml":
+				case Const.INV_TYPE_SCXML, Const.INV_TYPE_SCXML_SHORT:
 				
 					if( hasInvokedData(invokeid) )
 						throw "Invoke id already exists: " + invokeid;
@@ -1066,17 +1063,17 @@ class Interp extends Base {
 		}
 	}
 	
-	function invokeTypeAccepted( type : String ) {
-		switch( type.stripEndSlash() ) {
-			case
-				"http://www.w3.org/TR/scxml", "scxml": return true;//,
-//				"http://www.w3.org/TR/ccxml/", "ccxml",
-//				"http://www.w3.org/TR/voicexml30/", "voicexml30",
-//				"http://www.w3.org/TR/voicexml21/", "voicexml21": return true;
-			default:
-				return false;
-		}
-	}
+//	function isAcceptedInvokeType( type : String ) {
+//		switch( type.stripEndSlash() ) {
+//			case
+//				"http://www.w3.org/TR/scxml", "scxml": return true;//,
+////				"http://www.w3.org/TR/ccxml/", "ccxml",
+////				"http://www.w3.org/TR/voicexml30/", "voicexml30",
+////				"http://www.w3.org/TR/voicexml21/", "voicexml21": return true;
+//			default:
+//				return false;
+//		}
+//	}
 	
 	function setFromSrc( id : String, src : String ) {
 		var val = null;
