@@ -122,14 +122,12 @@ class BlockingQueue<T> {
 	public inline function enqueue( i : T ) { dq.add( i ); }
 	public inline function dequeue() { return dq.pop(true); }
 }
-#end
 
 typedef TTimerData = {
 	time : Float,
 	func : Void->Void	
 }
 
-#if !(js || flash)
 class TimerThread {
 	var mutex : Mutex;
 	var queueLock : Lock;

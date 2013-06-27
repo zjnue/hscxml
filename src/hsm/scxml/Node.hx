@@ -139,4 +139,3 @@ class Assign extends Exec {
 	public var content:String;
 	public function new(p:Node) { super(p); content = ""; }
 }
-

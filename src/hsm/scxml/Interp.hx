@@ -720,18 +720,19 @@ class Interp extends Base {
 				var evtType = target == "#_internal" ? "internal" : "external";
 				
 				var type = getAltProp( c, "type", "typeexpr" );
+				if( type != null ) type = type.stripEndSlash();
 				
 				if( (type == null || type.isIoProcScxml()) && target != null && !isValidAndSupportedSendTarget(target) ) {
 					if( target.indexOf("#_scxml_") == 0 ) {
-						raise( new Event( Event.ERROR_COMMS, null, sendid, evtType) );
+						raise( new Event( Event.ERROR_COMMS, null, sendid, evtType ) );
 						return;
 					}
-					raise( new Event( Event.ERROR_EXEC, null, sendid, evtType) );
+					raise( new Event( Event.ERROR_EXEC, null, sendid, evtType ) );
 					throw "Invalid send target: " + target;
 				}
 				
 				if( type.isIoProcBasicHttp() && (!ioProcessorSupportsPost() || target == null) ) {
-					raise( new Event( Event.ERROR_COMMS, null, sendid, evtType) );
+					raise( new Event( Event.ERROR_COMMS, null, sendid, evtType ) );
 					return;
 				}
 				
@@ -740,7 +741,7 @@ class Interp extends Base {
 				if( type.isIoProcScxml() && event == null )
 					throw "Send type " + type + " + requires either 'event' or 'eventexpr' to be defined.";
 				if( !isValidAndSupportedSendType(type) ) {
-					raise( new Event( Event.ERROR_EXEC, null, sendid, evtType) );
+					raise( new Event( Event.ERROR_EXEC, null, sendid, evtType ) );
 					return;
 				}
 //				if( ioProcessorSupportsPost() && type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" )
@@ -984,6 +985,7 @@ class Interp extends Base {
 		try {
 			//log("invoke(): inv.id = " + inv.get("id"));
 			var type = getAltProp( inv, "type", "typeexpr" );
+			if( type != null ) type = type.stripEndSlash();
 			if( type != null && !type.isAcceptedInvokeType() )
 				throw "Bad invoke type: " + type;
 			// TODO check spec
@@ -1046,7 +1048,7 @@ class Interp extends Base {
 			} else
 				contentVal = Std.string( parseContent(content) );
 			
-			switch( type.stripEndSlash() ) {
+			switch( type ) {
 				
 				case Const.INV_TYPE_SCXML, Const.INV_TYPE_SCXML_SHORT:
 				

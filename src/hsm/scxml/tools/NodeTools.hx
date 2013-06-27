@@ -3,14 +3,23 @@ package hsm.scxml.tools;
 import hsm.scxml.Node;
 
 class NodeTools {
-	// types
 	public static inline function isTState( s : Node ) { return Std.is(s,State); }
 	public static inline function isTParallel( s : Node ) { return Std.is(s,Parallel); }
 	public static inline function isTFinal( s : Node ) { return Std.is(s,Final); }
 	public static inline function isTScxml( s : Node ) { return Std.is(s,Scxml); }
 	public static inline function isTInitial( s : Node ) { return Std.is(s,Initial); }
 	public static inline function isTHistory( s : Node ) { return Std.is(s,History); }
-	// defs
+	public static inline function isTTransition( s : Node ) { return Std.is(s, Transition); }
+	public static inline function isTDataModel( s : Node ) { return Std.is(s, DataModel); }
+	public static inline function isTScript( s : Node ) { return Std.is(s, Script); }
+	public static inline function isTInvoke( s : Node ) { return Std.is(s, Invoke); }
+	public static inline function isTOnEntry( s : Node ) { return Std.is(s, OnEntry); }
+	public static inline function isTOnExit( s : Node ) { return Std.is(s, OnExit); }
+	public static inline function isTData( s : Node ) { return Std.is(s, Data); }
+	public static inline function isTParam( s : Node ) { return Std.is(s, Param); }
+	public static inline function isTContent( s : Node ) { return Std.is(s, Content); }
+	public static inline function isTFinalize( s : Node ) { return Std.is(s, Finalize); }
+	public static inline function isTDoneData( s : Node ) { return Std.is(s, DoneData); }
 	public static inline function isState( s : Node ) { return isTState(s) || isTParallel(s) || isTFinal(s); }
 	public static inline function isPseudoState( s : Node ) { return isTInitial(s) || isTHistory(s); }
 	public static inline function isTransitionTarget( s : Node ) { return isState(s) || isTHistory(s); }
@@ -37,19 +46,6 @@ class NodeTools {
 				return true;
 		return false;
 	}
-	// extra
-	public static inline function isTTransition( s : Node ) { return Std.is(s, Transition); }
-	public static inline function isTDataModel( s : Node ) { return Std.is(s, DataModel); }
-	public static inline function isTScript( s : Node ) { return Std.is(s, Script); }
-	public static inline function isTInvoke( s : Node ) { return Std.is(s, Invoke); }
-	public static inline function isTOnEntry( s : Node ) { return Std.is(s, OnEntry); }
-	public static inline function isTOnExit( s : Node ) { return Std.is(s, OnExit); }
-	public static inline function isTData( s : Node ) { return Std.is(s, Data); }
-	public static inline function isTParam( s : Node ) { return Std.is(s, Param); }
-	public static inline function isTContent( s : Node ) { return Std.is(s, Content); }
-	public static inline function isTFinalize( s : Node ) { return Std.is(s, Finalize); }
-	public static inline function isTDoneData( s : Node ) { return Std.is(s, DoneData); }
-	// filters
 	public static inline function stateFilter( n : Node ) { return isTState(n); }
 	public static inline function parallelFilter( n : Node ) { return isTParallel(n); }
 	public static inline function transitionFilter( n : Node ) { return isTTransition(n); }
@@ -63,7 +59,6 @@ class NodeTools {
 	public static inline function invokeFilter( n : Node ) { return isTInvoke(n); }
 	public static inline function onEntryFilter( n : Node ) { return isTOnEntry(n); }
 	public static inline function onExitFilter( n : Node ) { return isTOnExit(n); }
-	// lists
 	public static inline function state( n : Node ) { return Lambda.filter( n, stateFilter ).iterator(); }
 	public static inline function parallel( n : Node ) { return Lambda.filter( n, parallelFilter ).iterator(); }
 	public static inline function transition( n : Node ) { return Lambda.filter( n, transitionFilter ).iterator(); }
@@ -78,4 +73,3 @@ class NodeTools {
 	public static inline function onentry( n : Node ) { return Lambda.filter( n, onEntryFilter ).iterator(); }
 	public static inline function onexit( n : Node ) { return Lambda.filter( n, onExitFilter ).iterator(); }
 }
-

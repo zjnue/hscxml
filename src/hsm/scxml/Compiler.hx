@@ -57,4 +57,3 @@ class Compiler {
 		contentNode.content = DataTools.trim(buf.toString());
 	}
 }
-

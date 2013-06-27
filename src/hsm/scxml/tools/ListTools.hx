@@ -22,4 +22,3 @@ class ListTools {
 		return l;
 	}
 }
-

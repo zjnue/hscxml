@@ -38,10 +38,9 @@ class Const {
 	];
 	
 	public static inline function isAcceptedInvokeType( type : String ) {
-		return Lambda.has( acceptedInvokeTyoes, type.stripEndSlash() );
+		return Lambda.has( acceptedInvokeTyoes, type );
 	}
 	public static inline function isScxmlInvokeType( type : String ) {
-		var tmp = type.stripEndSlash();
-		return tmp == INV_TYPE_SCXML || tmp == INV_TYPE_SCXML_SHORT;
+		return type == INV_TYPE_SCXML || type == INV_TYPE_SCXML_SHORT;
 	}
 }
