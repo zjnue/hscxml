@@ -156,7 +156,7 @@ class Base #if (js || flash) extends WorkerScript #end {
 					contentVal = StringTools.trim( cast(cnode, Content).content );
 			}
 		} catch( e:Dynamic ) {
-			raise( new Event("error.execution") );
+			raise( new Event( Event.ERROR_EXEC ) );
 			contentVal = "";
 		}
 		return contentVal;
@@ -178,7 +178,7 @@ class Base #if (js || flash) extends WorkerScript #end {
 						throw "check";
 				}
 			} catch( e:Dynamic ) {
-				raise( new Event("error.execution") );
+				raise( new Event( Event.ERROR_EXEC ) );
 				continue;
 			}
 			data.push( { key : name, value : (expr != null ? expr : location) } );

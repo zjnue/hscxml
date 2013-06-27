@@ -147,7 +147,7 @@ class Interp extends Base {
 						datamodel.set(id, datamodel.doVal(val));
 					} catch( e:Dynamic ) {
 						datamodel.set(id, null);
-						raise( new Event("error.execution") );
+						raise( new Event( Event.ERROR_EXEC ) );
 					}
 				}
 			}
@@ -541,7 +541,7 @@ class Interp extends Base {
 			if( transition.exists("cond") && datamodel.supportsCond )
 				return datamodel.doCond( transition.get("cond") );
 		} catch( e:Dynamic ) {
-			raise( new Event("error.execution") );
+			raise( new Event( Event.ERROR_EXEC ) );
 			return false;
 		}
 		return true;
@@ -627,7 +627,7 @@ class Interp extends Base {
 				try {
 					val = DataTools.copyFrom( {}, parseParams(params) );
 				} catch( e:Dynamic ) {
-					raise( new Event("error.execution") );
+					raise( new Event( Event.ERROR_EXEC ) );
 				}
 			}
 		}
@@ -683,7 +683,7 @@ class Interp extends Base {
 			try {
 				executeContent(i);
 			} catch( e : Dynamic ) {
-				raise( new Event("error.execution") );
+				raise( new Event( Event.ERROR_EXEC ) );
 				break;
 			}
 		}
@@ -723,15 +723,15 @@ class Interp extends Base {
 				
 				if( (type == null || type.isIoProcScxml()) && target != null && !isValidAndSupportedSendTarget(target) ) {
 					if( target.indexOf("#_scxml_") == 0 ) {
-						raise( new Event("error.communication", null, sendid, evtType) );
+						raise( new Event( Event.ERROR_COMMS, null, sendid, evtType) );
 						return;
 					}
-					raise( new Event("error.execution", null, sendid, evtType) );
+					raise( new Event( Event.ERROR_EXEC, null, sendid, evtType) );
 					throw "Invalid send target: " + target;
 				}
 				
 				if( type.isIoProcBasicHttp() && (!ioProcessorSupportsPost() || target == null) ) {
-					raise( new Event("error.communication", null, sendid, evtType) );
+					raise( new Event( Event.ERROR_COMMS, null, sendid, evtType) );
 					return;
 				}
 				
@@ -740,7 +740,7 @@ class Interp extends Base {
 				if( type.isIoProcScxml() && event == null )
 					throw "Send type " + type + " + requires either 'event' or 'eventexpr' to be defined.";
 				if( !isValidAndSupportedSendType(type) ) {
-					raise( new Event("error.execution", null, sendid, evtType) );
+					raise( new Event( Event.ERROR_EXEC, null, sendid, evtType) );
 					return;
 				}
 //				if( ioProcessorSupportsPost() && type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" )
@@ -1059,7 +1059,7 @@ class Interp extends Base {
 			}
 			
 		} catch( e : Dynamic ) {
-			raise( new Event("error.execution") );
+			raise( new Event( Event.ERROR_EXEC ) );
 		}
 	}
 	
@@ -1083,7 +1083,7 @@ class Interp extends Base {
 			datamodel.set(id, datamodel.doVal(val));
 		} catch( e:Dynamic ) {
 			datamodel.set(id, null);
-			raise( new Event("error.execution") );
+			raise( new Event( Event.ERROR_EXEC ) );
 		}
 	}
 	
@@ -1153,7 +1153,7 @@ class Interp extends Base {
 			case "invokeId": invokeId = msg.args[0];
 			case "sendDomEventFailed":
 				if( msg.args[0] == null || msg.args[0] == "" ) {
-					postEvent( new Event("error.communication") );
+					postEvent( new Event( Event.ERROR_COMMS ) );
 					return;
 				}
 				var parts = msg.args[0].split(",");

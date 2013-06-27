@@ -21,6 +21,8 @@ private typedef Hash<T> = haxe.ds.StringMap<T>;
 #end
 
 class Event {
+	public static inline var ERROR_COMMS = "error.communication";
+	public static inline var ERROR_EXEC = "error.execution";
 	public var name : String;
 	public var type : String;
 	public var sendid : String;
