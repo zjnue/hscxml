@@ -71,10 +71,7 @@ class Interp extends Base {
 		configuration = new Set();
 		statesToInvoke = new Set();
 		internalQueue = new Queue();
-		externalQueue = new BlockingQueue();
-		#if (js || flash)
-		externalQueue.onNewContent = checkBlockingQueue;
-		#end
+		externalQueue = new BlockingQueue( #if (js || flash) checkBlockingQueue #end );
 		historyValue = new Hash();
 		
 		extraInit();
@@ -609,13 +606,10 @@ class Interp extends Base {
 		for( d in n.donedata() ) {
 			if( val != null )
 				break;
-			var params = [];
-			var content = [];
+			var params = [], content = [];
 			for( child in d ) {
-				if( child.isTParam() )
-					params.push(child);
-				else if( child.isTContent() )
-					content.push(child);
+				if( child.isTParam() ) params.push(child);
+				else if( child.isTContent() ) content.push(child);
 			}
 			if( content.length > 0 && params.length > 0 )
 				throw "check";
@@ -757,13 +751,10 @@ class Interp extends Base {
 				var namelist = c.exists("namelist") ? c.get("namelist") : null;
 				data = data.concat( getNamelistData(namelist) );
 				
-				var params = [];
-				var content = [];
+				var params = [], content = [];
 				for( child in c ) {
-					if( child.isTParam() )
-						params.push(child);
-					else if( child.isTContent() )
-						content.push(child);
+					if( child.isTParam() ) params.push(child);
+					else if( child.isTContent() ) content.push(child);
 				}
 				
 //				if( (content.length == 0 && event == null) || (content.length > 0 && event != null) )
@@ -1017,16 +1008,11 @@ class Interp extends Base {
 			data = data.concat( getNamelistData(namelist) );
 			var autoforward = inv.exists("autoforward") ? inv.get("autoforward") : "false";
 			
-			var params = [];
-			var content = [];
-			var finalize = [];
+			var params = [], content = [], finalize = [];
 			for( child in inv ) {
-				if( child.isTParam() )
-					params.push(child);
-				else if( child.isTContent() )
-					content.push(child);
-				else if( child.isTFinalize() )
-					finalize.push(child);
+				if( child.isTParam() ) params.push(child);
+				else if( child.isTContent() ) content.push(child);
+				else if( child.isTFinalize() ) finalize.push(child);
 			}
 			
 			if( content.length > 0 && src != null )
@@ -1125,14 +1111,17 @@ class Interp extends Base {
 		return null;
 	}
 	
-	#if (js || flash)
 	public static function main() {
 		var i = new Interp();
-		#if js i.export(); #end
+		i.export();
 	}
 	
 	override public function handleOnMessage(data) {
+		#if (js || flash)
 		var msg = haxe.Unserializer.run(data);
+		#else
+		var msg : {cmd:String, args:Array<Dynamic>} = data;
+		#end
 		switch( msg.cmd ) {
 			case "postEvent": postEvent( cast(msg.args[0], Event) );
 			case "interpret": interpret( Xml.parse(msg.args[0]).firstElement() );
@@ -1141,6 +1130,7 @@ class Interp extends Base {
 			case "killParentHandler": parentEventHandler = function( evt : Event ) {};
 			case "exitInterpreter": exitInterpreter();
 			case "invokeId": invokeId = msg.args[0];
+			#if (js || flash)
 			case "sendDomEventFailed":
 				if( msg.args[0] == null || msg.args[0] == "" ) {
 					postEvent( new Event( Event.ERROR_COMMS ) );
@@ -1151,8 +1141,7 @@ class Interp extends Base {
 				if( fromInvokeId == null || fromInvokeId == "undefined" )
 					fromInvokeId = parts.pop();
 				postToWorker( fromInvokeId, "sendDomEventFailed", [parts.join(",")] );
+			#end
 		}
 	}
-	#end
-	
 }

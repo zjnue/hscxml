@@ -5,19 +5,7 @@ import hsm.scxml.Types;
 import hsm.scxml.tools.DrawTools;
 import hsm.scxml.tools.DataTools;
 
-#if neko
-import neko.vm.Thread;
-#elseif cpp
-import cpp.vm.Thread;
-#end
-
-#if flash
-import flash.system.Worker;
-import flash.system.WorkerDomain;
-import flash.system.MessageChannel;
-#elseif js
-import js.Worker;
-#end
+import hxworker.Worker;
 
 #if (js || flash)
 import hsm.scxml.Base;
@@ -30,16 +18,8 @@ import sys.FileSystem;
 #end
 
 class Scxml {
-	#if (js || flash)
-	var worker : Worker;
-	#else
-	var interp : Interp;
-	#end
 	
-	#if flash
-	var outgoingChannel : MessageChannel;
-	var incomingChannel : MessageChannel;
-	#end
+	var worker : Worker;
 	
 	public var onInit : Void -> Void;
 	public var log : String -> Void;
@@ -67,27 +47,14 @@ class Scxml {
 		if( onInit != null ) this.onInit = onInit;
 		if( log == null ) log = this.log;
 		
-		var scxml = Xml.parse(content).firstElement();
+		var input = #if js "interp.js" #elseif flash new InterpByteArray() #else hsm.scxml.Interp #end;
+		worker = new Worker( input, handleWorkerMessage, handleWorkerError );
 		
-		#if (js || flash)
-		
-		#if js
-		worker = new Worker( "interp.js" );
-		worker.addEventListener( "message", function(e) { handleWorkerMessage( e.data ); } );
-		worker.addEventListener( "error", function(e) { handleWorkerError( e.message ); } );
-		#else
-		worker = WorkerDomain.current.createWorker( new InterpByteArray() );
-		outgoingChannel = Worker.current.createMessageChannel( worker );
-		incomingChannel = worker.createMessageChannel( Worker.current );
-		
-		worker.setSharedProperty( WorkerScript.TO_SUB, outgoingChannel );
-		worker.setSharedProperty( WorkerScript.FROM_SUB, incomingChannel );
-		
-		incomingChannel.addEventListener( flash.events.Event.CHANNEL_MESSAGE, function(e) {
-			while( incomingChannel.messageAvailable )
-				handleWorkerMessage( incomingChannel.receive() );
-		});
-		worker.start();
+		#if !(js || flash)
+		var interp : hsm.scxml.Interp = cast worker.inst;
+		interp.onInit = onInit;
+		if( log != null ) interp.log = log;
+		if( parentEventHandler != null ) interp.parentEventHandler = parentEventHandler;
 		#end
 		
 		try {
@@ -97,21 +64,10 @@ class Scxml {
 			if( parentEventHandler != null )
 				parentEventHandler( new Event("done.invoke") );
 		}
-		
-		#else
-		
-		var c = Thread.create(createInterp);
-		c.sendMessage(scxml);
-		c.sendMessage(onInit);
-		c.sendMessage(log);
-		c.sendMessage(parentEventHandler);
-		
-		#end
 	}
 	
-	#if (js || flash)
-	
 	function handleWorkerMessage( data : Dynamic ) {
+		#if (js || flash)
 		var msg = haxe.Unserializer.run(data);
 		switch( msg.cmd ) {
 			case "log": if( log != null ) log(msg.args[0]);
@@ -127,19 +83,33 @@ class Scxml {
 			default:
 				log("worker msg received: msg.cmd = " + msg.cmd + " msg.args = " + Std.string(msg.args));
 		}
+		#end
 	}
 	
 	function handleWorkerError( msg : String ) {
 		log("worker error: " + msg);
 	}
 	
-	public function postToWorker( cmd : String, ?args : Array<Dynamic> ) : Void {
-		if( args == null ) args = [];
-		#if js
-		worker.postMessage( haxe.Serializer.run({cmd:cmd, args:args}) );
-		#else
-		outgoingChannel.send( haxe.Serializer.run({cmd:cmd, args:args}) );
+	public inline function postToWorker( cmd : String, ?args : Array<Dynamic> ) : Void {
+		worker.call( cmd, args );
+	}
+	
+	public inline function getDot() {
+		#if !(js || flash)
+		//return DrawTools.getDot(interp.topNode);
 		#end
+	}
+	
+	public inline function start() {
+		postToWorker( "start" );
+	}
+	
+	public inline function stop() {
+		postToWorker( "stop" );
+	}
+	
+	public inline function postEvent( evt : Event ) {
+		postToWorker( "postEvent", [evt] );
 	}
 	
 	function sendDomEvent( fromInvokeId : String, target : String, iface : String, domEvtType : String, 
@@ -160,6 +130,7 @@ class Scxml {
 			nodes = new js.JQuery(target).get();
 			if( nodes.length == 0 ) {
 				log("sendDomEvent target not found: " + target);
+				postToWorker( "sendDomEventFailed", [fromInvokeId] );
 				return;
 			}
 			detail = contentVal != null ? contentVal : DataTools.copyFrom( {}, data );
@@ -173,57 +144,6 @@ class Scxml {
 		
 		for( node in nodes )
 			node.dispatchEvent( cast event );
-		#end
-	}
-	
-	#else
-	function createInterp() {
-		var scxml = Thread.readMessage(true);
-		var onInit = Thread.readMessage(true);
-		var log = Thread.readMessage(true);
-		var parentEventHandler = Thread.readMessage(true);
-		
-		interp = new hsm.scxml.Interp();
-		interp.onInit = onInit;
-		if( log != null ) interp.log = log;
-		if( parentEventHandler != null ) interp.parentEventHandler = parentEventHandler;
-		
-		try {
-			interp.interpret( scxml );
-		} catch( e:Dynamic ) {
-			log("ERROR: e = " + Std.string(e));
-			parentEventHandler( new Event("done.invoke") );
-		}
-	}
-	#end
-	
-	inline public function getDot() {
-		#if !(js || flash)
-		return DrawTools.getDot(interp.topNode);
-		#end
-	}
-	
-	inline public function start() {
-		#if (js || flash)
-		postToWorker( "start" );
-		#else
-		interp.start();
-		#end
-	}
-	
-	inline public function stop() {
-		#if (js || flash)
-		postToWorker( "stop" );
-		#else
-		interp.stop();
-		#end
-	}
-	
-	inline public function postEvent( evt : Event ) {
-		#if (js || flash)
-		postToWorker( "postEvent", [evt] );
-		#else
-		if( interp != null ) interp.postEvent( evt );
 		#end
 	}
 }

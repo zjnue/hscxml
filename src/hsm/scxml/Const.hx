@@ -23,11 +23,11 @@ class Const {
 	
 	public static inline var INV_TYPE_SCXML = "http://www.w3.org/TR/scxml";
 	public static inline var INV_TYPE_SCXML_SHORT = "scxml";
-	public static inline var INV_TYPE_CCXML = "http://www.w3.org/TR/ccxml/";
+	public static inline var INV_TYPE_CCXML = "http://www.w3.org/TR/ccxml";
 	public static inline var INV_TYPE_CCXML_SHORT = "ccxml";
-	public static inline var INV_TYPE_VOICEXML30 = "http://www.w3.org/TR/voicexml30/";
+	public static inline var INV_TYPE_VOICEXML30 = "http://www.w3.org/TR/voicexml30";
 	public static inline var INV_TYPE_VOICEXML30_SHORT = "voicexml30";
-	public static inline var INV_TYPE_VOICEXML21 = "http://www.w3.org/TR/voicexml21/";
+	public static inline var INV_TYPE_VOICEXML21 = "http://www.w3.org/TR/voicexml21";
 	public static inline var INV_TYPE_VOICEXML21_SHORT = "voicexml21";
 	
 	public static var acceptedInvokeTyoes = [

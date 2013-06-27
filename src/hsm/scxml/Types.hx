@@ -101,7 +101,7 @@ class Queue<T> {
 #if (js || flash)
 class BlockingQueue<T> {
 	var l : List<T>;
-	public function new() { l = new List<T>(); callOnNewContent = false; }
+	public function new( ?onNew : Void -> Void ) { l = new List<T>(); onNewContent = onNew; callOnNewContent = false; }
 	public var callOnNewContent : Bool;
 	public var onNewContent : Void -> Void;
 	public inline function enqueue( i : T ) {
