@@ -1063,18 +1063,6 @@ class Interp extends Base {
 		}
 	}
 	
-//	function isAcceptedInvokeType( type : String ) {
-//		switch( type.stripEndSlash() ) {
-//			case
-//				"http://www.w3.org/TR/scxml", "scxml": return true;//,
-////				"http://www.w3.org/TR/ccxml/", "ccxml",
-////				"http://www.w3.org/TR/voicexml30/", "voicexml30",
-////				"http://www.w3.org/TR/voicexml21/", "voicexml21": return true;
-//			default:
-//				return false;
-//		}
-//	}
-	
 	function setFromSrc( id : String, src : String ) {
 		var val = null;
 		if( src.indexOf("file:") >= 0 )

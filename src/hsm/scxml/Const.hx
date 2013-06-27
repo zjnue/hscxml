@@ -1,5 +1,7 @@
 package hsm.scxml;
 
+using hsm.scxml.tools.DataTools;
+
 class Const {
 	
 	public static inline var IOPROC_SCXML = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";
@@ -36,9 +38,10 @@ class Const {
 	];
 	
 	public static inline function isAcceptedInvokeType( type : String ) {
-		return Lambda.has( acceptedInvokeTyoes, type );
+		return Lambda.has( acceptedInvokeTyoes, type.stripEndSlash() );
 	}
 	public static inline function isScxmlInvokeType( type : String ) {
-		return type == INV_TYPE_SCXML || type == INV_TYPE_SCXML_SHORT;
+		var tmp = type.stripEndSlash();
+		return tmp == INV_TYPE_SCXML || tmp == INV_TYPE_SCXML_SHORT;
 	}
 }
