@@ -150,6 +150,35 @@ class Interp extends Base {
 			}
 	}
 	
+	function checkBlockingQueue() {
+		#if (js || flash)
+		var externalEvent = externalQueue.dequeue();
+		if( externalEvent != null ) {
+			if( isCancelEvent(externalEvent) ) {
+				running = false;
+				mainEventLoop();
+				return;
+			}
+			setEvent(externalEvent);
+			for( state in configuration )
+				for( inv in state.invoke() ) {
+					if( inv.get("invokeid") == externalEvent.invokeid )
+						applyFinalize(inv, externalEvent);
+					if( inv.exists("autoforward") && inv.get("autoforward") == "true" )
+						send(inv.get("id"), externalEvent);
+				}
+			var enabledTransitions = selectTransitions(externalEvent);
+			if( !enabledTransitions.isEmpty() )
+				microstep(enabledTransitions.toList());
+			mainEventLoop();
+		}
+		else if( running ) 
+			externalQueue.callOnNewContent = true;
+		else
+			log("checkBlockingQueue: externalEvent = " + Std.string(externalEvent) + " running = " + Std.string(running));
+		#end
+	}
+	
 	#if (js || flash)
 	
 	function mainEventLoop() {
@@ -188,33 +217,6 @@ class Interp extends Base {
 			for( t in timers )
 				t.stop();
 		}
-	}
-	
-	function checkBlockingQueue() {
-		var externalEvent = externalQueue.dequeue();
-		if( externalEvent != null ) {
-			if( isCancelEvent(externalEvent) ) {
-				running = false;
-				mainEventLoop();
-				return;
-			}
-			setEvent(externalEvent);
-			for( state in configuration )
-				for( inv in state.invoke() ) {
-					if( inv.get("invokeid") == externalEvent.invokeid )
-						applyFinalize(inv, externalEvent);
-					if( inv.exists("autoforward") && inv.get("autoforward") == "true" )
-						send(inv.get("id"), externalEvent);
-				}
-			var enabledTransitions = selectTransitions(externalEvent);
-			if( !enabledTransitions.isEmpty() )
-				microstep(enabledTransitions.toList());
-			mainEventLoop();
-		}
-		else if( running ) 
-			externalQueue.callOnNewContent = true;
-		else
-			log("checkBlockingQueue: externalEvent = " + Std.string(externalEvent) + " running = " + Std.string(running));
 	}
 	
 	#else
@@ -564,20 +566,19 @@ class Interp extends Base {
 			}
 			id = datamodel.get(idlocation);
 		}
-		if( hasInvokedData(id) ) {
-			#if (js || flash)
+		if( hasWorker(id) ) {
 			postToWorker( id, "stop" );
 			postToWorker( id, "killParentHandler" );
 			postToWorker( id, "exitInterpreter" );
-			#else
-			var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(id);
-			data.instance.running = false;
-			data.instance.parentEventHandler = function( evt : Event ) {};
-			data.instance.exitInterpreter();
-			#end
 		} else {
 			log("Warning, cancel invoke data missing for id: " + id);
 		}
+	}
+	
+	function killParentHandler() {
+		#if !(js || flash)
+		parentEventHandler = function( evt : Event ) {};
+		#end
 	}
 	
 	// TODO check, evt does not seem necessary here
@@ -587,18 +588,12 @@ class Interp extends Base {
 	}
 	
 	function send( invokeid : String, evt : Event ) {
-		if( !hasInvokedData(invokeid) )
+		if( !hasWorker(invokeid) )
 			throw "check";
-			
-		var invData = getInvokedData(invokeid);
-		if( !invData.type.isScxmlInvokeType() )
-			throw "Invoke type currently not supported: " + invData.type;
-		
-		#if (js || flash)
+		var worker = getWorker(invokeid);
+		if( !worker.type.isScxmlInvokeType() )
+			throw "Invoke type currently not supported: " + worker.type;
 		postToWorker( invokeid, "postEvent", [evt] );
-		#else
-		invData.instance.postEvent( evt );
-		#end
 	}
 	
 	function getDoneData( n : Node ) {
@@ -657,8 +652,7 @@ class Interp extends Base {
 	}
 	
 	inline function isValidAndSupportedSendTarget( target : String ) {
-		return if( Lambda.has(["#_internal", "#_parent", "#_scxml_" + datamodel.get("_sessionid")], target ) ||
-					(invokedData != null && hasInvokedData(target.substr(2))) )
+		return if( Lambda.has(["#_internal", "#_parent", "#_scxml_" + datamodel.get("_sessionid")], target) || hasWorker(target.substr(2)) )
 			true;
 		else
 			datamodel.exists(target);
@@ -821,14 +815,8 @@ class Interp extends Base {
 									
 									if( target.indexOf("#_") == 0 ) {
 										var sub = target.substr(2);
-										if( hasInvokedData(sub) ) {
-											#if (js || flash)
+										if( hasWorker(sub) )
 											postToWorker( sub, "postEvent", [evt] );
-											#else
-											var data : {type:String, instance:hsm.scxml.Interp} = getInvokedData(sub);
-											data.instance.postEvent(evt);
-											#end
-										}
 									}
 								
 								}
@@ -1038,7 +1026,7 @@ class Interp extends Base {
 				
 				case Const.INV_TYPE_SCXML, Const.INV_TYPE_SCXML_SHORT:
 				
-					if( hasInvokedData(invokeid) )
+					if( hasWorker(invokeid) )
 						throw "Invoke id already exists: " + invokeid;
 					
 					createSubInst( contentVal, data, invokeid, type );
@@ -1113,15 +1101,11 @@ class Interp extends Base {
 	
 	public static function main() {
 		var i = new Interp();
-		i.export();
+		hxworker.WorkerScript.export(i);
 	}
 	
 	override public function handleOnMessage(data) {
-		#if (js || flash)
-		var msg = haxe.Unserializer.run(data);
-		#else
-		var msg : {cmd:String, args:Array<Dynamic>} = data;
-		#end
+		var msg = hxworker.Worker.uncompress( data );
 		switch( msg.cmd ) {
 			case "postEvent": postEvent( cast(msg.args[0], Event) );
 			case "interpret": interpret( Xml.parse(msg.args[0]).firstElement() );

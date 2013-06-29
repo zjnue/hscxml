@@ -1,47 +1,95 @@
 package hxworker;
 
+#if neko
+import neko.vm.Mutex;
+#elseif cpp
+import cpp.vm.Mutex;
+#end
+
+import hxworker.Worker;
+
+#if haxe3
+private typedef Hash<T> = haxe.ds.StringMap<T>;
+#end
+
 class WorkerScript {
-	
+
 	#if flash
 	var channelOut : flash.system.MessageChannel;
 	var channelIn : flash.system.MessageChannel;
+	#elseif (neko || cpp)
+	var workersMutex : Mutex;
 	#end
 	
+	var workers : Hash<Worker>;
+	
 	public function new() {
+		workers = new Hash();
 		#if flash
 		channelIn = flash.system.Worker.current.getSharedProperty( Worker.TO_SUB );
 		channelOut = flash.system.Worker.current.getSharedProperty( Worker.FROM_SUB );
 		channelIn.addEventListener( flash.events.Event.CHANNEL_MESSAGE, onMessage );
+		#elseif (neko || cpp)
+		workersMutex = new Mutex();
 		#end
 	}
-	public function handleOnMessage( data : Dynamic ) : Void {}
-	public function post( cmd : String, args : Array<Dynamic> ) : Void {
-		#if js
-		postMessage( haxe.Serializer.run({cmd:cmd, args:args}) );
-		#elseif flash
-		channelOut.send( haxe.Serializer.run({cmd:cmd, args:args}) );
-		#end
-	}
-	function onMessage( e : Dynamic ) : Void {
+	// here we receive a message from main (parent)
+	public function onMessage( e : Dynamic ) : Void {
 		#if js
 		handleOnMessage( e.data );
 		#elseif flash
 		while( channelIn.messageAvailable )
 			handleOnMessage( channelIn.receive() );
+		#else
+		handleOnMessage( e );
 		#end
 	}
 	function onError( e : Dynamic ) : Void {}
+	public function handleOnMessage( data : Dynamic ) : Void {}
+	// this call posts data from a child worker, to main (parent)
+	public function post( cmd : String, args : Array<Dynamic> ) : Void {
+		#if js
+		postMessage( Worker.compress(cmd, args) );
+		#elseif flash
+		channelOut.send( Worker.compress(cmd, args) );
+		#else
+		//
+		#end
+	}
+	function handleWorkerMessage( data : Dynamic, inv_id : String ) {}
 	#if js
 	function postMessage( msg : Dynamic ) : Void {
 		untyped __js__("self.postMessage( msg )");
 	}
 	#end
 	
+	function setWorker( id : String, worker : Worker ) {
+		#if (neko || cpp) workersMutex.acquire(); #end
+		workers.set(id, worker);
+		#if (neko || cpp) workersMutex.release(); #end
+	}
+	
+	function getWorker( id : String ) {
+		var worker = null;
+		#if (neko || cpp) workersMutex.acquire(); #end
+		worker = workers.get(id);
+		#if (neko || cpp) workersMutex.release(); #end
+		return worker;
+	}
+	
+	function hasWorker( id : String ) {
+		var has = false;
+		#if (neko || cpp) workersMutex.acquire(); #end
+		has = workers.exists(id);
+		#if (neko || cpp) workersMutex.release(); #end
+		return has;
+	}
+	
 	// TODO make sure all methods in Interp (our workerscript-to-be) are added here
 	// use a macro for this eventually
-	public function export() {
+	public static function export( script : WorkerScript ) {
 		#if js
-		var script = this;
+		
 		untyped __js__("self.onmessage = script.onMessage");
 		untyped __js__("self.onerror = script.onError");
 		untyped __js__("self.post = script.post");
@@ -65,7 +113,6 @@ class WorkerScript {
 		untyped __js__("self.running = script.running");
 		untyped __js__("self.binding = script.binding");
 		untyped __js__("self.genStateId = script.genStateId");
-		untyped __js__("self.invokedData = script.invokedData");
 		untyped __js__("self.locId = script.locId");
 		untyped __js__("self.platformId = script.platformId");
 		untyped __js__("self.cancelledSendIds = script.cancelledSendIds");
@@ -130,9 +177,6 @@ class WorkerScript {
 		untyped __js__("self.getNamelistData = script.getNamelistData");
 		untyped __js__("self.parseContent = script.parseContent");
 		untyped __js__("self.parseParams = script.parseParams");
-		untyped __js__("self.setInvokedData = script.setInvokedData");
-		untyped __js__("self.getInvokedData = script.getInvokedData");
-		untyped __js__("self.hasInvokedData = script.hasInvokedData");
 		untyped __js__("self.invoke = script.invoke");
 		untyped __js__("self.postToWorker = script.postToWorker");
 		untyped __js__("self.invokeTypeAccepted = script.invokeTypeAccepted");
@@ -140,6 +184,11 @@ class WorkerScript {
 		untyped __js__("self.getFileContent = script.getFileContent");
 		untyped __js__("self.getTargetStates = script.getTargetStates");
 		untyped __js__("self.getTargetState = script.getTargetState");
+		untyped __js__("self.setWorker = script.setWorker");
+		untyped __js__("self.getWorker = script.getWorker");
+		untyped __js__("self.hasWorker = script.hasWorker");
+		untyped __js__("self.workers = script.workers");
+		
 		#end
 	}
 

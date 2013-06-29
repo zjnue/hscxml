@@ -7,6 +7,12 @@ import hsm.scxml.tools.DataTools;
 
 import hxworker.Worker;
 
+#if neko
+import neko.vm.Thread;
+#elseif cpp
+import cpp.vm.Thread;
+#end
+
 #if (js || flash)
 import hsm.scxml.Base;
 #else
@@ -50,13 +56,7 @@ class Scxml {
 		var input = #if js "interp.js" #elseif flash new InterpByteArray() #else hsm.scxml.Interp #end;
 		worker = new Worker( input, handleWorkerMessage, handleWorkerError );
 		
-		#if !(js || flash)
-		var interp : hsm.scxml.Interp = cast worker.inst;
-		interp.onInit = onInit;
-		if( log != null ) interp.log = log;
-		if( parentEventHandler != null ) interp.parentEventHandler = parentEventHandler;
-		#end
-		
+		#if (js || flash)
 		try {
 			postToWorker( "interpret", [content] );
 		} catch( e:Dynamic ) {
@@ -64,34 +64,45 @@ class Scxml {
 			if( parentEventHandler != null )
 				parentEventHandler( new Event("done.invoke") );
 		}
+		#else
+		var c = Thread.create(createInterp);
+		c.sendMessage(content);
+		c.sendMessage(onInit);
+		c.sendMessage(log);
+		c.sendMessage(parentEventHandler);
+		c.sendMessage(worker);
+		#end
 	}
 	
 	function handleWorkerMessage( data : Dynamic ) {
-		#if (js || flash)
-		var msg = haxe.Unserializer.run(data);
+		var msg = Worker.uncompress( data );
 		switch( msg.cmd ) {
 			case "log": if( log != null ) log(msg.args[0]);
 			case "onInit": onInit();
 			case "postEvent":
 				if( parentEventHandler != null ) {
-					log("parentEventHandler: " + Std.string(msg.args[0]));
 					parentEventHandler( cast(msg.args[0], Event) );
 				}
 			case "sendDomEvent":
-				var args : Array<Dynamic> = msg.args;
+				var args = msg.args;
 				sendDomEvent( args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7] );
 			default:
-				log("worker msg received: msg.cmd = " + msg.cmd + " msg.args = " + Std.string(msg.args));
+				log("worker msg received: cmd = " + msg.cmd + " args = " + Std.string(msg.args));
 		}
-		#end
 	}
 	
 	function handleWorkerError( msg : String ) {
 		log("worker error: " + msg);
 	}
 	
-	public inline function postToWorker( cmd : String, ?args : Array<Dynamic> ) : Void {
+	function postToWorker( cmd : String, ?args : Array<Dynamic> ) : Void {
+		#if (js || flash)
 		worker.call( cmd, args );
+		#else
+		if( cmd == "interpret" ) args = [Xml.parse(args[0]).firstElement()];
+		if( args == null ) args = [];
+		Reflect.callMethod( worker.inst, Reflect.field(worker.inst, cmd), args );
+		#end
 	}
 	
 	public inline function getDot() {
@@ -111,6 +122,29 @@ class Scxml {
 	public inline function postEvent( evt : Event ) {
 		postToWorker( "postEvent", [evt] );
 	}
+	
+	#if !(js || flash)
+	function createInterp() {
+		var content = Thread.readMessage(true);
+		var onInit = Thread.readMessage(true);
+		var log = Thread.readMessage(true);
+		var parentEventHandler = Thread.readMessage(true);
+		var worker = Thread.readMessage(true);
+		
+		var interp = new hsm.scxml.Interp();
+		interp.onInit = onInit;
+		if( log != null ) interp.log = log;
+		if( parentEventHandler != null ) interp.parentEventHandler = parentEventHandler;
+		worker.inst = interp;
+		
+		try {
+			interp.interpret( Xml.parse(content).firstElement() );
+		} catch( e:Dynamic ) {
+			log("ERROR: e = " + Std.string(e));
+			parentEventHandler( new Event("done.invoke") );
+		}
+	}
+	#end
 	
 	function sendDomEvent( fromInvokeId : String, target : String, iface : String, domEvtType : String, 
 		cancelable : Bool, bubbles : Bool, contentVal : String, data : Array<{key:String, value:Dynamic}> ) {

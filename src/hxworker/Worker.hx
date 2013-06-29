@@ -29,6 +29,7 @@ class Worker {
 	var thread : Thread;
 	#end
 	
+	public var type : String;
 	public var onData : Dynamic -> Void;
 	public var onError : String -> Void;
 	
@@ -51,27 +52,36 @@ class Worker {
 		});
 		inst.start();
 		#else
-		thread = Thread.create( createInst );
-		thread.sendMessage( input );
-		Sys.sleep(0.01);
+		//
 		#end
 	}
 	
+	// data received here is passed from main (parent) to this worker
 	public function call( cmd : String, ?args : Array<Dynamic> ) : Void {
 		if( args == null ) args = [];
 		#if js
-		inst.postMessage( haxe.Serializer.run({cmd:cmd, args:args}) );
+		inst.postMessage( compress(cmd, args) );
 		#elseif flash
-		channelOut.send( haxe.Serializer.run({cmd:cmd, args:args}) );
+		channelOut.send( compress(cmd, args) );
 		#else
-		inst.handleOnMessage( {cmd:cmd, args:args} );
+		//
 		#end
 	}
 	
-	#if (neko || cpp)
-	function createInst() {
-		var input = Thread.readMessage(true);
-		inst = Type.createInstance(input, []);
+	public static inline function compress( cmd : String, args : Array<Dynamic> ) {
+		#if (js || flash)
+		return haxe.Serializer.run( {cmd:cmd, args:args} );
+		#else
+		return {cmd:cmd, args:args};
+		#end
 	}
-	#end
+	
+	public static inline function uncompress( data : Dynamic ) : { cmd : String, args : Array<Dynamic> } {
+		#if (js || flash)
+		return haxe.Unserializer.run( data );
+		#else
+		return data;
+		#end
+	}
+	
 }

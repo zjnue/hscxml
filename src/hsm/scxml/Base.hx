@@ -6,20 +6,12 @@ import hsm.scxml.Types;
 using hsm.scxml.tools.DataTools;
 using hsm.scxml.tools.NodeTools;
 
-#if js
-import js.Worker;
-#elseif flash
-import flash.system.Worker;
-import flash.system.WorkerDomain;
-import flash.system.MessageChannel;
-#end
+import hxworker.Worker;
 
 #if neko
 import neko.vm.Thread;
-import neko.vm.Mutex;
 #elseif cpp
 import cpp.vm.Thread;
-import cpp.vm.Mutex;
 #end
 
 #if haxe3
@@ -38,7 +30,6 @@ class Base extends hxworker.WorkerScript {
 	
 	#else
 	
-	var invokedDataMutex:Mutex;
 	var timerThread : TimerThread;
 	var mainThread : Thread;
 	
@@ -69,14 +60,11 @@ class Base extends hxworker.WorkerScript {
 	var binding : String;
 	
 	var cancelledSendIds : Hash<Bool>;
-	var invokedData : Hash<Dynamic>;
 
 	public function new() {
 		super();
 		#if (js || flash)
 		haxe.Serializer.USE_CACHE = true;
-		#else
-		log = function(msg:String) trace(msg);
 		#end
 	}
 	
@@ -90,10 +78,6 @@ class Base extends hxworker.WorkerScript {
 	
 	inline function extraInit() {
 		cancelledSendIds = new Hash();
-		invokedData = new Hash();
-		#if !(js || flash)
-		invokedDataMutex = new Mutex();
-		#end
 	}
 	
 	inline function raise( evt : Event ) {
@@ -247,51 +231,48 @@ class Base extends hxworker.WorkerScript {
 		return prop;
 	}
 	
-	#if (js || flash)
+	function createSubInst( content : String, data : Array<{key:String, value:Dynamic}>, inv_id : String, type : String ) {
 	
-	function createSubInst( content : String, data : Array<{key:String, value:Dynamic}>, invokeid : String, type : String ) {
 		var xml = Xml.parse(content).firstElement().setSubInstData(data);
-		#if js
 		
-		var worker = new Worker( "interp.js" );
-		setInvokedData( invokeid, { type : type, instance : worker } );
-		worker.addEventListener( "message", function(e) { handleWorkerMessage(e.data, invokeid); } );
-		worker.addEventListener( "error", function(e) { handleWorkerError(e.message); } );
+		var input = #if js "interp.js" #elseif flash flash.Lib.current.loaderInfo.bytes #else hsm.scxml.Interp #end;
+		var worker = new Worker( input, handleWorkerMessage.bind(_,inv_id), handleWorkerError );
+		worker.type = type;
+		setWorker(inv_id, worker);
 		
-		#else
-		
-		var worker = WorkerDomain.current.createWorker( flash.Lib.current.loaderInfo.bytes );
-		var outgoingChannel = Worker.current.createMessageChannel( worker );
-		var incomingChannel = worker.createMessageChannel( Worker.current );
-		
-		worker.setSharedProperty( hxworker.Worker.TO_SUB, outgoingChannel );
-		worker.setSharedProperty( hxworker.Worker.FROM_SUB, incomingChannel );
-		
-		incomingChannel.addEventListener( flash.events.Event.CHANNEL_MESSAGE, function(e) {
-			while( incomingChannel.messageAvailable )
-				handleWorkerMessage( incomingChannel.receive(), invokeid );
-		});
-		setInvokedData( invokeid, { type : type, instance : worker, incomingChannel : incomingChannel, outgoingChannel : outgoingChannel } );
-		worker.start();
-		
-		#end
+		#if (js || flash)
 		try {
-			postToWorker( invokeid, "invokeId", [invokeid] );
-			postToWorker( invokeid, "interpret", [xml.toString()] );
+			postToWorker( inv_id, "invokeId", [inv_id] );
+			postToWorker( inv_id, "interpret", [xml.toString()] );
 		} catch( e:Dynamic ) {
 			log("ERROR: sub worker: e = " + Std.string(e));
 		}
+		#else
+		
+		var c = Thread.create( createChildInterp );
+		c.sendMessage(Thread.current());
+		c.sendMessage(content);
+		c.sendMessage(data);
+		c.sendMessage(inv_id);
+		c.sendMessage(type);
+		c.sendMessage(worker);
+		Thread.readMessage(true);
+		
+		Sys.sleep(0.2); // FIXME erm, for now give new instance 'some time' to stabilize (see test 250)
+		
+		#end
 	}
 	
-	function handleWorkerMessage( data : Dynamic, invokeid : String ) {
-		var msg = haxe.Unserializer.run(data);
+	// here we receive a message from the sub worker with invoke = inv_id
+	override function handleWorkerMessage( data : Dynamic, inv_id : String ) {
+		var msg = Worker.uncompress( data );
 		switch( msg.cmd ) {
 			case "log": if( log != null ) log("log-from-child: " + msg.args[0]);
-			case "onInit": postToWorker( invokeid, "start" );
+			case "onInit": postToWorker( inv_id, "start" );
 			case "postEvent": addToExternalQueue( cast(msg.args[0], Event) );
 			case "sendDomEvent": msg.args[0] += "," + invokeId; post(msg.cmd, msg.args);
 			default:
-				log("Interp: sub worker msg received: msg.cmd = " + msg.cmd + " msg.args = " + Std.string(msg.args));
+				log("Interp: sub worker msg received: cmd = " + msg.cmd + " args = " + Std.string(msg.args));
 		}
 	}
 	
@@ -299,49 +280,26 @@ class Base extends hxworker.WorkerScript {
 		log("worker error: " + msg);
 	}
 	
-	function postToWorker( invokeId : String, cmd : String, ?args : Array<Dynamic> ) {
-		if( args == null ) args = [];
-		#if js
-		var worker = getInvokedData(invokeId).instance;
-		worker.postMessage( haxe.Serializer.run({cmd:cmd, args:args}) );
+	function postToWorker( inv_id : String, cmd : String, ?args : Array<Dynamic> ) {
+		var worker = getWorker(inv_id);
+		#if (js || flash)
+		worker.call( cmd, args );
 		#else
-		var outgoingChannel = getInvokedData(invokeId).outgoingChannel;
-		outgoingChannel.send( haxe.Serializer.run({cmd:cmd, args:args}) );
+		if( cmd == "interpret" ) args = [Xml.parse(args[0]).firstElement()];
+		if( args == null ) args = [];
+		Reflect.callMethod( worker.inst, Reflect.field(worker.inst, cmd), args );
 		#end
 	}
 	
-	inline function setInvokedData( id : String, data : Dynamic ) {
-		invokedData.set(id, data);
-	}
-	
-	inline function getInvokedData( id : String ) {
-		return invokedData.get(id);
-	}
-	
-	inline function hasInvokedData( id : String ) {
-		return invokedData.exists(id);
-	}
-	
-	#else
-	
-	function createSubInst( content : String, data : Array<{key:String, value:Dynamic}>, invokeid : String, type : String ) {
-		var c = Thread.create( createChildInterp );
-		c.sendMessage(Thread.current());
-		c.sendMessage(content);
-		c.sendMessage(data);
-		c.sendMessage(invokeid);
-		c.sendMessage(type);
-		Thread.readMessage(true);
-		
-		Sys.sleep(0.2); // FIXME erm, for now give new instance 'some time' to stabilize (see test 250)
-	}
-	
+	#if !(js || flash)
 	function createChildInterp() {
+		
 		var main = Thread.readMessage(true);
 		var xmlStr = Thread.readMessage(true);
 		var data : Array<{key:String,value:Dynamic}> = Thread.readMessage(true);
 		var invokeid = Thread.readMessage(true);
 		var type = Thread.readMessage(true);
+		var worker = Thread.readMessage(true);
 		
 		var xml = Xml.parse(xmlStr).firstElement().setSubInstData(data);
 		
@@ -351,40 +309,15 @@ class Base extends hxworker.WorkerScript {
 		inst.parentEventHandler = function( evt : Event ) {
 			me.addToExternalQueue(evt);
 		};
+		
 		inst.log = function(msg) { log("log-from-child: " + msg); };
 		inst.onInit = function() { inst.start(); };
 		
-		setInvokedData(invokeid, {
-			type : type,
-			instance : inst
-		});
+		worker.inst = inst;
 		
-		main.sendMessage("please continue..");
+		main.sendMessage("done");
 		
 		inst.interpret( xml );
 	}
-	
-	function setInvokedData( id : String, data : Dynamic ) {
-		invokedDataMutex.acquire();
-		invokedData.set(id, data);
-		invokedDataMutex.release();
-	}
-	
-	function getInvokedData( id : String ) {
-		var data : Dynamic = null;
-		invokedDataMutex.acquire();
-		data = invokedData.get(id);
-		invokedDataMutex.release();
-		return data;
-	}
-	
-	function hasInvokedData( id : String ) {
-		var has = false;
-		invokedDataMutex.acquire();
-		has = invokedData.exists(id);
-		invokedDataMutex.release();
-		return has;
-	}
-	
 	#end
 }
