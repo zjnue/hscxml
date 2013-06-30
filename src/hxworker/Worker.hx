@@ -13,21 +13,23 @@ class Worker {
 	public static inline var FROM_SUB = "fromSub";
 	#end
 	
+	public var type : String;
+	
 	#if js
-	public var inst : js.Worker;
+	var inst : js.Worker;
 	#elseif flash
-	public var inst : flash.system.Worker;
+	var inst : flash.system.Worker;
 	var channelIn : flash.system.MessageChannel;
 	var channelOut : flash.system.MessageChannel;
 	#end
 	
-	public var type : String;
-	public var onData : Dynamic -> Void;
-	public var onError : String -> Void;
+	var onData : Dynamic -> Void;
+	var onError : String -> Void;
 	
-	public function new( input : Dynamic, onData : Dynamic -> Void, onError : String -> Void ) {
+	public function new( input : Dynamic, onData : Dynamic -> Void, onError : String -> Void, ?type : String ) {
 		this.onData = onData;
 		this.onError = onError;
+		this.type = type;
 		#if js
 		
 		inst = new js.Worker( input );
@@ -48,15 +50,12 @@ class Worker {
 		#else
 		
 		feedMainThread = Thread.create( feedMain );
-		feedMainThread.sendMessage( Thread.current() );
 		feedMainThread.sendMessage( onData );
 		
 		sendErrorToMainThread = Thread.create( sendErrorToMain );
-		sendErrorToMainThread.sendMessage( Thread.current() );
 		sendErrorToMainThread.sendMessage( onError );
 		
 		thread = Thread.create( createInst );
-		thread.sendMessage( Thread.current() );
 		thread.sendMessage( input );
 		thread.sendMessage( this );
 		thread.sendMessage( sendErrorToMainThread );
@@ -65,27 +64,25 @@ class Worker {
 	
 	#if !(js || flash)
 	
-	public inline function toMain( msg : Dynamic ) {
+	public inline function sendFromSub( msg : Dynamic ) {
 		feedMainThread.sendMessage( msg );
 	}
 	
-	public inline function toInst( msg : Dynamic ) {
+	inline function sendToSub( msg : Dynamic ) {
 		thread.sendMessage( msg );
 	}
 	
 	var thread : Thread;
 	function createInst() {
-		var main = Thread.readMessage( true );
 		var clazz = Thread.readMessage( true );
 		var worker = Thread.readMessage( true );
 		var errorThread = Thread.readMessage( true );
-		var inst = Type.createInstance( clazz, [] );
+		var inst : WorkerScript = Type.createInstance( clazz, [] );
 		inst.worker = worker;
 		
 		while( true ) {
 			try {
-				var msg = Thread.readMessage( true );
-				inst.onMessage( msg );
+				inst.onMessage( Thread.readMessage( true ) );
 			} catch( e:Dynamic ) {
 				errorThread.sendMessage( "ERROR: " + e );
 			}
@@ -94,22 +91,14 @@ class Worker {
 	
 	var sendErrorToMainThread : Thread;
 	function sendErrorToMain() {
-		var main = Thread.readMessage( true );
 		var onError = Thread.readMessage( true );
-		while( true ) {
-			var msg = Thread.readMessage( true );
-			onError( msg );
-		}
+		while( true ) onError( Thread.readMessage( true ) );
 	}
 	
 	var feedMainThread : Thread;
 	function feedMain() {
-		var main = Thread.readMessage( true );
 		var onData = Thread.readMessage( true );
-		while( true ) {
-			var msg = Thread.readMessage( true );
-			onData( msg );
-		}
+		while( true ) onData( Thread.readMessage( true ) );
 	}
 	#end
 	
@@ -121,7 +110,7 @@ class Worker {
 		#elseif flash
 		channelOut.send( compress(cmd, args) );
 		#else
-		toInst( compress(cmd, args) );
+		sendToSub( compress(cmd, args) );
 		#end
 	}
 	

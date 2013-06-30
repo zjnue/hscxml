@@ -1,7 +1,5 @@
 package hsm.scxml;
 
-using hsm.scxml.tools.DataTools;
-
 class Const {
 	
 	public static inline var IOPROC_SCXML = "http://www.w3.org/TR/scxml/#SCXMLEventProcessor";

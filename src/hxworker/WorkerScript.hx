@@ -46,7 +46,7 @@ class WorkerScript {
 		#end
 	}
 	function onError( e : Dynamic ) : Void {}
-	public function handleOnMessage( data : Dynamic ) : Void {}
+	function handleOnMessage( data : Dynamic ) : Void {}
 	// this call posts data from a child worker, to main (parent)
 	public function post( cmd : String, args : Array<Dynamic> ) : Void {
 		#if js
@@ -54,7 +54,7 @@ class WorkerScript {
 		#elseif flash
 		channelOut.send( Worker.compress(cmd, args) );
 		#else
-		worker.toMain( Worker.compress(cmd, args) );
+		worker.sendFromSub( Worker.compress(cmd, args) );
 		#end
 	}
 	function handleWorkerMessage( data : Dynamic, inv_id : String ) {}

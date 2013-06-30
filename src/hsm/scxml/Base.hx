@@ -228,8 +228,7 @@ class Base extends hxworker.WorkerScript {
 		var xml = Xml.parse(content).firstElement().setSubInstData(data);
 		
 		var input = #if js "interp.js" #elseif flash flash.Lib.current.loaderInfo.bytes #else hsm.scxml.Interp #end;
-		var worker = new Worker( input, handleWorkerMessage.bind(_,inv_id), handleWorkerError );
-		worker.type = type;
+		var worker = new Worker( input, handleWorkerMessage.bind(_,inv_id), handleWorkerError, type );
 		setWorker(inv_id, worker);
 		
 		try {

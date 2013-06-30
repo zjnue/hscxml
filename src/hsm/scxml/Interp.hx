@@ -575,12 +575,6 @@ class Interp extends Base {
 		}
 	}
 	
-	function killParentHandler() {
-		#if !(js || flash)
-		parentEventHandler = function( evt : Event ) {};
-		#end
-	}
-	
 	// TODO check, evt does not seem necessary here
 	function applyFinalize( inv : Node, evt : Event ) {
 		for( f in inv.finalize() )
