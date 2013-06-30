@@ -19,6 +19,7 @@ class WorkerScript {
 	var channelIn : flash.system.MessageChannel;
 	#elseif (neko || cpp)
 	var workersMutex : Mutex;
+	public var worker : Worker;
 	#end
 	
 	var workers : Hash<Worker>;
@@ -53,7 +54,7 @@ class WorkerScript {
 		#elseif flash
 		channelOut.send( Worker.compress(cmd, args) );
 		#else
-		//
+		worker.toMain( Worker.compress(cmd, args) );
 		#end
 	}
 	function handleWorkerMessage( data : Dynamic, inv_id : String ) {}

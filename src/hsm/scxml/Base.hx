@@ -21,23 +21,15 @@ private typedef Hash<T> = haxe.ds.StringMap<T>;
 class Base extends hxworker.WorkerScript {
 
 	#if (js || flash)
-	
 	var timers : Array<haxe.Timer>;
+	#else
+	var timerThread : TimerThread;
+	var mainThread : Thread;
+	#end
 	
 	dynamic function parentEventHandler( evt : Event ) { post("postEvent", [evt]); }
 	function onInit() { post("onInit", []); }
 	function log( msg : String ) { post("log", [msg]); }
-	
-	#else
-	
-	var timerThread : TimerThread;
-	var mainThread : Thread;
-	
-	public var parentEventHandler : Event -> Void;
-	public var onInit : Void -> Void;
-	public var log : String -> Void;
-	
-	#end
 	
 	var d : Node;
 	
@@ -240,27 +232,12 @@ class Base extends hxworker.WorkerScript {
 		worker.type = type;
 		setWorker(inv_id, worker);
 		
-		#if (js || flash)
 		try {
 			postToWorker( inv_id, "invokeId", [inv_id] );
 			postToWorker( inv_id, "interpret", [xml.toString()] );
 		} catch( e:Dynamic ) {
 			log("ERROR: sub worker: e = " + Std.string(e));
 		}
-		#else
-		
-		var c = Thread.create( createChildInterp );
-		c.sendMessage(Thread.current());
-		c.sendMessage(content);
-		c.sendMessage(data);
-		c.sendMessage(inv_id);
-		c.sendMessage(type);
-		c.sendMessage(worker);
-		Thread.readMessage(true);
-		
-		Sys.sleep(0.2); // FIXME erm, for now give new instance 'some time' to stabilize (see test 250)
-		
-		#end
 	}
 	
 	// here we receive a message from the sub worker with invoke = inv_id
@@ -280,44 +257,7 @@ class Base extends hxworker.WorkerScript {
 		log("worker error: " + msg);
 	}
 	
-	function postToWorker( inv_id : String, cmd : String, ?args : Array<Dynamic> ) {
-		var worker = getWorker(inv_id);
-		#if (js || flash)
-		worker.call( cmd, args );
-		#else
-		if( cmd == "interpret" ) args = [Xml.parse(args[0]).firstElement()];
-		if( args == null ) args = [];
-		Reflect.callMethod( worker.inst, Reflect.field(worker.inst, cmd), args );
-		#end
+	inline function postToWorker( inv_id : String, cmd : String, ?args : Array<Dynamic> ) {
+		getWorker(inv_id).call( cmd, args );
 	}
-	
-	#if !(js || flash)
-	function createChildInterp() {
-		
-		var main = Thread.readMessage(true);
-		var xmlStr = Thread.readMessage(true);
-		var data : Array<{key:String,value:Dynamic}> = Thread.readMessage(true);
-		var invokeid = Thread.readMessage(true);
-		var type = Thread.readMessage(true);
-		var worker = Thread.readMessage(true);
-		
-		var xml = Xml.parse(xmlStr).firstElement().setSubInstData(data);
-		
-		var me = this;
-		var inst = new hsm.scxml.Interp();
-		inst.invokeId = invokeid;
-		inst.parentEventHandler = function( evt : Event ) {
-			me.addToExternalQueue(evt);
-		};
-		
-		inst.log = function(msg) { log("log-from-child: " + msg); };
-		inst.onInit = function() { inst.start(); };
-		
-		worker.inst = inst;
-		
-		main.sendMessage("done");
-		
-		inst.interpret( xml );
-	}
-	#end
 }
