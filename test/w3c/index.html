@@ -4520,7 +4520,7 @@ evaluated.</p>
 &lt;scxml version="1.0" datamodel="ecmascript"&gt;
 ....
  &lt;state id="getTime"&gt;
-   &lt;transition event="ping" cond="time.getHours() &gt; 17 ||  time.getHours() &lt; 9" target="storeClosed"/&gt;
+   &lt;transition event="ping" cond="time.getHours() &gt; 17 || time.getHours() &lt; 9" target="storeClosed"/&gt;
    &lt;transition event="ping" target="takeOrder"/&gt;
    &lt;datamodel&gt;
      &lt;data id="time" expr="new Date()"/&gt;
