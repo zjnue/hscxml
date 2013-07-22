@@ -366,7 +366,7 @@
    
 <assert id="276"  specnum="5.3" specid="#data">
  	     <![CDATA[The SCXML Processor MUST allow the environment to provide values for top-level data elements at instantiation time. (Top-level data elements are those that are children of the datamodel element that is a child of scxml). Specifically, the Processor MUST use the values provided at instantiation time instead of those contained in these data elements.]]>
-    <test id="" conformance="mandatory" manual="false">
+    <test id="276" conformance="mandatory" manual="false">
     <start uri="276/test276.txml"/>
         <dep uri="276/test276sub1.txml"/>
   </test>
