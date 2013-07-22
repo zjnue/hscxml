@@ -146,13 +146,6 @@
   </test>  
    </assert> 
    
-          <assert id="406"  specnum="3.13" specid="#SelectingTransitions">
-      <![CDATA[ [the SCXML Processor executing a set of transitions] MUST then [after the exits and the transitions] enter the states in the transitions' entry set in entry order.]]>
-       <test id="406" conformance="mandatory" manual="false">
-    <start uri="406/test406.txml"/>
-  </test>  
-  </assert>
-  
          <assert id="407"  specnum="3.13" specid="#SelectingTransitions">
       <![CDATA[ To exit a state, the SCXML Processor MUST execute the executable content in the state's <onexit> handler.]]>
        <test id="407" conformance="mandatory" manual="false">
