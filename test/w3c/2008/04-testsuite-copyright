@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Generated from data/head.php, ../../smarty/{head.tpl} -->
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Licenses for W3C Test Suites</title>
+
+<link rel="Help" href="/Help/" />
+<link rel="stylesheet" href="/2008/site/css/minimum" type="text/css" media="handheld, all" />
+<style type="text/css" media="print, screen and (min-width: 481px)">
+/*<![CDATA[*/
+@import url("/2008/site/css/advanced");
+/*]]>*/
+</style>
+<link href="/2008/site/css/minimum" rel="stylesheet" type="text/css" media="handheld, only screen and (max-device-width: 480px)" />
+<meta name="viewport" content="width=device-width" />
+<link rel="stylesheet" href="/2008/site/css/print" type="text/css" media="print" />
+<link rel="shortcut icon" href="/2008/site/images/favicon.ico" type="image/x-icon" />
+</head>
+<body id="www-w3-org" class="w3c_public">
+<div id="w3c_container">
+<!-- Generated from data/mast.php, ../../smarty/{mast.tpl} -->
+<div id="w3c_mast"><!-- #w3c_mast / Page top header -->
+<h1 class="logo"><a tabindex="2" accesskey="1" href="/"><img src="/2008/site/images/logo-w3c-mobile-lg" width="90" height="53" alt="W3C" /></a> <span class="alt-logo">W3C</span></h1>
+<div id="w3c_nav">
+<form action="http://www.w3.org/Help/search" method="get" enctype="application/x-www-form-urlencoded">
+<!-- w3c_sec_nav is populated through js -->
+<div class="w3c_sec_nav"><!-- --></div>
+<ul class="main_nav"><!-- Main navigation menu -->
+<li class="first-item"><a href="/standards/">Standards</a></li>
+<li><a href="/participate/">Participate</a></li>
+<li><a href="/Consortium/membership">Membership</a></li>
+<li class="last-item"><a href="/Consortium/">About W3C</a></li>
+<li class="search-item">
+<div id="search-form"><input tabindex="3" class="text" name="q" value="" title="Search" /> <button id="search-submit" name="search-submit" type="submit"><img class="submit" src="/2008/site/images/search-button" alt="Search" width="21" height="17" /></button></div>
+</li>
+</ul>
+</form>
+</div>
+</div>
+<!-- /end #w3c_mast -->
+<div id="w3c_main">
+<div id="w3c_logo_shadow" class="w3c_leftCol"><img width="100%" height="32" alt="" src="/2008/site/images/logo-shadow" /></div>
+<div class="w3c_leftCol"><h2 class="offscreen">Site Navigation</h2>
+    <h3 class="category"><span class="ribbon"><a href="/Consortium/Legal/ipr-notice.html" title="Up to Policies and Legal Information">Policies and Legal Information <img src="/2008/site/images/header-link" alt="Header link" width="13" height="13" class="header-link" /></a></span></h3>
+       <ul class="theme">
+        <li><a class="current">Licenses for W3C Test Suites</a></li>
+        <li><a href="/2004/10/27-testcases.html">Policies for Contribution of Test Cases to W3C</a></li>
+        <li><a href="/Consortium/Legal/IPR-FAQ-20000620.html">Intellectual Rights FAQ</a></li>
+        <li><a href="/Consortium/Legal/privacy-statement-20000612.html">W3C Privacy Statements</a></li>
+        <li><a href="/Consortium/Legal/2002/copyright-documents-20021231.html">W3C Document License</a></li>
+        <li><a href="/Consortium/Legal/2002/trademarks-20021231.html">W3C Trademarks and Generic Terms</a></li>
+        <li><a href="/Consortium/Legal/2002/trademark-license-20021231.html">W3C&#xAE; Trademark and Service Mark License</a></li>
+        <li><a href="/Consortium/Legal/2002/copyright-software-20021231.html">W3C Software Notice and License</a></li>
+        <li><a href="/Consortium/Legal/2002/collaborators-agreement-20021231.html">W3C Invited Expert and Collaborators Agreement</a></li>
+        <li><a href="/Consortium/Persistence.html">W3C URI Persistence Policy</a></li>
+        <li><a href="/1999/10/21-mirroring-policy.html">Mirroring the W3C Site</a></li>
+        <li><a href="/Consortium/Legal/2006/08-copyright-translations.html">Translations of the Copyright Notice</a></li>
+       </ul>
+       <br /></div>
+<div class="w3c_mainCol">
+<!-- Generated from data/crumbs.php, ../../smarty/{crumbs.tpl} -->
+<div id="w3c_crumbs">
+       <div id="w3c_crumbs_frame">
+        <ul class="bct"> <!-- .bct / Breadcrumbs -->
+          <li class="skip"><a tabindex="1" accesskey="2" title="Skip to content (e.g., when browsing via audio)" href="#w3c_content_body">Skip</a></li>
+          <li><a href="/">W3C</a>&#xA0;<span class="cr">&#xBB;</span>&#xA0;</li>
+          <li><a href="/Consortium/">About&#xA0;W3C</a>&#xA0;<span class="cr">&#xBB;</span>&#xA0;</li>
+          <li><a href="/Consortium/facts.html">Facts&#xA0;About&#xA0;W3C</a>&#xA0;<span class="cr">&#xBB;</span>&#xA0;</li>
+          <li><a href="/Consortium/Legal/ipr-notice.html">Policies&#xA0;and&#xA0;Legal&#xA0;Information</a>&#xA0;<span class="cr">&#xBB;</span>&#xA0;</li>
+          <li class="current">Licenses for W3C Test Suites</li>
+        </ul>            
+     </div>
+    </div>
+<h1 class="title">Licenses for W3C Test Suites</h1>
+<ul class="w3c_toc">
+<li class="toc_prefix">On this page &#x2192; </li>
+<li><a href="#lic1">BSD&#xA0;License&#xA0;Summary</a><span class="bullet">&#xA0;&#x2022; </span></li>
+<li><a href="#lic2">W3C&#xA0;License&#xA0;Summary</a><span class="bullet">&#xA0;&#x2022; </span></li>
+<li><a href="#howtouse">how&#xA0;to&#xA0;use</a><span class="bullet">&#xA0;&#x2022; </span></li>
+<li><a href="#disclaimer">disclaimer</a></li>
+</ul>
+<div id="w3c_content_body">
+<div class="line">
+<div class="unit size3on4">
+<p>Licenses for distribution of W3C Test Suites should satisfy two goals:</p>
+<ol class="show_items">
+  <li>Enable developers to use test cases easily, and promote software
+    development and bugtracking.</li>
+  <li>Enable a W3C Working Group to create a branded, "Authoritative W3C Test
+    Suite" to reflect the group consensus process, and to promote
+    interoperability and stability of performance claims.</li>
+</ol>
+
+<p>To achieve these goals, W3C makes available Test Suites under two distinct
+licenses for two mutually exclusive uses:</p>
+<ol class="show_items">
+  <li>a <a href="03-bsd-license.html">3-clause BSD License</a> for software
+    development, bugtracking, and other applications that do not require
+    assertions of performance to the public or implied claims of conformance
+    to a W3C Specification. See <a href="#lic1">summary of 3-clause BSD License</a>.</li>
+  <li>a <a href="04-testsuite-license.html">W3C Test Suite License</a> for
+    an Authoritative W3C Test Suite or when claims of performance with
+    respect to a specification are required. See <a href="#lic2">summary of W3C Test Suite License</a>.</li>
+</ol>
+
+<p>The choice of license is up to the licensee for every single use of tests
+from a W3C Test Suite. It will typically depend on usage requirements:
+the first one allows changes, the second does not. See below for <a href="#howtouse">how to use the licenses</a>.</p>
+
+<p>W3C encourages community development of Test Suites and welcomes
+contributions (see <a href="/2004/10/27-testcases.html">policies for
+contribution of test cases to W3C</a>), which will then be distributed
+under these two licenses. If you wish to contribute (e.g. altered) 
+test cases, please contact the relevant Working Group and review 
+the contribution policies.</p>
+
+<h2 id="lic1">Summary of Use of the BSD 
+Test Suite license for Software Development</h2>
+
+<p>Under the <a href="03-bsd-license.html">3-clause BSD License</a>, tests
+can be copied, altered, and integrated into software development tools,
+bugtracking tools, etc. This license allows developers, commercial vendors,
+and open source projects to copy tests and alter them as they wish to test
+and improve their software. However, if changes are made, the derivative work
+must not be distributed with W3C logos, unless W3C gives explicit
+permission.</p>
+
+<p><strong>Note:</strong> It is explicitly understood that clause 3 of the BSD license prohibits the assertion of performance claims with respect to W3C<sup></sup> Specifications by claiming successful passing of modified tests.</p>
+
+<h2 id="lic2">Summary of Use of the W3C Test Suite License</h2>
+
+<p>Under the <a href="04-testsuite-license.html">W3C Test Suite license</a>,
+a vendor neutral Test Suite is provided to the public, implementers and page
+authors so they may test performance of software or content with respect to
+a W3C Specification. Tests published under this license can be copied and 
+used for any purpose, but no modifications are permitted. Consequently, 
+performance claims can only be made against <strong>unaltered tests.</strong> 
+Under this license, tests of a W3C Test Suite are 
+protected by <a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">copyright</a> and by the <a href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">W3C trademark</a>. Copies of tests from a W3C 
+Test Suite created for the purpose of allowing assertion of performance claims with respect to W3C<sup></sup> Specifications are implicitly made under this license.</p>
+
+<p>The creation of a subset of a Test Suite is considered a derivative work,
+thus a violation of the rights of the collection. Consequently it either does 
+not allow claims of performance and the use of the name <q>W3C</q> or it requires 
+a special license from W3C.</p>
+
+<p>Test Suites may distinguish the test harness (or, framework for
+navigation) and the actual tests. For these Test Suites, 
+the prohibition of change only
+applies to the tests. The <a href="04-testsuite-license.html">W3C Test Suite
+license</a> is based on the <a href="http://www.w3.org/Consortium/Legal/copyright-documents">
+W3C Document license</a> but gives further rights concerning navigation/harness 
+and the use of the W3C trademark in performance claims.</p>
+
+<h2 id="howtouse">How to Use The Licenses</h2>
+
+<p>For either license, include the following statement in a Test Suite (HTML
+markup shown):</p>
+
+<blockquote>
+<p>Distributed under both the &lt;a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-license"&gt;W3C Test Suite License&lt;/a&gt; and the
+   &lt;a href="http://www.w3.org/Consortium/Legal/2008/03-bsd-license"&gt;W3C 3-clause BSD License&lt;/a&gt;. To contribute to a W3C Test Suite,
+see the &lt;a href="http://www.w3.org/2004/10/27-testcases"&gt;policies and contribution forms&lt;/a&gt;.</p>
+</blockquote>
+
+<h3 id="q1">How does this affect test suites published prior to this policy?</h3>
+
+<p>It does not affect existing test suites until they are modified
+to include the new license.
+We encourage parties who manage W3C test suites to update the
+test suite to include the <a href="#howtouse">license statement</a>
+shown above. Depending on the organization of the test suite, it
+may be necessary to update both "cover pages" and individual test
+cases.</p>
+
+
+<h2 id="disclaimer">Disclaimer</h2>
+
+<p>UNDER BOTH MUTUALLY EXCLUSIVE LICENSES, THIS DOCUMENT AND ALL DOCUMENTS,
+TESTS AND SOFTWARE THAT LINK THIS STATEMENT ARE PROVIDED "AS IS," AND
+COPYRIGHT HOLDERS MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED,
+INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, NON-INFRINGEMENT, OR TITLE; THAT THE CONTENTS OF THE
+DOCUMENT ARE SUITABLE FOR ANY PURPOSE; NOR THAT THE IMPLEMENTATION OF SUCH
+CONTENTS WILL NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR
+OTHER RIGHTS.</p>
+
+<p>COPYRIGHT HOLDERS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL OR
+CONSEQUENTIAL DAMAGES ARISING OUT OF ANY USE OF THE DOCUMENT OR THE
+PERFORMANCE OR IMPLEMENTATION OF THE CONTENTS THEREOF.</p>
+</div>
+<div class="unit size1on4 lastUnit w3c_rhs">
+<h2 class="h4 category">Test Suite Licenses</h2>
+<ul class="theme right-list">
+<li><a href="/Consortium/Legal/2008/03-bsd-license.html">3-Clause BSD</a></li>
+<li><a href="/Consortium/Legal/2008/04-testsuite-license.html">W3C</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Generated from data/footer.php, ../../smarty/{footer-block.tpl} -->
+<div id="w3c_footer">
+<div id="w3c_footer-inner">
+<h2 class="offscreen">Footer Navigation</h2>
+<div class="w3c_footer-nav">
+<h3>Navigation</h3>
+<ul class="footer_top_nav">
+<li><a href="/">Home</a></li>
+<li><a href="/standards/">Standards</a></li>
+<li><a href="/participate/">Participate</a></li>
+<li><a href="/Consortium/membership">Membership</a></li>
+<li class="last-item"><a href="/Consortium/">About W3C</a></li>
+</ul>
+</div>
+<div class="w3c_footer-nav">
+<h3>Contact W3C</h3>
+<ul class="footer_bottom_nav">
+<li><a href="/Consortium/contact">Contact</a></li>
+<li><a accesskey="0" href="/Help/">Help and FAQ</a></li>
+<li><a href="/Consortium/sponsor/">Sponsor / Donate</a></li>
+<li><a href="/Consortium/siteindex">Site Map</a></li>
+<li>
+<address id="w3c_signature"><a href="http://lists.w3.org/Archives/Public/site-comments/">Feedback</a></address>
+</li>
+</ul>
+</div>
+<div class="w3c_footer-nav">
+<h3>W3C Updates</h3>
+<ul class="footer_follow_nav">
+<li><a href="http://twitter.com/W3C" title="Follow W3C on Twitter"><img src="/2008/site/images/twitter-bird" alt="Twitter" class="social-icon" width="78" height="83" /></a>
+<a href="http://identi.ca/w3c" title="See W3C on Identica"><img src="/2008/site/images/identica-logo" alt="Identica" class="social-icon" width="91" height="83" /></a></li>
+</ul>
+</div>
+<!-- #footer address / page signature -->
+<p>Questions to site-policy@w3.org</p>
+<p class="copyright">Copyright &#xA9; 2012 W3C <sup>&#xAE;</sup> (<a href="http://www.csail.mit.edu/"><acronym title="Massachusetts Institute of Technology">MIT</acronym></a>, <a href="http://www.ercim.org/"><acronym title="European Research Consortium for Informatics and Mathematics">ERCIM</acronym></a>,
+<a href="http://www.keio.ac.jp/">Keio</a>) <a href="/Consortium/Legal/ipr-notice">Usage policies
+apply</a>.</p>
+</div>
+</div>
+<!-- /end #footer -->
+<!-- Generated from data/scripts.php, ../../smarty/{scripts.tpl} -->
+<div id="w3c_scripts"><script type="text/javascript" src="/2008/site/js/main"><![CDATA[
+//
+<!-- -->
+//
+]]></script></div>
+</body>
+</html>

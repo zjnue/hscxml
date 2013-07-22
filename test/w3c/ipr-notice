@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="generator" content="HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 13), see www.w3.org" /><title>Policies and Legal Information - W3C</title><link rel="stylesheet" href="/2008/site/css/minimum" type="text/css" media="handheld, all" /><style type="text/css" media="print, screen and (min-width: 481px)" xml:space="preserve">
+     @import url("/2008/site/css/advanced");
+</style><link href="/2008/site/css/minimum" rel="stylesheet" type="text/css" media="handheld, only screen and (max-device-width: 480px)" /><meta name="viewport" content="width=device-width" /><link rel="stylesheet" href="/2008/site/css/print" type="text/css" media="print" /><link rel="shortcut icon" href="/2008/site/images/favicon.ico" type="image/x-icon" /></head><body id="www-w3-org" class="w3c_public"><div id="w3c_container">
+    
+    
+
+         <div id="w3c_mast">
+            <h1 class="logo">
+               <a tabindex="2" accesskey="1" href="/"><img src="/2008/site/images/logo-w3c-mobile-lg" width="90" height="53" alt="W3C" /></a>
+               <span class="alt-logo">W3C</span>
+            </h1>
+
+            <div id="w3c_nav">
+               
+               
+
+               <form action="/Help/search" method="get" enctype="application/x-www-form-urlencoded"><div class="w3c_sec_nav"><!-- --></div><ul class="main_nav"><li class="first-item">
+                        <a href="/standards/">Standards</a>
+                     </li><li>
+                        <a href="/participate/">Participate</a>
+                     </li><li>
+                        <a href="/Consortium/membership">Membership</a>
+                     </li><li class="last-item">
+                        <a href="/Consortium/">About W3C</a>
+                     </li><li class="search-item">
+                        <div id="search-form">
+                           <input tabindex="3" class="text" name="q" value="" title="Search" type="text" />
+                           <button id="search-submit" name="search-submit" type="submit"><img class="submit" src="/2008/site/images/search-button" alt="Search" width="21" height="17" /></button>
+                        </div>
+                     </li></ul></form>
+            </div>
+            
+         </div>
+         
+
+         <div id="w3c_main">
+            <div id="w3c_logo_shadow" class="w3c_leftCol">
+               <img height="32" alt="" src="/2008/site/images/logo-shadow" />
+            </div>
+            
+            
+            <div class="w3c_leftCol"><h2 class="offscreen">Site Navigation</h2>
+    <h3 class="category"><span class="ribbon"><a href="/Consortium/facts.html" title="Up to Facts About W3C">Facts About W3C <img src="/2008/site/images/header-link" alt="Header link" width="13" height="13" class="header-link" /></a></span></h3>
+       <ul class="theme">
+        <li><a class="current">Policies and Legal Information</a></li>
+       </ul>
+       <br /></div>
+            <div class="w3c_mainCol">
+               <div id="w3c_crumbs">
+       <div id="w3c_crumbs_frame">
+        <ul class="bct"> <!-- .bct / Breadcrumbs -->
+          <li class="skip"><a tabindex="1" accesskey="2" title="Skip to content (e.g., when browsing via audio)" href="#w3c_content_body">Skip</a></li>
+          <li><a href="/">W3C</a>&#xA0;<span class="cr">&#xBB;</span>&#xA0;</li>
+          <li><a href="/Consortium/">About&#xA0;W3C</a>&#xA0;<span class="cr">&#xBB;</span>&#xA0;</li>
+          <li><a href="/Consortium/facts.html">Facts&#xA0;About&#xA0;W3C</a>&#xA0;<span class="cr">&#xBB;</span>&#xA0;</li>
+          <li class="current">Policies and Legal Information</li>
+        </ul>            
+     </div>
+    </div>
+               <h1 class="title">Policies and Legal Information</h1>
+<ul class="w3c_toc">
+<li class="toc_prefix">On this page &#x2192; </li>
+<li>
+                              <a href="#copyright">copyrights&#xA0;for&#xA0;documents,&#xA0;software,&#xA0;tests</a> <span class="bullet">&#xA0;&#x2022; </span></li><li>
+                              <a href="#trademark">trademarks</a><span class="bullet">&#xA0;&#x2022; </span>
+                           </li><li>
+                              <a href="#patpol">patents</a><span class="bullet">&#xA0;&#x2022; </span>
+                           </li><li>
+                              <a href="#privacy">privacy&#xA0;policies</a>                           <span class="bullet">&#xA0;&#x2022; </span></li>
+			      <li><a href="#disclaimers">disclaimers</a></li>
+</ul>
+
+               <div id="w3c_content_body">
+                  <div class="line">
+                     <div class="unit size3on4">
+
+	                       <div class="intro">
+
+                           <p class="tPadding">W3C has established a framework of policies, terms and conditions
+that govern your interaction with the Web site and with the documents
+and services
+W3C provides. Please see below for <strong>W3C's Intellectual Rights Notices and Legal Disclaimers</strong>.</p>
+	                       </div>
+	                       
+	                       <h2 id="copyright"><span id="Copyright">Copyrights</span> for Documents, Software, Tests</h2>
+			                     <p>W3C offers several licenses depending
+			       on the nature of the material, and whether
+			       derivative works are permitted.</p>
+
+			                     <ul class="show_items"><li>The <a href="/Consortium/Legal/2002/copyright-documents-20021231">Document License</a> governs documents such as technical reports.</li><li>The <a href="/Consortium/Legal/2002/copyright-software-20021231">Software License</a> governs
+distribution of W3C <a href="/Status.html">W3C Open Source Software</a> and
+some other materials where creation of derivative works may be desired.</li><li>The  <a href="/Consortium/Legal/2008/04-testsuite-copyright.html">Test Suite Licenses</a>
+governs the distribution of W3C test suites. There are two licenses, depending on whether you plan to modify the test cases. W3C encourages people to
+contribute to W3C test suites; contributors agree to the
+<a href="/2004/10/27-testcases.html">Test Case Contribution Policy</a>.</li>
+<li>In <a href="/community/">Community and Business Groups</a>, draft Specifications are governed by a <a href="http://www.w3.org/community/about/agreements/cla/">W3C Community Contributor License Agreement (CLA)</a>. Participants then sign (voluntarily) a <a href="http://www.w3.org/community/about/agreements/final/">Final Specification Agreement</a>. These agreements include both copyright and patent licensing provisions.</li>
+
+</ul>
+
+<p>See also information about <a href="/Consortium/Legal/2006/08-copyright-translations.html">translations of the copyright notice</a>.</p>
+	                       <h2 id="trademark">Trademarks</h2>
+
+			                     <p id="W3C_Trademarks">W3C <a href="/Consortium/Legal/2002/trademarks-20021231">trademarks</a> and <a href="/participate/promote#logos">logos</a> are governed by the <a href="/Consortium/Legal/2002/trademark-license-20021231">trademark license</a>. There are also some additional usage policies
+for some logos, such as the <a href="/Consortium/Legal/logo-usage-20000308">W3C logo usage
+policies</a>.</p>
+	                       <h2 id="patpol">Patent Policy</h2>
+
+			                     <p>In February 2004, W3C adopted a 
+			       <a href="/Consortium/Patent-Policy-20040205/">Patent Policy</a> to enable continued innovation and widespread adoption of Web standards developed by the World Wide Web Consortium. The W3C Patent Policy governs the handling of patents in the process of producing <a href="/standards/">Web Standards</a>. The goal of this policy is to assure that Recommendations produced under this policy can be implemented on a <a href="/Consortium/Patent-Policy-20040205/#sec-Requirements">Royalty-Free (RF) basis</a>. See the <a href="/2003/12/22-pp-faq">Patent Policy FAQ</a> for additional information.</p>
+	                       <h2 id="privacy">Privacy Policies</h2>
+
+			                     <p>The <a href="/Consortium/Legal/privacy-statement-20000612">W3C Privacy</a> sets expectations about how W3C will make use of information
+gathered during the course of your interactions with our Web site. W3C works
+to ensure that people can interact with the site with confidence. Please find below information about the W3C Intellectual Rights Notice, Legal Disclaimers, and more.</p>
+
+
+	                       <h2 id="disclaimers"><span id="Legal_Disclaimer">Disclaimers</span></h2>
+
+			       <p>Unless otherwise noted, all materials contained in this Site are
+copyrighted and may not be used except as provided in these terms and
+conditions or in the copyright notice (<a href="/Consortium/Legal/copyright-documents">documents</a>
+and <a href="/Consortium/Legal/copyright-software">software</a>) or
+other proprietary notice provided with the relevant materials.</p>
+
+                        <p>The materials contained in the Site may be downloaded or copied
+provided that ALL copies retain the copyright and any other proprietary
+notices contained on the materials. No material may be modified, edited or
+taken out of context such that its use creates a false or misleading
+statement or impression as to the positions, statements or actions of W3C.</p>
+
+                        <p>The name and trademarks of copyright holders may NOT be used in
+advertising or publicity pertaining to the Web site, its content,
+specifications, or software without specific, written prior permission. Title
+to copyright in Web site documents will at all times remain with copyright
+holders. Use of W3C trademarks and service marks is covered by the <a href="/Consortium/Legal/trademark-license">W3C Trademark and
+Servicemark License</a>.</p>
+
+                        <p>Caches of W3C materials should comply with the "maximum time to live"
+information provided with the materials. After such materials have expired
+they should not be served from caches without first validating the contents
+of the W3C Site. Organizations that want to mirror W3C content must abide by
+the <a href="/1999/10/21-mirroring-policy">W3C Mirroring
+Policy.</a>
+                        </p>
+
+
+
+                     </div>
+
+                     <div class="unit size1on4 lastUnit w3c_rhs">
+              
+
+                        
+                           <h2 class="h4 category">General</h2>
+
+                           <ul class="theme right-list"><li>
+			     <a href="/Consortium/Legal/IPR-FAQ-20000620.html">IPR FAQ</a>
+                              </li></ul>
+	                       
+
+                        
+                           <h2 class="h4 category">Agreements</h2>
+
+                           <ul class="theme right-list"><li>
+                                 <a href="/Consortium/Agreement/">Membership</a>
+                              </li><li>
+                                 <a href="/Consortium/Legal/2002/collaborators-agreement-20021231">Collaborators</a>
+                              </li><li>
+                                 <a href="/Consortium/Process">Process Document</a>
+                              </li><li>
+                                 <a href="/Consortium/Patent-Policy/">Patent Policy</a>
+                              </li></ul>
+	                       
+
+                        
+                           <h2 class="h4 category">Copyright and Trademark</h2>
+
+                           <ul class="theme right-list"><li>
+                                 <a href="/Consortium/Legal/2002/copyright-documents-20021231">Document</a>
+                              </li><!-- Add excerpt license --><li>
+                                 <a href="/Consortium/Legal/2002/copyright-software-20021231">Software</a>
+                              </li><li>
+                                 <a href="/Consortium/Legal/2008/04-testsuite-copyright.html">Test Suites</a>
+                              </li><li>
+                                 <a href="/2004/10/27-testcases.html">Test Case Contributions</a>
+			       </li>
+			       <li><a href="/Consortium/Legal/2002/trademarks-20021231">Trademarks</a></li>
+<li><a href="/Consortium/Legal/2002/trademark-license-20021231">Trademark License</a></li>
+</ul>
+	                       
+                           <h2 class="h4 category">Community and Business Group Agreements</h2>
+			   <ul class="theme right-list">
+			     <li> <a href="http://www.w3.org/community/about/agreements/cla/">CLA</a></li>
+			     <li><a href="http://www.w3.org/community/about/agreements/final/">Final Specification</a></li>
+			   </ul>
+                        
+                           <h2 class="h4 category">Web Site</h2>
+		                         <ul class="theme right-list"><li>
+				                          <a href="/Consortium/Legal/privacy-statement-20000612">Privacy</a>
+                              </li><li>
+                                 <a href="/Consortium/Persistence">URI Persistence</a>
+                              </li><li>
+                                 <a href="/Mail/">Mail</a>
+                              </li><li>
+                                 <a href="/Consortium/Legal/logo-usage-20000308">Logos</a>
+                              </li><li>
+                                 <a href="/1999/10/21-mirroring-policy">Mirroring</a>
+                              </li></ul>
+	                       
+                     </div>
+                  
+                  </div>
+               </div>
+            </div>
+         </div>
+         
+         
+         
+      </div><div id="w3c_footer">
+         <div id="w3c_footer-inner">
+            <h2 class="offscreen">Footer Navigation</h2>
+            <div class="w3c_footer-nav">
+               <h3>Navigation</h3>
+               <ul class="footer_top_nav"><li>
+                     <a href="/">Home</a>
+                  </li><li>
+                     <a href="/standards/">Standards</a>
+                  </li><li>
+                     <a href="/participate/">Participate</a>
+                  </li><li>
+                     <a href="/Consortium/membership">Membership</a>
+                  </li><li class="last-item">
+                     <a href="/Consortium/">About W3C</a>
+                  </li></ul>
+            </div>
+            <div class="w3c_footer-nav">
+               <h3>Contact W3C</h3>
+               <ul class="footer_bottom_nav"><li>
+                     <a href="/Consortium/contact">Contact</a>
+                  </li><li>
+                     <a accesskey="0" href="/Help/">Help and FAQ</a>
+                  </li><li>
+                     <a href="/Consortium/sponsor/">Sponsor / Donate</a>
+                  </li><li>
+                     <a href="/Consortium/siteindex">Site Map</a>
+                  </li><li>
+                     <address id="w3c_signature">
+                        <a href="http://lists.w3.org/Archives/Public/site-comments/">Feedback</a></address>
+                  </li></ul>
+            </div>
+            <div class="w3c_footer-nav">
+               <h3>W3C Updates</h3>
+               <ul class="footer_follow_nav"><li>
+                     <a href="http://twitter.com/W3C" title="Follow W3C on Twitter">
+                        <img src="/2008/site/images/twitter-bird" alt="Twitter" width="78" height="83" class="social-icon" />
+                     </a>
+                     <a href="http://identi.ca/w3c" title="See W3C on Identica">
+                        <img src="/2008/site/images/identica-logo" alt="Identica" width="91" height="83" class="social-icon" />
+                     </a>
+                  </li></ul>
+            </div>
+            <p class="copyright">Copyright &#xA9; 2012 W3C <sup>&#xAE;</sup> (<a href="http://www.csail.mit.edu/">
+                  <acronym title="Massachusetts Institute of Technology">MIT</acronym>
+               </a>, <a href="http://www.ercim.org/">
+                  <acronym title="European Research Consortium for Informatics and Mathematics"> ERCIM</acronym>
+               </a>, <a href="http://www.keio.ac.jp/">Keio</a>) <a href="/Consortium/Legal/ipr-notice">Usage policies apply</a>.</p>
+         </div>
+      </div><!-- Generated from data/scripts.php, ../../smarty/{scripts.tpl} --><!-- At the bottom for performance reasons --><div id="w3c_scripts">
+         <script type="text/javascript" src="/2008/site/js/main" xml:space="preserve"><!-- --></script>
+      </div></body></html>

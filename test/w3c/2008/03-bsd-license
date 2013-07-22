@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>W3C 3-clause BSD License</title>
+  <style type="text/css">
+/*<![CDATA[*/
+/*]]> */</style>
+  <link href="../../../StyleSheets/base.css" rel="stylesheet" type="text/css"
+  />
+  <link href="../legal.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<p><a href="../../../" shape="rect"><img src="../../../Icons/w3c_home"
+alt="W3C" /></a><img src="../../../Icons/legal.png" alt="Legal" /> <a
+href="..">Legal</a> &gt; <a
+href="04-testsuite-copyright.html">Licenses for W3C Test Suites</a> &gt; 3-clause BSD</p>
+
+<h1>W3C 3-clause BSD License</h1>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:</p>
+<ul>
+  <li>Redistributions of works must retain the original copyright notice, this
+    list of conditions and the following disclaimer.</li>
+  <li>Redistributions in binary form must reproduce the original copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.</li>
+  <li>Neither the name of the W3C nor the names of its contributors may be
+    used to endorse or promote products derived from this work without
+    specific prior written permission.</li>
+</ul>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.</p>
+<hr />
+
+<div class="endmatter">
+<address>
+  Questions to <a href="mailto:site-policy@w3.org">site-policy@w3.org</a> <br
+  />
+  Derived from the <a href="http://www.opensource.org/licenses/bsd-license.php">OSI 3-clause BSD</a><br/>
+  Created: 2008 by Rigo Wenning. Enacted 20 August 2008<br/>
+  Last modified:
+  $Id: 03-bsd-license.html,v 1.20 2008/08/20 18:53:27 ijacobs Exp $ 
+</address>
+</div>
+</body>
+</html>
