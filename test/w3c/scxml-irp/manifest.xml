@@ -182,7 +182,7 @@
    </assert> 
    
           <assert id="415"  specnum="3.13" specid="#SelectingTransitions">
-      <![CDATA[If it [the SCXML Processor] has entered a <final> state that is a child of <scxml> [during the last microstep], it MUST halt processing.>>
+      <![CDATA[If it [the SCXML Processor] has entered a <final> state that is a child of <scxml> [during the last microstep], it MUST halt processing.]]>
        <test id="406" conformance="mandatory" manual="true">
     <start uri="415/test415.txml"/>
   </test>  
