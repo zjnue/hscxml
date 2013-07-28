@@ -27,6 +27,7 @@ class Scxml {
 	
 	var worker : Worker;
 	
+	public var id : String;
 	public var path : String;
 	public var onInit : Void -> Void;
 	public var log : String -> Void;
