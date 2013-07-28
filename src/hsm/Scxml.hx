@@ -20,7 +20,7 @@ import sys.FileSystem;
 #end
 
 #if flash
-@:file("swf/Interp.swf") class InterpByteArray extends flash.utils.ByteArray {}
+@:file("Interp.swf") class InterpByteArray extends flash.utils.ByteArray {}
 #end
 
 class Scxml {
