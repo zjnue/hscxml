@@ -1056,8 +1056,8 @@ class Interp extends Base {
 		return null;
 		#else		
 		var file = src.substr(5);
-		var path = Sys.getCwd() + "ecma/"; // FIXME tmp hack (relative urls..)
-		return DataTools.trim( sys.io.File.getContent(path+file) );
+		var fullPath = sys.FileSystem.fullPath( path ) + "/" + file;
+		return DataTools.trim( sys.io.File.getContent(fullPath) );
 		#end
 	}
 	
@@ -1109,6 +1109,7 @@ class Interp extends Base {
 		switch( msg.cmd ) {
 			case "postEvent": postEvent( cast(msg.args[0], Event) );
 			case "interpret": interpret( Xml.parse(msg.args[0]).firstElement() );
+			case "path": path = Std.string(msg.args[0]);
 			case "start": start();
 			case "stop": stop();
 			case "killParentHandler": parentEventHandler = function( evt : Event ) {};

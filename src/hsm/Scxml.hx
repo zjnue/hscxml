@@ -27,6 +27,7 @@ class Scxml {
 	
 	var worker : Worker;
 	
+	public var path : String;
 	public var onInit : Void -> Void;
 	public var log : String -> Void;
 	public var parentEventHandler : Event -> Void;
@@ -58,6 +59,7 @@ class Scxml {
 		
 		#if (js || flash)
 		try {
+			postToWorker( "path", [path] );
 			postToWorker( "interpret", [content] );
 		} catch( e:Dynamic ) {
 			log("ERROR: worker: e = " + Std.string(e));
@@ -71,6 +73,7 @@ class Scxml {
 		c.sendMessage(log);
 		c.sendMessage(parentEventHandler);
 		c.sendMessage(worker);
+		c.sendMessage(path);
 		#end
 	}
 	
@@ -134,8 +137,10 @@ class Scxml {
 		var log = Thread.readMessage(true);
 		var parentEventHandler = Thread.readMessage(true);
 		var worker = Thread.readMessage(true);
+		var path = Thread.readMessage(true);
 		
 		var interp = new hsm.scxml.Interp();
+		interp.path = path;
 		interp.onInit = onInit;
 		if( log != null ) interp.log = log;
 		if( parentEventHandler != null ) interp.parentEventHandler = parentEventHandler;

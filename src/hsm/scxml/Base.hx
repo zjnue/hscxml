@@ -41,6 +41,7 @@ class Base extends hxworker.WorkerScript {
 	
 	var d : Node;
 	
+	public var path : String;
 	public var invokeId : String;
 	public var topNode( get_topNode, never ) : Node;
 	
@@ -243,6 +244,7 @@ class Base extends hxworker.WorkerScript {
 		#if (js || flash)
 		try {
 			postToWorker( inv_id, "invokeId", [inv_id] );
+			postToWorker( inv_id, "path", [path] );
 			postToWorker( inv_id, "interpret", [xml.toString()] );
 		} catch( e:Dynamic ) {
 			log("ERROR: sub worker: e = " + Std.string(e));
@@ -256,6 +258,7 @@ class Base extends hxworker.WorkerScript {
 		c.sendMessage(inv_id);
 		c.sendMessage(type);
 		c.sendMessage(worker);
+		c.sendMessage(path);
 		Thread.readMessage(true);
 		
 		Sys.sleep(0.2); // FIXME erm, for now give new instance 'some time' to stabilize (see test 250)
@@ -300,12 +303,14 @@ class Base extends hxworker.WorkerScript {
 		var invokeid = Thread.readMessage(true);
 		var type = Thread.readMessage(true);
 		var worker = Thread.readMessage(true);
+		var path = Thread.readMessage(true);
 		
 		var xml = Xml.parse(xmlStr).firstElement().setSubInstData(data);
 		
 		var me = this;
 		var inst = new hsm.scxml.Interp();
 		inst.invokeId = invokeid;
+		inst.path = path;
 		inst.parentEventHandler = function( evt : Event ) {
 			me.addToExternalQueue(evt);
 		};
