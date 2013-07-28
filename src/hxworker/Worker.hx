@@ -68,6 +68,12 @@ class Worker {
 		#end
 	}
 	
+	public function terminate() {
+		#if (js || flash)
+		inst.terminate();
+		#end
+	}
+	
 	public static inline function compress( cmd : String, args : Array<Dynamic> ) {
 		#if (js || flash)
 		return haxe.Serializer.run( {cmd:cmd, args:args} );

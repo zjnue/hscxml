@@ -111,6 +111,10 @@ class Scxml {
 		#end
 	}
 	
+	public function terminate() {
+		worker.terminate();
+	}
+	
 	public inline function start() {
 		postToWorker( "start" );
 	}
