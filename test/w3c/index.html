@@ -413,7 +413,7 @@ elements. Harel State Tables are a state machine notation that was
 developed by the mathematician David Harel <a
 href="#Harel_Politi">[Harel and Politi]</a> and is included in UML
 <a href="#UML">[UML 2.3]</a>. They offer a clean and well-thought
-out semantics for sophisticated constructs such as a parallel
+out semantics for sophisticated constructs such as parallel
 states. They have been defined as a graphical specification
 language, however, and hence do not have an XML representation. The
 goal of this document is to combine Harel semantics with an XML
@@ -1303,7 +1303,7 @@ semantics of transitions.</p>
 <p>[This section is normative.]</p>
 
 <p>This element represents the default initial state for a complex
-&lt;state&gt; element (i.e. one one containing child &lt;state&gt;
+&lt;state&gt; element (i.e. one containing child &lt;state&gt;
 or &lt;parallel&gt; elements.</p>
 
 <div class="div3">
@@ -1322,7 +1322,7 @@ transition <em title="MUST NOT in RFC2119 context"
 class="RFC2119">MUST NOT</em> contain 'cond' or 'event' attributes,
 and <em title="MUST in RFC2119 context" class="RFC2119">MUST</em>
 specify a non-null 'target' whose value is a valid state
-specification consisting of solely of descendants of the containing
+specification consisting solely of descendants of the containing
 state (see <a href="#LegalStateConfigurations"><em>3.11 Legal State
 Configurations and Specifications</em></a> for details). This
 transition <em title="MAY in RFC2119 context"
@@ -1567,7 +1567,7 @@ the parent before taking any transition that exits the parent.
 After the parent state has been visited for the first time, for
 each &lt;history&gt; element, we define the set of states that the
 processor has recorded to be the 'stored state configuration' for
-that history state. . We also define the states specified by the
+that history state. We also define the states specified by the
 'target' of the &lt;history&gt; element's &lt;transition&gt; child
 to be the 'default stored state configuration' for that element. If
 a transition is executed that takes the &lt;history&gt; state as
@@ -1927,7 +1927,7 @@ source and target states. Otherwise, if the transition has 'type'
 target states are proper descendants of its source state, the exit
 set consists of all active states in C that are proper descendants
 of its source state. (If a transition has 'type' of "internal", but
-but its source state is not compound or its target states are not
+its source state is not compound or its target states are not
 all proper descendants of its source state, its exit set is defined
 as if it had 'type' of "external". The exit set of a set of
 transitions is the union of the exit sets of the individual
@@ -3240,7 +3240,7 @@ the expression as if it evaluated to 'false' and <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> place the
 error 'error.execution' in the internal event queue. The set of
 operators in conditional expressions varies depending on the data
-model, but all datam odels <em title="MUST in RFC2119 context"
+model, but all data models <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> support the 'In()' predicate, which takes
 a state ID as its argument and returns true if the state machine is
 in that state. This predicate allows coordination among parallel
@@ -3465,7 +3465,7 @@ field to the send id of the triggering &lt;send&gt; element.
 Otherwise it <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> leave it blank.</li>
 
-<li><em>origin</em>. This a URI, equivalent to the 'target'
+<li><em>origin</em>. This is a URI, equivalent to the 'target'
 attribute on the &lt;send&gt; element. For external events, the
 SCXML Processor <em title="SHOULD in RFC2119 context"
 class="RFC2119">SHOULD</em> set this field to a value which, when
@@ -4036,7 +4036,7 @@ events have this sendid, the Processor will cancel them all.</td>
 <tr>
 <td>sendidexpr</td>
 <td>false</td>
-<td>Must occur with sendid.</td>
+<td>Must not occur with sendid.</td>
 <td>Value Expression</td>
 <td>none</td>
 <td>Any expression that evaluates to the ID of a delayed event</td>
@@ -4365,7 +4365,7 @@ once it is in this state.</li>
 state containing the invocation before it receives the
 done.invoke.<em>id</em> event, it cancels the invoked session. The
 method for doing this is platform-specific. However, when it is
-cancelled, the the invoked session <em
+cancelled, the invoked session <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> act as if
 the 'running' variable specified in <a
 href="#AlgorithmforSCXMLInterpretation"><em>A Algorithm for SCXML
@@ -4431,7 +4431,7 @@ identifier and send a message to the invoked VoiceXML session:</p>
 <div class="exampleInner">
 <pre>
          
-  &lt;send type="http://www.w3.org/TR/voicexml21/" targetexpr="'#' + myInvoke"/&gt;
+  &lt;send type="http://www.w3.org/TR/voicexml21/" targetexpr="'#_' + myInvoke"/&gt;
            
 </pre>
 </div>
@@ -4526,7 +4526,7 @@ evaluated.</p>
 &lt;scxml version="1.0" datamodel="ecmascript"&gt;
 ....
  &lt;state id="getTime"&gt;
-   &lt;transition event="ping" cond="time.getHours() &gt; 17 ||  time.getHours() &lt; 9" target="storeClosed"/&gt;
+   &lt;transition event="ping" cond="time.getHours() &gt; 17 || time.getHours() &lt; 9" target="storeClosed"/&gt;
    &lt;transition event="ping" target="takeOrder"/&gt;
    &lt;datamodel&gt;
      &lt;data id="time" expr="new Date()"/&gt;
@@ -4647,7 +4647,7 @@ either raised automatically by the platform or generated with the
 
 <dd>A microstep involves the processing of a single transition (or,
 in the case of parallel states, a single set of transitions.) A
-microstep may change the the current configuration, update the data
+microstep may change the current configuration, update the data
 model and/or generate new (internal and/or external) events. This,
 by causality, may in turn enable additional transitions which will
 be handled in the next microstep in the sequence, and so on.</dd>
@@ -6919,7 +6919,7 @@ Pattern: "xmlns" attribute with explicit inline content
 
   &lt;content&gt;
      &lt;csta:MakeCall&gt;
-       &lt;csta:callingDevice&gt;22343&lt;/callingDevice&gt;
+       &lt;csta:callingDevice&gt;22343&lt;/csta:callingDevice&gt;
        &lt;csta:calledDirectoryNumber&gt;18005551212&lt;/csta:calledDirectoryNumber&gt;
      &lt;/csta:MakeCall&gt;
   &lt;/content&gt;
@@ -7052,11 +7052,11 @@ class="RFC2119">MUST</em> add the event error.communication to the
 internal event queue of the sending session.</p>
 
 <p>The SCXML Processor <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> attempt deliver the message using HTTP
+class="RFC2119">MUST</em> attempt to deliver the message using HTTP
 method "POST" and with parameter values encoded by default in an
 application/x-www-form-urlencoded body (POST method). An SCXML
 Processor <em title="MAY in RFC2119 context"
-class="RFC2119">MAY</em> support other encodings, and allow then to
+class="RFC2119">MAY</em> support other encodings, and allow them to
 be specified in a platform-specific way.</p>
 
 <p>If the 'event' parameter of &lt;send&gt; is defined, the SCXML
