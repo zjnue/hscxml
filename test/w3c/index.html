@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="EN" xml:lang="EN" >
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <meta name="generator" content="HTML Tidy, see www.w3.org" />
 <title>State Chart XML (SCXML): State Machine Notation for Control
@@ -86,14 +86,14 @@ alt="W3C" src="http://www.w3.org/Icons/w3c_home" /></a></p>
 <h1><a id="title" name="title" />State Chart XML (SCXML): State
 Machine Notation for Control Abstraction</h1>
 
-<h2><a id="w3c-doctype" name="w3c-doctype" />W3C Working Draft 6
-December 2012</h2>
+<h2><a id="w3c-doctype" name="w3c-doctype" />W3C Last Call Working
+Draft 1 August 2013</h2>
 
 <dl>
 <dt>This version:</dt>
 
 <dd><a
-href="http://www.w3.org/TR/2012/WD-scxml-20121206/">http://www.w3.org/TR/2012/WD-scxml-20121206/</a></dd>
+href="http://www.w3.org/TR/2013/WD-scxml-20130801/">http://www.w3.org/TR/2013/WD-scxml-20130801/</a></dd>
 
 <dt>Latest version:</dt>
 
@@ -103,7 +103,7 @@ href="http://www.w3.org/TR/scxml/">http://www.w3.org/TR/scxml/</a></dd>
 <dt>Previous version:</dt>
 
 <dd><a
-href="http://www.w3.org/TR/2012/WD-scxml-20120216/">http://www.w3.org/TR/2012/WD-scxml-20120216/</a></dd>
+href="http://www.w3.org/TR/2012/WD-scxml-20121206/">http://www.w3.org/TR/2012/WD-scxml-20121206/</a></dd>
 
 <dt>Editors:</dt>
 
@@ -138,14 +138,15 @@ href="http://www.w3.org/TR/2012/WD-scxml-20120216/">http://www.w3.org/TR/2012/WD
 
 <p class="copyright"><a
 href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a>
-© 2012 <a href="http://www.w3.org/"><acronym
+© 2013 <a href="http://www.w3.org/"><acronym
 title="World Wide Web Consortium">W3C</acronym></a><sup>®</sup> (<a
 href="http://www.csail.mit.edu/"><acronym
 title="Massachusetts Institute of Technology">MIT</acronym></a>, <a
 href="http://www.ercim.eu/"><acronym
 title="European Research Consortium for Informatics and Mathematics">
-ERCIM</acronym></a>, <a href="http://www.keio.ac.jp/">Keio</a>),
-All Rights Reserved. W3C <a
+ERCIM</acronym></a>, <a href="http://www.keio.ac.jp/">Keio</a>, <a
+href="http://ev.buaa.edu.cn/">Beihang</a>), All Rights Reserved.
+W3C <a
 href="http://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">
 liability</a>, <a
 href="http://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">
@@ -173,25 +174,28 @@ revision of this technical report can be found in the <a
 href="http://www.w3.org/TR/">W3C technical reports index</a> at
 http://www.w3.org/TR/.</em></p>
 
-<p>This document is the Last Call Working Draft of SCXML published
-on 6 December 2012 for review by W3C Members and other interested
-parties, and has been developed by the <a
+<p>This document is the second Last Call Working Draft of SCXML
+published on 1 August 2013 for review by W3C Members and other
+interested parties, and has been developed by the <a
 href="http://www.w3.org/Voice/">Voice Browser Working Group</a> as
 part of the W3C <a
 href="http://www.w3.org/Voice/Activity.html">Voice Browser
-Activity</a>. The last call period ends on 11 January 2013.</p>
+Activity</a>. The last call period ends on 27 September 2013.</p>
 
 <p>The main differences from the previous draft are numerous
-corrections to and clarifications of the wording of the normative
-assertions. A <a href="diff.html">diff-marked version</a> of this
-document is also available for comparison purposes.</p>
+corrections to and clarifications of the normative wording as well
+as the algorithm for SCXML interpretation. These changes were made
+based on comments that we received on the <a
+href="http://www.w3.org/TR/2012/WD-scxml-20121206/">first Last Call
+Working Draft</a>. A <a href="diff.html">diff-marked version</a> of
+this document is also available for comparison purposes.</p>
 
 <p>Comments for this specification are welcomed to <a
 href="mailto:www-voice@w3.org">www-voice@w3.org</a> (<a
 href="http://lists.w3.org/Archives/Public/www-voice/">archives</a>).
 See <a href="http://www.w3.org/Mail/" shape="rect">W3C mailing list
 and archive usage guidelines</a>. Please send comments by
-<strong>11 January 2013</strong>.</p>
+<strong>27 September 2013</strong>.</p>
 
 <p>An Implementation Report Plan is currently being developed for
 this specification. The Working Group currently expects to require
@@ -203,10 +207,10 @@ Group build such a report, reviewers are encouraged to implement
 this specification and to indicate to W3C which features have been
 implemented, and any problems that arose.</p>
 
-<p>Publication as a Working Draft does not imply endorsement by the
-W3C Membership. This is a draft document and may be updated,
-replaced or obsoleted by other documents at any time. It is
-inappropriate to cite this document as other than work in
+<p>Publication as a Last Call Working Draft does not imply
+endorsement by the W3C Membership. This is a draft document and may
+be updated, replaced or obsoleted by other documents at any time.
+It is inappropriate to cite this document as other than work in
 progress.</p>
 
 <p>This document was produced by a group operating under the <a
@@ -339,24 +343,27 @@ I/O Processor</a><br />
 E <a href="#schemas">Schema</a><br />
 F <a href="#relatedWork">Related Work</a><br />
 G <a href="#Examples">Examples</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;G.1 <a href="#N1179B">Language
+&nbsp;&nbsp;&nbsp;&nbsp;G.1 <a href="#N1182D">Language
 Overview</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;G.2 <a href="#N117AC">Microwave
+&nbsp;&nbsp;&nbsp;&nbsp;G.2 <a href="#N1183E">Microwave
 Example</a><br />
 &nbsp;&nbsp;&nbsp;&nbsp;G.3 <a href="#MicrowaveParallel">Microwave
 Example (Using parallel)</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;G.4 <a href="#N117C3">Calculator
+&nbsp;&nbsp;&nbsp;&nbsp;G.4 <a href="#N11855">Calculator
 Example</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;G.5 <a href="#N117CE">Shale
-Example</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;G.6 <a href="#invokeex">Examples of Invoke
+&nbsp;&nbsp;&nbsp;&nbsp;G.5 <a href="#invokeex">Examples of Invoke
 and finalize</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;G.7 <a
+&nbsp;&nbsp;&nbsp;&nbsp;G.6 <a
 href="#content_and_namespaces">Inline Content and
 Namespaces</a><br />
-&nbsp;&nbsp;&nbsp;&nbsp;G.8 <a href="#custom_action">Custom Action
+&nbsp;&nbsp;&nbsp;&nbsp;G.7 <a href="#custom_action">Custom Action
 Elements</a><br />
 H <a href="#mimetype">MIME Type</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;H.1 <a
+href="#media-type-registration">Registration of MIME media type
+application/scxml+xml</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;H.2 <a href="#media-type-fragid">Fragment
+Identifiers</a><br />
 I <a href="#references">References</a><br />
 </p>
 </div>
@@ -406,7 +413,7 @@ elements. Harel State Tables are a state machine notation that was
 developed by the mathematician David Harel <a
 href="#Harel_Politi">[Harel and Politi]</a> and is included in UML
 <a href="#UML">[UML 2.3]</a>. They offer a clean and well-thought
-out semantics for sophisticated constructs such as parallel
+out semantics for sophisticated constructs such as a parallel
 states. They have been defined as a graphical specification
 language, however, and hence do not have an XML representation. The
 goal of this document is to combine Harel semantics with an XML
@@ -487,7 +494,7 @@ occurs.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N1015F" name="N1015F" />3.1.2 Compound States</h4>
+<h4><a id="N10167" name="N10167" />3.1.2 Compound States</h4>
 
 <p>One of the most powerful concepts in Harel notation is the idea
 that states may have internal structure. In particular, a
@@ -515,7 +522,7 @@ If no transition matches in any state, the event is discarded.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N10166" name="N10166" />3.1.3 Parallel States</h4>
+<h4><a id="N1016E" name="N1016E" />3.1.3 Parallel States</h4>
 
 <p>The &lt;parallel&gt; element represents a state whose children
 execute in parallel. Like &lt;state&gt;, the &lt;parallel&gt;
@@ -607,7 +614,7 @@ Interpretation</em></a> for a detailed description of the semantics
 </div>
 
 <div class="div3">
-<h4><a id="N10186" name="N10186" />3.1.4 Initial, Final, and
+<h4><a id="N1018E" name="N1018E" />3.1.4 Initial, Final, and
 History States</h4>
 
 <p>In the presence of compound states, transitions no longer simply
@@ -686,7 +693,7 @@ initial state (if the child is itself compound.)</p>
 </div>
 
 <div class="div3">
-<h4><a id="N101A4" name="N101A4" />3.1.5 'Type' and
+<h4><a id="N101AC" name="N101AC" />3.1.5 'Type' and
 Transitions</h4>
 
 <p>In the case of a transition located in a compound state, the
@@ -700,16 +707,17 @@ is an ancestor of all the source and target states). When a
 transition is taken, the state machine will exit all active states
 that are proper descendants of the LCCA, starting with the
 innermost one(s) and working up to the immediate descendant(s) of
-the LCCA. Then the state machine enters the target state(s), plus
-any states that are between it and the LCCA, starting with the
-outermost one (i.e., the immediate descendant of the LCCA) and
-working down to the target state(s). As states are exited, their
-&lt;onexit&gt; handlers are executed. Then the executable content
-in the transition is executed, followed by the &lt;onentry&gt;
-handlers of the states that are entered. If the target state(s) of
-the transition is not atomic, the state machine will enter their
-default initial states recursively until it reaches an atomic
-state(s).</p>
+the LCCA. (A 'proper descendant' of a state is a child, or a child
+of a child, or a child of a child of a child, etc.) Then the state
+machine enters the target state(s), plus any states that are
+between it and the LCCA, starting with the outermost one (i.e., the
+immediate descendant of the LCCA) and working down to the target
+state(s). As states are exited, their &lt;onexit&gt; handlers are
+executed. Then the executable content in the transition is
+executed, followed by the &lt;onentry&gt; handlers of the states
+that are entered. If the target state(s) of the transition is not
+atomic, the state machine will enter their default initial states
+recursively until it reaches an atomic state(s).</p>
 
 <p>In the example below, assume that state s11 is active when event
 'e' occurs. The source of the transition is state s1, its target is
@@ -930,14 +938,14 @@ Models</em></a>.</td>
 <td>"early"</td>
 <td>"early", "late"</td>
 <td>The data binding to use. See <a href="#DataBinding"><em>5.3.3
-Data Binding and Scoping</em></a> for details.</td>
+Data Binding</em></a> for details.</td>
 </tr>
 </tbody>
 </table>
 </div>
 
 <div class="div3">
-<h4><a id="N1024C" name="N1024C" />3.2.2 Children</h4>
+<h4><a id="N10254" name="N10254" />3.2.2 Children</h4>
 
 <ul>
 <li>&lt;state&gt; A compound or atomic state. Occurs zero or more
@@ -954,7 +962,7 @@ title="MUST in RFC2119 context" class="RFC2119">MUST</em> terminate
 processing when the state machine reaches this state. See <a
 href="#final"><em>3.7 &lt;final&gt;</em></a> for details.</li>
 
-<li>&lt;datamodel&gt; Defines part or all of the datamodel. Occurs
+<li>&lt;datamodel&gt; Defines part or all of the data model. Occurs
 0 or 1 times. See <a href="#datamodel"><em>5.2
 &lt;datamodel&gt;</em></a></li>
 
@@ -963,8 +971,16 @@ times. <a href="#script"><em>5.8 &lt;script&gt;</em></a></li>
 </ul>
 </div>
 
-<p>Platforms <em title="SHOULD in RFC2119 context"
-class="RFC2119">SHOULD</em> document their default datamodel.</p>
+<p>A conformant SCXML document <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> have at least one &lt;state&gt;,
+&lt;parallel&gt; or &lt;final&gt; child. At system initialization
+time, the SCXML Processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> enter the states specified by the
+'initial' attribute, if it is present. If it is not present, the
+Processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> enter the first state in document order.
+Platforms <em title="SHOULD in RFC2119 context"
+class="RFC2119">SHOULD</em> document their default data model.</p>
 </div>
 
 <div class="div2">
@@ -975,7 +991,7 @@ class="RFC2119">SHOULD</em> document their default datamodel.</p>
 <p>Holds the representation of a state.</p>
 
 <div class="div3">
-<h4><a id="N1027C" name="N1027C" />3.3.1 Attribute Details</h4>
+<h4><a id="N1028D" name="N1028D" />3.3.1 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -1019,7 +1035,7 @@ state.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N102B9" name="N102B9" />3.3.2 Children</h4>
+<h4><a id="N102CA" name="N102CA" />3.3.2 Children</h4>
 
 <ul>
 <li>&lt;onentry&gt; Optional element holding executable content to
@@ -1057,7 +1073,7 @@ system transitioned <em>from</em> the parent. May occur 0 or more
 times. See <a href="#history"><em>3.10
 &lt;history&gt;</em></a>.</li>
 
-<li>&lt;datamodel&gt; Defines part or all of the datamodel. Occurs
+<li>&lt;datamodel&gt; Defines part or all of the data model. Occurs
 0 or 1 times. See <a href="#datamodel"><em>5.2
 &lt;datamodel&gt;</em></a></li>
 
@@ -1068,24 +1084,27 @@ details.</li>
 </div>
 
 <p>[<a title="" id="atomic-state"
-name="atomic-state">Definition</a>: An <em>atomic state</em> is one
-that has no &lt;state&gt;, &lt;parallel&gt; or &lt;final&gt;
-children.]</p>
+name="atomic-state">Definition</a>: An <em>atomic state</em> is a
+&lt;state&gt; that has no &lt;state&gt;, &lt;parallel&gt; or
+&lt;final&gt; children.]</p>
 
 <p>[<a title="" id="compound-state"
 name="compound-state">Definition</a>: A <em>compound state</em> is
-one that has &lt;state&gt;, &lt;parallel&gt;, or &lt;final&gt;
-children (or a combination of these).]</p>
+a &lt;state&gt; that has &lt;state&gt;, &lt;parallel&gt;, or
+&lt;final&gt; children (or a combination of these).]</p>
+
+<p>[<a title="" id="default-initial-state"
+name="default-initial-state">Definition</a>: The <em>default
+initial state(s)</em> of a compound state are those specified by
+the 'initial' attribute or &lt;initial&gt; element, if either is
+present. Otherwise it is the state's first child state in document
+order. ]</p>
 
 <p>In a conformant SCXML document, a compound state <em
 title="MAY in RFC2119 context" class="RFC2119">MAY</em> specify
 either an "initial" attribute or an &lt;initial&gt; element, but
 not both. See <a href="#initial"><em>3.6 &lt;initial&gt;</em></a>
-for a discussion of the difference between the two notations. If
-neither the "initial" attribute nor an &lt;initial&gt; element is
-specified, the SCXML Processor <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> use the first child state in document
-order as the default initial state.</p>
+for a discussion of the difference between the two notations.</p>
 </div>
 
 <div class="div2">
@@ -1098,7 +1117,7 @@ which are simultaneously active when the parent element is
 active.</p>
 
 <div class="div3">
-<h4><a id="N10319" name="N10319" />3.4.1 Attribute Details</h4>
+<h4><a id="N1032F" name="N1032F" />3.4.1 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -1128,7 +1147,7 @@ IDs</em></a> for details.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N10345" name="N10345" />3.4.2 Children</h4>
+<h4><a id="N1035B" name="N1035B" />3.4.2 Children</h4>
 
 <ul>
 <li>&lt;onentry&gt; Holds executable content to be run upon
@@ -1158,7 +1177,7 @@ descendant states that were active the last time this state was
 exited. Occurs 0 or more times. See <a href="#history"><em>3.10
 &lt;history&gt;</em></a>.</li>
 
-<li>&lt;datamodel&gt; Defines part or all of the datamodel. Occurs
+<li>&lt;datamodel&gt; Defines part or all of the data model. Occurs
 0 or 1 times. See <a href="#datamodel"><em>5.2
 &lt;datamodel&gt;</em></a></li>
 
@@ -1180,7 +1199,7 @@ conditionalized via guard conditions. They may contain executable
 content, which is executed when the transition is taken.</p>
 
 <div class="div3">
-<h4><a id="N1037E" name="N1037E" />3.5.1 Attribute Details</h4>
+<h4><a id="N10394" name="N10394" />3.5.1 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -1261,7 +1280,7 @@ Transitions</em></a> for details.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N103F0" name="N103F0" />3.5.2 Children</h4>
+<h4><a id="N10406" name="N10406" />3.5.2 Children</h4>
 
 <ul>
 <li>The children of &lt;transition&gt; are executable content that
@@ -1284,17 +1303,17 @@ semantics of transitions.</p>
 <p>[This section is normative.]</p>
 
 <p>This element represents the default initial state for a complex
-&lt;state&gt; element (i.e. one containing child &lt;state&gt;
+&lt;state&gt; element (i.e. one one containing child &lt;state&gt;
 or &lt;parallel&gt; elements.</p>
 
 <div class="div3">
-<h4><a id="N1040A" name="N1040A" />3.6.1 Attribute Details</h4>
+<h4><a id="N10420" name="N10420" />3.6.1 Attribute Details</h4>
 
 <p>None</p>
 </div>
 
 <div class="div3">
-<h4><a id="N1040F" name="N1040F" />3.6.2 Children</h4>
+<h4><a id="N10425" name="N10425" />3.6.2 Children</h4>
 
 <ul>
 <li>&lt;transition&gt; A transition whose 'target' specifies the
@@ -1303,9 +1322,10 @@ transition <em title="MUST NOT in RFC2119 context"
 class="RFC2119">MUST NOT</em> contain 'cond' or 'event' attributes,
 and <em title="MUST in RFC2119 context" class="RFC2119">MUST</em>
 specify a non-null 'target' whose value is a valid state
-specification (see <a href="#LegalStateConfigurations"><em>3.11
-Legal State Configurations and Specifications</em></a> for
-details). This transition <em title="MAY in RFC2119 context"
+specification consisting of solely of descendants of the containing
+state (see <a href="#LegalStateConfigurations"><em>3.11 Legal State
+Configurations and Specifications</em></a> for details). This
+transition <em title="MAY in RFC2119 context"
 class="RFC2119">MAY</em> contain executable content.</li>
 </ul>
 </div>
@@ -1320,7 +1340,7 @@ class="RFC2119">MAY</em> contain executable content.</li>
 compound &lt;state&gt; element.</p>
 
 <div class="div3">
-<h4><a id="N1042A" name="N1042A" />3.7.1 Attribute Details</h4>
+<h4><a id="N10440" name="N10440" />3.7.1 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -1350,7 +1370,7 @@ IDs</em></a> for details.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N10455" name="N10455" />3.7.2 Children</h4>
+<h4><a id="N1046B" name="N1046B" />3.7.2 Children</h4>
 
 <ul>
 <li>&lt;onentry&gt; Optional element holding executable content to
@@ -1403,13 +1423,13 @@ href="#invoke"><em>6.4 &lt;invoke&gt;</em></a> for details.</p>
 when the state is entered.</p>
 
 <div class="div3">
-<h4><a id="N104A1" name="N104A1" />3.8.1 Attribute Details</h4>
+<h4><a id="N104B7" name="N104B7" />3.8.1 Attribute Details</h4>
 
 <p>None.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N104A6" name="N104A6" />3.8.2 Children</h4>
+<h4><a id="N104BC" name="N104BC" />3.8.2 Children</h4>
 
 <p>The children of the &lt;onentry&gt; handler consist of
 executable content as defined in <a href="#executable"><em>4
@@ -1434,13 +1454,13 @@ Interpretation</em></a> for details.</p>
 when the state is exited.</p>
 
 <div class="div3">
-<h4><a id="N104C1" name="N104C1" />3.9.1 Attribute Details</h4>
+<h4><a id="N104D7" name="N104D7" />3.9.1 Attribute Details</h4>
 
 <p>None.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N104C6" name="N104C6" />3.9.2 Children</h4>
+<h4><a id="N104DC" name="N104DC" />3.9.2 Children</h4>
 
 <p>The children of the &lt;onexit&gt; handler consist of executable
 content as defined in <a href="#executable"><em>4 Executable
@@ -1459,13 +1479,13 @@ Interpretation</em></a> for details.</p>
 <div class="div2">
 <h3><a id="history" name="history" />3.10 &lt;history&gt;</h3>
 
-<p>The &lt;history&gt; pseudo-state allows allows a state machine
-to remember its state configuration. A &lt;transition&gt; taking
-the &lt;history&gt; state as its target will return the state
-machine to this recorded configuration.</p>
+<p>The &lt;history&gt; pseudo-state allows a state machine to
+remember its state configuration. A &lt;transition&gt; taking the
+&lt;history&gt; state as its target will return the state machine
+to this recorded configuration.</p>
 
 <div class="div3">
-<h4><a id="N104DF" name="N104DF" />3.10.1 Attribute Details</h4>
+<h4><a id="N104F5" name="N104F5" />3.10.1 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -1506,12 +1526,12 @@ state or only its immediate active substate(s) are recorded.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N10518" name="N10518" />3.10.2 Children</h4>
+<h4><a id="N1052E" name="N1052E" />3.10.2 Children</h4>
 
 <ul>
 <li>&lt;transition&gt; A transition whose 'target' specifies the
-default history configuration. In a conformant SCXML document, this
-transition <em title="MUST NOT in RFC2119 context"
+default history configuration. Occurs once. In a conformant SCXML
+document, this transition <em title="MUST NOT in RFC2119 context"
 class="RFC2119">MUST NOT</em> contain 'cond' or 'event' attributes,
 and <em title="MUST in RFC2119 context" class="RFC2119">MUST</em>
 specify a non-null 'target' whose value is a valid state
@@ -1547,7 +1567,7 @@ the parent before taking any transition that exits the parent.
 After the parent state has been visited for the first time, for
 each &lt;history&gt; element, we define the set of states that the
 processor has recorded to be the 'stored state configuration' for
-that history state. We also define the states specified by the
+that history state. . We also define the states specified by the
 'target' of the &lt;history&gt; element's &lt;transition&gt; child
 to be the 'default stored state configuration' for that element. If
 a transition is executed that takes the &lt;history&gt; state as
@@ -1835,8 +1855,8 @@ Expressions</em></a>, <a href="#ErrorsinExpressions"><em>5.9.4
 Errors in Expressions</em></a>, <a href="#SystemVariables"><em>5.10
 System Variables</em></a>, <a href="#send"><em>6.2
 &lt;send&gt;</em></a>, <a
-href="#ecma_location_expressions"><em>C.2.3 Location
-Expressions</em></a>, <a href="#ecma_assign"><em>C.2.6
+href="#ecma_location_expressions"><em>C.2.4 Location
+Expressions</em></a>, <a href="#ecma_assign"><em>C.2.7
 &lt;assign&gt;</em></a>, <a href="#xpath_assign"><em>C.3.6
 &lt;assign&gt;</em></a> </td>
 </tr>
@@ -1877,21 +1897,6 @@ ancestor of S c) T lacks an 'cond' attribute or its 'cond'
 attribute evaluates to "true". (Note that such a transition can
 never be enabled by any named event.)]</p>
 
-<p>[<a title="" id="optimally-enabled"
-name="optimally-enabled">Definition</a>: A transition T is
-<em>optimally enabled</em> by event E in atomic state S if a) T is
-enabled by E in S and b) no transition that precedes T in document
-order in T's source state is enabled by E in S and c) no transition
-is enabled by E in S in any descendant of T's source state.]</p>
-
-<p>[<a title="" id="optimal-transition-set"
-name="optimal-transition-set">Definition</a>: The <em>optimal
-transition set</em> enabled by event E in state configuration C is
-the largest set of transitions such that each transition in the set
-is optimally enabled by E in an atomic state in C and no transition
-has a source state that is exited by another transition in the set
-that proceeds it in document order. ]</p>
-
 <p>[<a title="" id="source-state"
 name="source-state">Definition</a>: The <em>source state</em> of a
 transition is the &lt;state&gt; or &lt;parallel&gt; element that it
@@ -1904,36 +1909,69 @@ ancestors, expanded by the recursive application of the following
 two operations: 1) if any &lt;parallel&gt; element is a member of
 the set, any of its children that are not members of the set must
 be added 2) if any compound &lt;state&gt; is in the set and none of
-its children is in the set, its default initial state is added to
-the set. Any state whose child(ren) are added to the complete
+its children is in the set, its default initial state(s) are added
+to the set. Any state whose child(ren) are added to the complete
 target set by clause 2 is called a <em>default entry state</em>.
 ]</p>
 
 <p>[<a title="" id="exit-set" name="exit-set">Definition</a>: The
-<em>exit set</em> of a transition is the set of states that are
-exited when the transition is taken. If the transition does not
-contain a 'target', its exit set is empty. Otherwise (i.e., if the
-transition contains a 'target'), if its 'type' is "external", its
-exit set consists of all active states that are proper descendants
-of the <a href="#LCCA">Least Common Compound Ancestor (LCCA)</a> of
-the source and target states. Otherwise, if the transition has
-'type' "internal", its source state is a compound state, and all
-its target states are proper descendants of its source state, the
-exit set consists of all active states that are proper descendants
+<em>exit set</em> of a transition in configuration C is the set of
+states that are exited when the transition is taken when the state
+machine is in C. If the transition does not contain a 'target', its
+exit set is empty. Otherwise (i.e., if the transition contains a
+'target'), if its 'type' is "external", its exit set consists of
+all active states in C that are proper descendants of the <a
+href="#LCCA">Least Common Compound Ancestor (LCCA)</a> of the
+source and target states. Otherwise, if the transition has 'type'
+"internal", its source state is a compound state, and all its
+target states are proper descendants of its source state, the exit
+set consists of all active states in C that are proper descendants
 of its source state. (If a transition has 'type' of "internal", but
-its source state is not compound or its target states are not
+but its source state is not compound or its target states are not
 all proper descendants of its source state, its exit set is defined
 as if it had 'type' of "external". The exit set of a set of
 transitions is the union of the exit sets of the individual
 transitions. ]</p>
 
 <p>[<a title="" id="entry-set" name="entry-set">Definition</a>: The
-<em>entry set</em> of a transition is the set of states that are
-entered when the transition is taken. If a transition does not
-contain a 'target', its entry set is empty. Otherwise, it consists
-of all members of the transition's complete target set that are not
-currently active. The entry set of a set of transitions is the
-union of the transition sets of the individual transitions.]</p>
+<em>entry set</em> of a transition in configuration C is the set of
+states that are entered when the transition is taken. If a
+transition does not contain a 'target', its entry set is empty.
+Otherwise, it consists of all members of the transition's complete
+target set that are not currently active. The entry set of a set of
+transitions is the union of the transition sets of the individual
+transitions.]</p>
+
+<p>[<a title="" id="optimally-enabled"
+name="optimally-enabled">Definition</a>: A transition T is
+<em>optimally enabled</em> by event E in atomic state S if a) T is
+enabled by E in S and b) no transition that precedes T in document
+order in T's source state is enabled by E in S and c) no transition
+is enabled by E in S in any descendant of T's source state.]</p>
+
+<p>[<a title="" id="transition-conflict"
+name="transition-conflict">Definition</a>: Two transitions T1 and
+T2 <em>conflict</em> in state configuration C if their exit sets in
+C have a non-null intersection.]</p>
+
+<p>N.B. If two transitions conflict, then taking them both may lead
+to an illegal configuration. Hence, only one of the transitions may
+safely be taken. In order to resolve conflicts between transitions,
+we assign priorities to transitions as follows: let transitions T1
+and T2 conflict, where T1 is optimally enabled in atomic state S1,
+and T2 is optimally enabled in atomic state S2, where S1 and S2 are
+both active. We say that T1 has a higher priority than T2 if a)
+T1's source state is a descendant of T2's source state, or b) S1
+precedes S2 in document order.</p>
+
+<p>[<a title="" id="optimal-transition-set"
+name="optimal-transition-set">Definition</a>: The <em>optimal
+transition set</em> enabled by event E in state configuration C is
+the largest set of transitions such that a) each transition in the
+set is optimally enabled by E in an atomic state in C b) no
+transition conflicts with another transition in the set c) there is
+no optimally enabled transition outside the set that has a higher
+priority than some member of the set. ]</p>
 
 <p>[<a title="" id="microstep" name="microstep">Definition</a>: A
 <em>microstep</em> consists of the execution of the transitions in
@@ -2114,13 +2152,10 @@ queue when S is entered, the event generated by &lt;raise&gt; will
 not be processed until ec1 and ec2 have finished execution and e1
 has been processed. For details of event processing, see <a
 href="#AlgorithmforSCXMLInterpretation"><em>A Algorithm for SCXML
-Interpretation</em></a>. Note that the <a href="#send"><em>6.2
-&lt;send&gt;</em></a> element may also be used to raise internal
-events in an SCXML session. The &lt;send&gt; is a general-purpose
-message element, while &lt;raise&gt; has a simpler syntax.</p>
+Interpretation</em></a>.</p>
 
 <div class="div3">
-<h4><a id="N10796" name="N10796" />4.2.1 Attribute Details</h4>
+<h4><a id="N107B4" name="N107B4" />4.2.1 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -2149,7 +2184,7 @@ the 'event' attribute of transitions.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N107BC" name="N107BC" />4.2.2 Children</h4>
+<h4><a id="N107DA" name="N107DA" />4.2.2 Children</h4>
 
 None.</div>
 
@@ -2167,7 +2202,7 @@ rear of the session's internal event queue.</p>
 elements.</p>
 
 <div class="div3">
-<h4><a id="N107CD" name="N107CD" />4.3.1 Attribute Details</h4>
+<h4><a id="N107EB" name="N107EB" />4.3.1 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -2197,7 +2232,7 @@ Expressions</em></a> for details.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N107F6" name="N107F6" />4.3.2 Children</h4>
+<h4><a id="N10814" name="N10814" />4.3.2 Children</h4>
 
 <ul>
 <li>&lt;elseif&gt; Occurs 0 or more times. See <a
@@ -2259,7 +2294,7 @@ execute any of the executable content.</p>
 <p>[This section is normative.]</p>
 
 <div class="div3">
-<h4><a id="N10825" name="N10825" />4.4.1 Overview</h4>
+<h4><a id="N10843" name="N10843" />4.4.1 Overview</h4>
 
 <p>&lt;elseif&gt; is an empty element that partitions the content
 of an &lt;if&gt;, and provides a condition that determines whether
@@ -2274,7 +2309,7 @@ the partition is executed.</p>
 <p>[This section is normative.]</p>
 
 <div class="div3">
-<h4><a id="N10831" name="N10831" />4.5.1 Overview</h4>
+<h4><a id="N1084F" name="N1084F" />4.5.1 Overview</h4>
 
 <p>&lt;else&gt; is an empty element that partitions the content of
 an &lt;if&gt;. It is equivalent to an &lt;elseif&gt; with a "cond"
@@ -2282,7 +2317,7 @@ that always evaluates to true.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N10836" name="N10836" />4.5.2 Attribute Details</h4>
+<h4><a id="N10854" name="N10854" />4.5.2 Attribute Details</h4>
 
 <p>None.</p>
 </div>
@@ -2294,7 +2329,7 @@ that always evaluates to true.</p>
 <div class="div3">
 <p>[This section is normative.]</p>
 
-<h4><a id="N1083F" name="N1083F" />4.6.1 Overview</h4>
+<h4><a id="N1085D" name="N1085D" />4.6.1 Overview</h4>
 
 <p>The &lt;foreach&gt; element allows an SCXML application to
 iterate through a collection in the data model and to execute the
@@ -2302,7 +2337,7 @@ actions contained within it for each item in the collection.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N10846" name="N10846" />4.6.2 Attribute Details</h4>
+<h4><a id="N10864" name="N10864" />4.6.2 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -2356,7 +2391,7 @@ iteration of the foreach loop.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N10888" name="N10888" />4.6.3 Children</h4>
+<h4><a id="N108A6" name="N108A6" />4.6.3 Children</h4>
 
 <p>The children of &lt;foreach&gt; consist of one or more items of
 executable content. (Note that they are considered to be part of
@@ -2412,14 +2447,14 @@ SCXML application itself.)</p>
 <p>[This section is normative.]</p>
 
 <div class="div3">
-<h4><a id="N108B8" name="N108B8" />4.7.1 Overview</h4>
+<h4><a id="N108D6" name="N108D6" />4.7.1 Overview</h4>
 
 <p>&lt;log&gt; allows an application to generate a logging or debug
 message.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N108BD" name="N108BD" />4.7.2 Attribute Details</h4>
+<h4><a id="N108DB" name="N108DB" />4.7.2 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -2464,7 +2499,7 @@ logging it.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N108F2" name="N108F2" />4.7.3 Children</h4>
+<h4><a id="N10910" name="N10910" />4.7.3 Children</h4>
 
 <p>None.</p>
 </div>
@@ -2584,7 +2619,7 @@ for details.</p>
 
 <p>A general method for implementing extensions using the
 &lt;send&gt; element is presented in <a
-href="#custom_action"><em>G.8 Custom Action Elements</em></a>.</p>
+href="#custom_action"><em>G.7 Custom Action Elements</em></a>.</p>
 </div>
 </div>
 
@@ -2627,10 +2662,10 @@ into communications with external entities. Finally, the <a
 href="#script"><em>5.8 &lt;script&gt;</em></a> element permits the
 incorporation of a scripting language.</p>
 
-<p>The interpretation of these elements depends on the datamodel in
-question, and not all elements are supported in all datamodels. For
-the details of specific data models, see <a href="#profiles"><em>C
-Data Models</em></a>.</p>
+<p>The interpretation of these elements depends on the data model
+in question, and not all elements are supported in all data models.
+For the details of specific data models, see <a
+href="#profiles"><em>C Data Models</em></a>.</p>
 </div>
 
 <div class="div2">
@@ -2644,13 +2679,13 @@ data object. The exact nature of the data object depends on the
 data model language used.</p>
 
 <div class="div3">
-<h4><a id="N10999" name="N10999" />5.2.1 Attribute Details</h4>
+<h4><a id="N109B7" name="N109B7" />5.2.1 Attribute Details</h4>
 
 <p>None.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N1099E" name="N1099E" />5.2.2 Children</h4>
+<h4><a id="N109BC" name="N109BC" />5.2.2 Children</h4>
 
 <ul>
 <li>&lt;data&gt; Occurs 0 or more times. Each instance defines a
@@ -2665,10 +2700,10 @@ named data element.</li>
 <p>[This section is normative.]</p>
 
 <p>The &lt;data&gt; element is used to declare and populate
-portions of the datamodel.</p>
+portions of the data model.</p>
 
 <div class="div3">
-<h4><a id="N109AD" name="N109AD" />5.3.1 Attribute Details</h4>
+<h4><a id="N109CB" name="N109CB" />5.3.1 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -2721,7 +2756,7 @@ Expressions</em></a> for details.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N109F7" name="N109F7" />5.3.2 Children</h4>
+<h4><a id="N10A15" name="N10A15" />5.3.2 Children</h4>
 
 <p>The children of the &lt;data&gt; element represent an in-line
 specification of the value of the data object.</p>
@@ -2758,8 +2793,8 @@ the Platform <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> assign it as the value of the data
 element at the time specified by the 'binding' attribute of
 &lt;scxml&gt;. Note that in the latter two cases, the
-interpretation of the object or content will depend on the
-datamodel. See <a href="#profiles"><em>C Data Models</em></a> for
+interpretation of the object or content will depend on the data
+model. See <a href="#profiles"><em>C Data Models</em></a> for
 details. If the value specified for a &lt;data&gt; element (by
 'src', children, or the environment) is not a legal data value, the
 SCXML Processor <em title="MUST in RFC2119 context"
@@ -2770,60 +2805,10 @@ model with the specified id.</p>
 
 <p>Implementations <em title="MAY in RFC2119 context"
 class="RFC2119">MAY</em> predeclare and predefine variables in the
-datamodel. However, conformant SCXML implementations <em
+data model. However, conformant SCXML implementations <em
 title="SHOULD NOT in RFC2119 context" class="RFC2119">SHOULD
 NOT</em> assume the existence of any predeclared or predefined
 variables (i.e., ones not explicitly defined by &lt;data&gt;).</p>
-</div>
-
-<div class="div3">
-<h4><a id="DataBinding" name="DataBinding" />5.3.3 Data Binding and
-Scoping</h4>
-
-<p>There is a single globally visible data model for the entire
-state machine. Specifically, the SCXML Processor <em
-title="MUST in RFC2119 context" class="RFC2119">MUST</em> allow any
-data element to be accessed from any state. Thus the data model has
-no concept of scoping. However, authors control when the initial
-values are assigned to the data elements by means of the 'binding'
-attribute on the &lt;scxml&gt; element. When 'binding' is assigned
-the value "early" (the default), the SCXML Processor <em
-title="MUST in RFC2119 context" class="RFC2119">MUST</em> create
-all data elements and assign their initial values at document
-initialization time. When 'binding' is assigned the value "late",
-the SCXML Processor <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> create the data elements at document
-initialization time, but <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> assign the specified initial value to a
-given data element only when the state that contains it is entered
-for the first time, before any &lt;onentry&gt; markup. (The value
-of the data element between the time it is created and the time its
-parent state is first entered will depend on the data language
-chosen. The initial value specified by 'expr', 'src' or in-line
-content will be assigned to the data element even if the element
-already has a non-null value when the parent state is first
-entered.)</p>
-
-<p>Ordering dependencies between &lt;data&gt; elements are not
-permitted. In the case of early binding, the SCXML Processor <em
-title="MUST in RFC2119 context" class="RFC2119">MUST</em> evaluate
-all &lt;data&gt; elements at initialization time but <em
-title="MAY in RFC2119 context" class="RFC2119">MAY</em> do so in
-any order it chooses. Suppose, for example, that the declaration of
-element "a" precedes the declaration of element "b" in a document.
-It is not safe to assume that "a" will be instantiated and have a
-value when the declaration of "b" is executed. Therefore the "expr"
-in "b" cannot safely reference the value of "a" (and vice-versa).
-When late binding is selected, the SCXML Processor <em
-title="MUST in RFC2119 context" class="RFC2119">MUST</em> create
-data model elements at initialization time but <em
-title="MAY in RFC2119 context" class="RFC2119">MAY</em> do so in
-any order it chooses. Similarly, the processor <em
-title="MUST in RFC2119 context" class="RFC2119">MUST</em> assign
-the specified initial values to data elements only when the state
-containing them is first entered, but <em
-title="MAY in RFC2119 context" class="RFC2119">MAY</em> do so in
-any order it chooses.</p>
 
 <p>Note that this specification does not define any way to modify
 the data model except by&lt;assign&gt;, &lt;finalize&gt;, and
@@ -2835,11 +2820,35 @@ session and the SCXML Processor checks for eventless transitions
 model) only after entering a state or processing an event. However
 in some deployments it may be possible for external entities to
 modify the data model. For example, if SCXML is implemented in
-JavaScript in a browser, the scope of a document's datamodel is
+JavaScript in a browser, the scope of a document's data model is
 always accessible through the main window object and thus
-JavaScript code elsewhere in the window can modify the datamodel
+JavaScript code elsewhere in the window can modify the data model
 independent of the SCXML interpretation algorithm. Such a situation
 can lead to race conditions and unpredictable behavior</p>
+</div>
+
+<div class="div3">
+<h4><a id="DataBinding" name="DataBinding" />5.3.3 Data
+Binding</h4>
+
+<p>Authors control when the initial values are assigned to the data
+elements by means of the 'binding' attribute on the &lt;scxml&gt;
+element. When 'binding' is assigned the value "early" (the
+default), the SCXML Processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> create all data elements and assign their
+initial values at document initialization time. When 'binding' is
+assigned the value "late", the SCXML Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> create
+the data elements at document initialization time, but <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> assign
+the specified initial value to a given data element only when the
+state that contains it is entered for the first time, before any
+&lt;onentry&gt; markup. (The value of the data element between the
+time it is created and the time its parent state is first entered
+will depend on the data language chosen. The initial value
+specified by 'expr', 'src' or in-line content will be assigned to
+the data element even if the element already has a non-null value
+when the parent state is first entered.)</p>
 </div>
 </div>
 
@@ -2851,7 +2860,7 @@ can lead to race conditions and unpredictable behavior</p>
 <p>The &lt;assign&gt; element is used to modify the data model.</p>
 
 <div class="div3">
-<h4><a id="N10A5E" name="N10A5E" />5.4.1 Attribute Details</h4>
+<h4><a id="N10A65" name="N10A65" />5.4.1 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -2894,12 +2903,12 @@ Expressions</em></a> for details.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N10A99" name="N10A99" />5.4.2 Children</h4>
+<h4><a id="N10AA0" name="N10AA0" />5.4.2 Children</h4>
 
 <p>The children of the &lt;assign&gt;element provide an in-line
 specification of the legal data value (see <a
 href="#ValueExpressions"><em>5.9.3 Legal Data Values and Value
-Expressions</em></a>) to be inserted into the datamodel at the
+Expressions</em></a>) to be inserted into the data model at the
 specified location.</p>
 </div>
 
@@ -2910,7 +2919,7 @@ class="RFC2119">MUST</em> specify either "expr" or children of
 <p>Assignment to a data model is done by using a location
 expression to denote the part of the data model where the insertion
 is to be made. If the location expression does not denote a valid
-location in the datamodel or if the value specified (by 'expr' or
+location in the data model or if the value specified (by 'expr' or
 children) is not a legal value for the location specified, the
 SCXML Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> place the error 'error.execution' in the
@@ -2918,7 +2927,7 @@ internal event queue. Otherwise, the SCXML Processor <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> place the
 specified value at the specified location. Note that the nature of
 the insertion and the definition of a legal value depends on the
-data model language used. Note also that datamodels <em
+data model language used. Note also that data models <em
 title="MAY in RFC2119 context" class="RFC2119">MAY</em> support
 additional attributes for &lt;assign&gt; beyond those specified
 here. See <a href="#profiles"><em>C Data Models</em></a> for
@@ -2934,13 +2943,13 @@ details.</p>
 &lt;final&gt; state is entered.</p>
 
 <div class="div3">
-<h4><a id="N10ABC" name="N10ABC" />5.5.1 Attribute Details</h4>
+<h4><a id="N10AC3" name="N10AC3" />5.5.1 Attribute Details</h4>
 
 <p>None.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N10AC1" name="N10AC1" />5.5.2 Children</h4>
+<h4><a id="N10AC8" name="N10AC8" />5.5.2 Children</h4>
 
 <ul>
 <li>&lt;content&gt;. Specifies data to include in the event. May
@@ -2963,7 +2972,7 @@ entry into the final state, it <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> evaluate the &lt;donedata&gt; elements
 &lt;param&gt; or &lt;content&gt; children and place the resulting
 data in the _event.data field. The exact format of that data will
-be determined by the datamodel (see <a href="#profiles"><em>C Data
+be determined by the data model (see <a href="#profiles"><em>C Data
 Models</em></a> for details). In other cases (namely when the
 &lt;final&gt; element is a child of &lt;scxml&gt; and the state
 machine has not been triggered by &lt;invoke&gt;), the SCXML
@@ -2981,7 +2990,7 @@ an implementation-dependent manner.</p>
 service.</p>
 
 <div class="div3">
-<h4><a id="N10AE9" name="N10AE9" />5.6.1 Attribute Details</h4>
+<h4><a id="N10AF0" name="N10AF0" />5.6.1 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -3010,7 +3019,7 @@ Legal Data Values and Value Expressions</em></a> for details.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N10B13" name="N10B13" />5.6.2 Children</h4>
+<h4><a id="N10B1A" name="N10B1A" />5.6.2 Children</h4>
 
 <p>A conformant SCXML document <em
 title="MUST NOT in RFC2119 context" class="RFC2119">MUST NOT</em>
@@ -3036,10 +3045,10 @@ string as the value of the &lt;content&gt; element. If the 'expr'
 attribute is not present, the Processor <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> use the
 children of &lt;content&gt; as the output. The interpretation of
-the output of the &lt;content&gt; element depends on the datamodel.
-See <a href="#profiles"><em>C Data Models</em></a> for details. For
-the use of namespaces inside &lt;content&gt;, see <a
-href="#content_and_namespaces"><em>G.7 Inline Content and
+the output of the &lt;content&gt; element depends on the data
+model. See <a href="#profiles"><em>C Data Models</em></a> for
+details. For the use of namespaces inside &lt;content&gt;, see <a
+href="#content_and_namespaces"><em>G.6 Inline Content and
 Namespaces</em></a>.</p>
 </div>
 
@@ -3053,7 +3062,7 @@ key and a dynamically calculated value which can be passed to an
 external service or included in an event.</p>
 
 <div class="div3">
-<h4><a id="N10B40" name="N10B40" />5.7.1 Attribute Details</h4>
+<h4><a id="N10B47" name="N10B47" />5.7.1 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -3122,7 +3131,7 @@ href="#invoke"><em>6.4 &lt;invoke&gt;</em></a> for details.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N10BA1" name="N10BA1" />5.7.2 Children</h4>
+<h4><a id="N10BA8" name="N10BA8" />5.7.2 Children</h4>
 
 <p>None.</p>
 </div>
@@ -3137,7 +3146,7 @@ href="#invoke"><em>6.4 &lt;invoke&gt;</em></a> for details.</p>
 state machine.</p>
 
 <div class="div3">
-<h4><a id="N10BAE" name="N10BAE" />5.8.1 Attribute Details</h4>
+<h4><a id="N10BB5" name="N10BB5" />5.8.1 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -3166,7 +3175,7 @@ downloaded.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N10BD4" name="N10BD4" />5.8.2 Children</h4>
+<h4><a id="N10BDB" name="N10BDB" />5.8.2 Children</h4>
 
 <p>The child content of the &lt;script&gt; element represents the
 script code to be executed.</p>
@@ -3207,7 +3216,7 @@ Model</em></a>.</p>
 <p>[This section is normative.]</p>
 
 <p>SCXML contains three types of expressions, as described below.
-Different datamodels will support different languages for these
+Different data models will support different languages for these
 expression types, but certain properties of the expressions are
 constant across languages and are defined here.</p>
 
@@ -3230,8 +3239,8 @@ expression cannot be evaluated as a boolean value ('true' or
 the expression as if it evaluated to 'false' and <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> place the
 error 'error.execution' in the internal event queue. The set of
-operators in conditional expressions varies depending on the
-datamodel, but all datamodels <em title="MUST in RFC2119 context"
+operators in conditional expressions varies depending on the data
+model, but all datam odels <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> support the 'In()' predicate, which takes
 a state ID as its argument and returns true if the state machine is
 in that state. This predicate allows coordination among parallel
@@ -3244,10 +3253,10 @@ NOT</em> have side effects.</p>
 <h4><a id="LocationExpressions" name="LocationExpressions" />5.9.2
 Location Expressions</h4>
 
-<p>Location expressions are used to specify a location in the
-datamodel as part of the &lt;assign&gt;element. The exact nature of
-a location depends on the datamodel. For example, in the XPath
-datamodel (<a href="#xpath-profile"><em>C.3 The XPath Data
+<p>Location expressions are used to specify a location in the data
+model as part of the &lt;assign&gt;element. The exact nature of a
+location depends on the data model. For example, in the XPath data
+model (<a href="#xpath-profile"><em>C.3 The XPath Data
 Model</em></a>), the underlying data structure is an XML document
 consisting of a root node and children which are specified by
 individual &lt;data&gt; elements. The set of valid locations
@@ -3263,16 +3272,16 @@ internal event queue.</p>
 Data Values and Value Expressions</h4>
 
 <p>A data model definition contains a specification of the
-underlying data structure. For example, the XPath datamodel (<a
+underlying data structure. For example, the XPath data model (<a
 href="#xpath-profile"><em>C.3 The XPath Data Model</em></a>)
 defines the data structure to be an XML document. Such a
 specification of the data structure implicitly defines a set of
 "legal data values", namely the objects that can be part of such a
 data structure. For an XML data model, the set of legal data values
 consists of XML data nodes and descendants, plus strings (as values
-of attributes or text children). In conjunction with this, the
-datamodel definition specifies a set of value expressions which can
-be evaluated at runtime to return legal data values. If a value
+of attributes or text children). In conjunction with this, the data
+model definition specifies a set of value expressions which can be
+evaluated at runtime to return legal data values. If a value
 expression does not return a legal data value, the SCXML Processor
 <em title="MUST in RFC2119 context" class="RFC2119">MUST</em> place
 the error 'error.execution' in the internal event queue.</p>
@@ -3321,7 +3330,7 @@ variable '_event' to hold a structure containing the current
 event's name and any data contained in the event (see <a
 href="#InternalStructureofEvents"><em>5.10.1 The Internal Structure
 of Events</em></a>. The exact nature of the structure depends on
-the datamodel being used. See <a href="#profiles"><em>C Data
+the data model being used. See <a href="#profiles"><em>C Data
 Models</em></a> for details. The SCXML Processor <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> bind the
 _event variable when an event is pulled off the internal or
@@ -3390,7 +3399,7 @@ platform-specific system variables. The Processor <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> place all
 platform-specific system variables underneath it. The exact
 structure of the platform-specific variables depends on the data
-model. For example, in the ECMAScript datamodel <a
+model. For example, in the ECMAScript data model <a
 href="#ecma-profile"><em>C.2 The ECMAScript Data Model</em></a>,
 '_x' will be a top-level ECMAScript object and the
 platform-specific system variables will be its properties.</li>
@@ -3423,7 +3432,7 @@ Events</h4>
 <p>Events have an internal structure which is reflected in the
 _event variable. This variable can be accessed to condition
 transitions (via boolean expressions in the 'cond' attribute) or to
-update the datamodel (via &lt;assign&gt;), etc.</p>
+update the data model (via &lt;assign&gt;), etc.</p>
 
 <p>The SCXML Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> ensure that the following fields are
@@ -3445,14 +3454,18 @@ by the platform itself, such as error events), "internal" (for
 events raised by &lt;raise&gt; and &lt;send&gt; with target
 '_internal') or "external" (for all other events).</li>
 
-<li><em>sendid</em>. In the case of error events triggered by a
+<li><em>sendid</em>. If the sending entity has specified a value
+for this, the Processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> set this field to that value (see <a
+href="#eventioprocessors"><em>D Event I/O Processors</em></a> for
+details). Otherwise, in the case of error events triggered by a
 failed attempt to send an event, the Processor <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> set this
 field to the send id of the triggering &lt;send&gt; element.
 Otherwise it <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> leave it blank.</li>
 
-<li><em>origin</em>. This is a URI, equivalent to the 'target'
+<li><em>origin</em>. This a URI, equivalent to the 'target'
 attribute on the &lt;send&gt; element. For external events, the
 SCXML Processor <em title="SHOULD in RFC2119 context"
 class="RFC2119">SHOULD</em> set this field to a value which, when
@@ -3568,7 +3581,7 @@ Interpretation</em></a> for details.)</p>
 <p>[This section is normative.]</p>
 
 <div class="div3">
-<h4><a id="N10D34" name="N10D34" />6.2.1 Overview</h4>
+<h4><a id="N10D41" name="N10D41" />6.2.1 Overview</h4>
 
 <p>&lt;send&gt; is used to send events and data to external
 systems, including external SCXML Interpreters, or to raise events
@@ -3576,7 +3589,7 @@ in the current SCXML session.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N10D39" name="N10D39" />6.2.2 Attribute Details</h4>
+<h4><a id="N10D46" name="N10D46" />6.2.2 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -3692,8 +3705,8 @@ details.</td>
 <td>none</td>
 <td>Any valid location expression</td>
 <td>Any location expression evaluating to a data model location in
-which a system-generated id can be stored. See below for details.
-for details.</td>
+which a system-generated id can be stored. See below for
+details.</td>
 </tr>
 
 <tr>
@@ -3729,8 +3742,8 @@ as the value of 'delay'.</td>
 <tr>
 <td>namelist</td>
 <td>false</td>
-<td>Must not be specified in conjunction with the &lt;param&gt; or
-&lt;content&gt; elements.</td>
+<td>Must not be specified in conjunction with &lt;content&gt;
+element.</td>
 <td>List of location expressions</td>
 <td>none</td>
 <td>List of data model locations</td>
@@ -3745,7 +3758,7 @@ Location Expressions</em></a> for details.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N10E1A" name="N10E1A" />6.2.3 Children</h4>
+<h4><a id="N10E27" name="N10E27" />6.2.3 Children</h4>
 
 <ul>
 <li>&lt;param&gt;. The SCXML Processor <em
@@ -3753,10 +3766,7 @@ title="MUST in RFC2119 context" class="RFC2119">MUST</em> evaluate
 this element when the parent &lt;send&gt; element is evaluated and
 pass the resulting data to the external service when the message is
 delivered. Occurs 0 or more times. See <a href="#param"><em>5.7
-&lt;param&gt;</em></a> for details. The SCXML Processor <em
-title="MUST in RFC2119 context" class="RFC2119">MUST</em> include
-all attributes and values provided by &lt;param&gt; and/or
-'namelist' even if duplicates occur.</li>
+&lt;param&gt;</em></a> for details.</li>
 
 <li>&lt;content&gt;. The SCXML Processor <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> evaluate
@@ -3771,6 +3781,11 @@ class="RFC2119">MUST</em> specify exactly one of 'event',
 'eventexpr' and &lt;content&gt;. A conformant document <em
 title="MUST NOT in RFC2119 context" class="RFC2119">MUST NOT</em>
 specify "namelist" or &lt;param&gt; with &lt;content&gt;.</p>
+
+<p>The SCXML Processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> include all attributes and values
+provided by &lt;param&gt; or 'namelist' even if duplicates
+occur.</p>
 
 <p>If 'idlocation' is present, the SCXML Processor <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> generate
@@ -3805,13 +3820,9 @@ Send</h4>
 destination of the event. The target is defined by either the
 'target' or the 'targetexpr' attribute. In most cases, the format
 of the target depends on the type of the target (for example a SIP
-URL for SIP-INFO messages or a HTTP URL for Web Services). If
-neither the 'target' nor the 'targetexpr' attribute is specified,
-the SCXML Processor <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> add the event will be added to the
-external event queue of the sending session. If the value of the
-'target' or 'targetexpr' attribute is not supported or invalid, the
-Processor <em title="MUST in RFC2119 context"
+URL for SIP-INFO messages or a HTTP URL for Web Services). If the
+value of the 'target' or 'targetexpr' attribute is not supported or
+invalid, the Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> place the error error.execution on the
 internal event queue. If it is unable to dispatch the message, the
 Processor <em title="MUST in RFC2119 context"
@@ -3997,7 +4008,7 @@ not be guaranteed to succeed, for example if the event has already
 been delivered by the time the &lt;cancel&gt; tag executes.</p>
 
 <div class="div3">
-<h4><a id="N10F2A" name="N10F2A" />6.3.1 Attribute Details</h4>
+<h4><a id="N10F36" name="N10F36" />6.3.1 Attribute Details</h4>
 
 <table border="1" summary="attibute table">
 <tbody>
@@ -4017,14 +4028,15 @@ been delivered by the time the &lt;cancel&gt; tag executes.</p>
 <td>Must not occur with sendidexpr.</td>
 <td>IDREF</td>
 <td>none</td>
-<td>The ID of a delayed event</td>
-<td>The ID of the event which is to be canceled.</td>
+<td>The sendid of a delayed event</td>
+<td>The ID of the event(s) to be cancelled. If multiple delayed
+events have this sendid, the Processor will cancel them all.</td>
 </tr>
 
 <tr>
 <td>sendidexpr</td>
 <td>false</td>
-<td>Must not occur with sendid.</td>
+<td>Must occur with sendid.</td>
 <td>Value Expression</td>
 <td>none</td>
 <td>Any expression that evaluates to the ID of a delayed event</td>
@@ -4043,7 +4055,7 @@ class="RFC2119">MUST</em> specify exactly one of sendid or
 sendidexpr.</p>
 
 <div class="div3">
-<h4><a id="N10F68" name="N10F68" />6.3.2 Children</h4>
+<h4><a id="N10F74" name="N10F74" />6.3.2 Children</h4>
 
 <p>None</p>
 </div>
@@ -4155,7 +4167,7 @@ Expressions</em></a> for details.</td>
 <tr>
 <td>namelist</td>
 <td>false</td>
-<td>Must not occur with the &lt;content&gt; element.</td>
+<td>Must not occur with the &lt;param&gt; element.</td>
 <td>List of location expressions</td>
 <td>none</td>
 <td>List of data model locations</td>
@@ -4182,7 +4194,7 @@ process. See below for details.</td>
 </div>
 
 <div class="div3">
-<h4><a id="N11017" name="N11017" />6.4.2 Children</h4>
+<h4><a id="N11023" name="N11023" />6.4.2 Children</h4>
 
 <ul>
 <li>&lt;param&gt;. Element containing data to be passed to the
@@ -4199,12 +4211,6 @@ when the parent &lt;invoke&gt; element is evaluated and pass the
 resulting data to the invoked service. Occurs 0 or 1 times. See <a
 href="#content"><em>5.6 &lt;content&gt;</em></a> for details.</li>
 </ul>
-
-<p>A conformant SCXML Document <em
-title="MUST NOT in RFC2119 context" class="RFC2119">MUST NOT</em>
-specify more than one of 'src', &lt;param&gt;, or &lt;content&gt;.
-However it <em title="MAY in RFC2119 context"
-class="RFC2119">MAY</em> specify &lt;param&gt; multiple times.</p>
 </div>
 
 <p>Platforms <em title="MUST in RFC2119 context"
@@ -4359,7 +4365,7 @@ once it is in this state.</li>
 state containing the invocation before it receives the
 done.invoke.<em>id</em> event, it cancels the invoked session. The
 method for doing this is platform-specific. However, when it is
-cancelled, the invoked session <em
+cancelled, the the invoked session <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> act as if
 the 'running' variable specified in <a
 href="#AlgorithmforSCXMLInterpretation"><em>A Algorithm for SCXML
@@ -4408,7 +4414,7 @@ value as was used in the original &lt;invoke&gt;, while the target
 has the special form #_<em>invokeid</em>, where <em>invokeid</em>
 is the identifier corresponding to the original &lt;invoke&gt; tag.
 For example, in a document using ECMAScript as the data model, the
-following code would invoke a VXML session:</p>
+following code would invoke a VoiceXML session:</p>
 
 <div class="exampleInner">
 <pre>
@@ -4420,12 +4426,12 @@ following code would invoke a VXML session:</p>
 <p>In this case, the unique invoke identifier has been stored in
 the data model location MyInvoke. Since the target attribute is an
 expression which is evaluated, the following code will extract that
-identifier and send a message to the invoked VXML session:</p>
+identifier and send a message to the invoked VoiceXML session:</p>
 
 <div class="exampleInner">
 <pre>
          
-  &lt;send type="http://www.w3.org/TR/voicexml21/" targetexpr="'#_' + myInvoke"/&gt;
+  &lt;send type="http://www.w3.org/TR/voicexml21/" targetexpr="'#' + myInvoke"/&gt;
            
 </pre>
 </div>
@@ -4454,13 +4460,13 @@ processed.In the case of parallel states, only the finalize code in
 the original invoking state is executed.</p>
 
 <div class="div3">
-<h4><a id="N11117" name="N11117" />6.5.1 Attribute Details</h4>
+<h4><a id="N1111B" name="N1111B" />6.5.1 Attribute Details</h4>
 
 <p>None.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N1111C" name="N1111C" />6.5.2 Children</h4>
+<h4><a id="N11120" name="N11120" />6.5.2 Children</h4>
 
 <p>&lt;finalize&gt;'s children consist of 0 or more elements of
 executable content.</p>
@@ -4520,7 +4526,7 @@ evaluated.</p>
 &lt;scxml version="1.0" datamodel="ecmascript"&gt;
 ....
  &lt;state id="getTime"&gt;
-   &lt;transition event="ping" cond="time.getHours() &gt; 17 || time.getHours() &lt; 9" target="storeClosed"/&gt;
+   &lt;transition event="ping" cond="time.getHours() &gt; 17 ||  time.getHours() &lt; 9" target="storeClosed"/&gt;
    &lt;transition event="ping" target="takeOrder"/&gt;
    &lt;datamodel&gt;
      &lt;data id="time" expr="new Date()"/&gt;
@@ -4641,11 +4647,10 @@ either raised automatically by the platform or generated with the
 
 <dd>A microstep involves the processing of a single transition (or,
 in the case of parallel states, a single set of transitions.) A
-microstep may change the current configuration, update the
-datamodel and/or generate new (internal and/or external) events.
-This, by causality, may in turn enable additional transitions which
-will be handled in the next microstep in the sequence, and so
-on.</dd>
+microstep may change the the current configuration, update the data
+model and/or generate new (internal and/or external) events. This,
+by causality, may in turn enable additional transitions which will
+be handled in the next microstep in the sequence, and so on.</dd>
 
 <dt class="label">macrostep</dt>
 
@@ -4732,20 +4737,26 @@ algorithm.</p>
 <pre>
 datatype List
    <code>function</code> head()      // Returns the head of the list
-   <code>function</code> tail()      // Returns the tail of the list
+   <code>function</code> tail()      // Returns the tail of the list (i.e., the rest of the list once the head is removed)
    <code>function</code> append(l)   // Returns the list appended with l
    <code>function</code> filter(f)   // Returns the list of elements that satisfy the predicate f
    <code>function</code> some(f)     // Returns true if some element in the list satisfies the predicate f
    <code>function</code> every(f)    // Returns true if every element in the list satisfies the predicate f
-
+The notation [...] is used as a list constructor, so that '[t]' denotes a list whose only member is the object t.
+ 
 datatype OrderedSet
-   <code>procedure</code> add(e)     // Adds e to the set if it is not already a member
-   <code>procedure</code> delete(e)  // Deletes e from the set
-   <code>function</code> member(e)   // Is e a member of set?
-   <code>function</code> isEmpty()   // Is the set empty?
-   <code>function</code> toList()    // Converts the set to a list that reflects the order in which elements were originally added.
-   <code>procedure</code> clear()    // Remove all elements from the set (make it empty)   
-
+   <code>procedure</code> add(e)              // Adds e to the set if it is not already a member
+   <code>procedure</code> delete(e)           // Deletes e from the set
+   <code>procedure</code> union(s)            // Adds all members of s that are not already members of the set (s must also be an OrderedSet)
+   <code>function</code>  isMember(e)         // Is e a member of set?
+   <code>function</code> hasIntersection(s)  // Returns true if this set and  set s have at least one member in common
+   <code>function</code>  isEmpty()           // Is the set empty?
+   <code>procedure</code> clear()             // Remove all elements from the set (make it empty) 
+   <code>function</code>  toList()            // Converts the set to a list that reflects the order in which elements were originally added
+                                 // In the case of sets created by intersection, the order of the first set (the one on which the method was called) is used 
+                                 // In the case of sets created by union, the members of the first set (the one on which union was called) retain their original ordering
+                                 // while any members belonging to the second set only are placed after, retaining their ordering in their original set. 
+ 
 
 datatype Queue
    <code>procedure</code> enqueue(e) // Puts e last in the queue
@@ -4755,13 +4766,15 @@ datatype Queue
 datatype BlockingQueue
    <code>procedure</code> enqueue(e) // Puts e last in the queue
    <code>function</code> dequeue()   // Removes and returns first element in queue, blocks if queue is empty
+
+datatype HashTable // table[foo] returns the value associated with foo.  table[foo] = bar sets the value associated with foo to be bar.
 </pre>
 
 <h3 id="GlobalVariables">Global variables</h3>
 
 <p>The following variables are global from the point of view of the
-algorithm. Their values will be set in the
-procedureinterpret().</p>
+algorithm. Their values will be set in the procedure
+interpret().</p>
 
 <pre>
 global configuration
@@ -4792,7 +4805,10 @@ name="exitOrder">exitOrder</a></code>  // Descendants precede ancestors, with re
 <h3 id="ProceduresandFunctions">Procedures and Functions</h3>
 
 <p>This section defines the procedures and functions that make up
-the core of the SCXML interpreter.</p>
+the core of the SCXML interpreter. N.B. in the code below, the
+keyword 'continue' has its traditional meaning in languages like C:
+break off the current iteration of the loop and procede to the next
+iteration.</p>
 
 <h4 id="interpret"><code>procedure</code> interpret(scxml,id)</h4>
 
@@ -4807,12 +4823,12 @@ validation fails. Then convert initial attributes to
 specified by the attribute. (This step is done purely to simplify
 the statement of the algorithm and has no effect on the system's
 behavior. Such transitions will not contain any executable
-content). Create an empty configuration complete with a new
-populated instance of the data model and a execute the global
-scripts. Create the two queues to handle events and set the global
-running variable to true. Finally call enterStates on the initial
-transition that is a child of scxml and start the interpreter's
-event loop.</p>
+content). Initialize the global data structures, including the data
+model. If binding is set to 'early', initialize the data model.
+Then execute the global &lt;script&gt; element, if any. Finally
+call enterStates on the initial configuration, set the global
+running variable to true and start the interpreter's event
+loop.</p>
 
 <pre>
 procedure interpret(doc):
@@ -4820,15 +4836,14 @@ procedure interpret(doc):
     expandScxmlSource(doc)
     configuration = new OrderedSet()
     statesToInvoke = new OrderedSet()
-    datamodel = new Datamodel(doc)
-    executeGlobalScriptElements(doc)
     internalQueue = new Queue()
     externalQueue = new BlockingQueue()
-    running = true
-    binding = doc.binding
-    if binding == "early":
+    historyValue = new HashTable()
+    datamodel = new Datamodel(doc)
+    if doc.binding == "early":
         initializeDatamodel(datamodel, doc)
-    executeTransitionContent([doc.initial.transition])
+    running = true
+    executeGlobalScriptElement(doc)
     enterStates([doc.initial.transition])
     mainEventLoop()
 </pre>
@@ -4842,20 +4857,24 @@ entering a top-level final state.)</p>
 
 <p>At the top of the loop, we have either just entered the state
 machine, or we have just processed an external event. Each
-iteration through the loop consists of four main steps: 1)Take any
-internally enabled transitions, namely those that don't require an
-event or that are triggered by an internal event. 2) execute any
-&lt;invoke&gt; tags for states that we entered on the last
-iteration through the loop 3) repeat step 1 to handle any errors
-raised by the &lt;invoke&gt; elements. 4) When the internal event
-queue is empty, wait for an external event and then execute any
-transitions that it triggers. However special preliminary
-processing is applied to the event if the state has executed any
-&lt;invoke&gt; elements. First, if this event was generated by an
-invoked process, apply &lt;finalize&gt; processing to it. Secondly,
-if any &lt;invoke&gt; elements have autoforwarding set, forward the
-event to them. These steps apply before the transitions are
-taken.</p>
+iteration through the loop consists of four main steps: 1)Complete
+the macrostep by repeatedly taking any internally enabled
+transitions, namely those that don't require an event or that are
+triggered by an internal event. After each such
+transition/microstep, check to see if we have reached a final
+state. 2) When there are no more internally enabled transitions
+available, the macrostep is done. Execute any &lt;invoke&gt; tags
+for states that we entered on the last iteration through the loop
+3) If any internal events have been generated by the invokes,
+repeat step 1 to handle any errors raised by the &lt;invoke&gt;
+elements. 4) When the internal event queue is empty, wait for an
+external event and then execute any transitions that it triggers.
+However special preliminary processing is applied to the event if
+the state has executed any &lt;invoke&gt; elements. First, if this
+event was generated by an invoked process, apply &lt;finalize&gt;
+processing to it. Secondly, if any &lt;invoke&gt; elements have
+autoforwarding set, forward the event to them. These steps apply
+before the transitions are taken.</p>
 
 <p>This event loop thus enforces run-to-completion semantics, in
 which the system process an external event and then takes all the
@@ -4875,47 +4894,50 @@ the processing of ext1.</p>
 procedure mainEventLoop():
     while running:
         enabledTransitions = null
-        stable = false
+        macrostepDone = false
         # Here we handle eventless transitions and transitions 
-        # triggered by internal events until machine is stable
-        while running and not stable:
+        # triggered by internal events until macrostep is complete
+        while running and not macrostepDone:
             enabledTransitions = selectEventlessTransitions()
             if enabledTransitions.isEmpty():
                 if internalQueue.isEmpty(): 
-                    stable = true
+                    macrostepDone = true
                 else:
                     internalEvent = internalQueue.dequeue()
                     datamodel["_event"] = internalEvent
                     enabledTransitions = selectTransitions(internalEvent)
-            if not enabledTransitions.isEmpty()::
+            if not enabledTransitions.isEmpty():
                 microstep(enabledTransitions.toList())
-        # Here we invoke whatever needs to be invoked
+        # either we're in a final state, and we break out of the loop 
+        if not running:
+            break;
+        # or we've completed a macrostep, so we start a new macrostep by waiting for an external event
+        # Here we invoke whatever needs to be invoked. The implementation of 'invoke' is platform-specific
         for state in statesToInvoke:
             for inv in state.invoke:
-                inv.invoke(inv)
+                invoke(inv)
         statesToInvoke.clear()
-        # Invoking may have raised internal error events and we
-        # need to back up and handle those too        
+        # Invoking may have raised internal error events and we iterate to handle them        
         if not internalQueue.isEmpty():
             continue
-         # A blocking wait for an external event.  Alternatively, if we have been invoked
-        # our parent session also might cancel us.  The mechanism for this is platform specific,
-        # but here we assume it's a special event we receive
-        externalEvent = externalQueue.dequeue()
-        if isCancelEvent(externalEvent)
-            running = false
-            continue
-        datamodel["_event"] = externalEvent
-        for state in configuration:
-            for inv in state.invoke:
-                if inv.invokeid == externalEvent.invokeid:
-                    applyFinalize(inv, externalEvent)
-                if inv.autoforward:
-                    send(inv.id, externalEvent) 
-        enabledTransitions = selectTransitions(externalEvent)
-        if not enabledTransitions.isEmpty()::
-            microstep(enabledTransitions.toList()) 
-    # If we get here, we have reached a top-level final state or have been cancelled          
+       # A blocking wait for an external event.  Alternatively, if we have been invoked
+       # our parent session also might cancel us.  The mechanism for this is platform specific,
+       # but here we assume it's a special event we receive
+       externalEvent = externalQueue.dequeue()
+       if isCancelEvent(externalEvent):
+           running = false
+           continue
+       datamodel["_event"] = externalEvent
+       for state in configuration:
+           for inv in state.invoke:
+              if inv.invokeid == externalEvent.invokeid:
+                  applyFinalize(inv, externalEvent)
+              if inv.autoforward:
+                  send(inv.id, externalEvent) 
+       enabledTransitions = selectTransitions(externalEvent)
+       if not enabledTransitions.isEmpty():
+           microstep(enabledTransitions.toList()) 
+    # End of outer while running loop.  If we get here, we have reached a top-level final state or have been cancelled          
     exitInterpreter()            
 </pre>
 
@@ -4973,7 +4995,7 @@ function selectEventlessTransitions():
                 if not t.event and conditionMatch(t): 
                     enabledTransitions.add(t)
                     break loop
-    enabledTransitions = filterPreempted(enabledTransitions)
+    enabledTransitions = removeConflictingTransitions(enabledTransitions)
     return enabledTransitions
 </pre>
 
@@ -5007,50 +5029,73 @@ function selectTransitions(event):
                 if t.event and nameMatch(t.event, event.name) and conditionMatch(t):
                     enabledTransitions.add(t)
                     break loop
-    enabledTransitions = filterPreempted(enabledTransitions)
+    enabledTransitions = removeConflictingTransitions(enabledTransitions)
     return enabledTransitions
 </pre>
 
-<h4 id="filterPreempted"><code>function</code>
-filterPreempted(enabledTransitions)</h4>
+<h4 id="removeConflictingTransitions"><code>function</code>
+removeConflictingTransitions(enabledTransitions)</h4>
 
-<p>Filter out any transition in enabledTransitions that is
-preempted by a transition that precedes it in enabledTransitions.
-Note that enabledTransitions will contain multiple transitions only
-if a parallel state is active. In that case, we may have one
-transition selected for each of its children. These transitions may
-conflict with each other in the sense that they have incompatible
-target states. When such a conflict occurs, we select the first
-transition in document order and say that it preempts the other
+<p>enabledTransitions will contain multiple transitions only if a
+parallel state is active. In that case, we may have one transition
+selected for each of its children. These transitions may conflict
+with each other in the sense that they have incompatible target
+states. Loosely speaking, transitions are compatible when each one
+is contained within a single &lt;state&gt; child of the
+&lt;parallel&gt; element. Transitions that aren't contained within
+a single child force the state machine to leave the
+&lt;parallel&gt; ancestor (even if they reenter it later). Such
+transitions conflict with each other, and with transitions that
+remain within a single &lt;state&gt; child, in that they may have
+targets that cannot be simultaneously active. The test that
+transitions have non-intersecting exit sets captures this
+requirement. (If the intersection is null, the source and targets
+of the two transitions are contained in separate &lt;state&gt;
+descendants of &lt;parallel&gt;. If intersection is non-null, then
+at least one of the transitions is exiting the &lt;parallel&gt;).
+When such a conflict occurs, then if the source state of one of the
+transitions is a descendant of the source state of the other, we
+select the transition in the descendant. Otherwise we prefer the
+transition that was selected by the earlier state in document order
+and discard the other transition. Note that targetless transitions
+have empty exit sets and thus do not conflict with any other
 transitions.</p>
 
+<p>We start with a list of enabledTransitions and produce a
+conflict-free list of filteredTransitions. For each t1 in
+enabledTransitions, we test it against all t2 that are already
+selected in filteredTransitions. If there is a conflict, then if
+t1's source state is a descendant of t2's source state, we prefer
+t1 and say that it preempts t2 (so we we make a note to remove t2
+from filteredTransitions). Otherwise, we prefer t2 since it was
+selected in an earlier state in document order, so we say that it
+preempts t1. (There's no need to do anything in this case since t2
+is already in filteredTransitions. Furthermore, once one transition
+preempts t1, there is no need to test t1 against any other
+transitions.) Finally, if t1 isn't preempted by any transition in
+filteredTransitions, remove any transitions that it preempts and
+add it to that list.</p>
+
 <pre>
-function filterPreempted(enabledTransitions):
+function removeConflictingTransitions(enabledTransitions):
     filteredTransitions = new OrderedSet()
-    for t in enabledTransitions:
-        # does any t2 in filteredTransitions preempt t? if not, add t to filteredTransitions
-        if not filteredTransitions.some(lambda t2: preemptsTransition(t2, t)):
-            filteredTransitions.add(t)
+ // toList sorts the transitions in the order of the states that selected them
+    for t1 in enabledTransitions.toList():
+        t1Preempted = false;
+        transitionsToRemove = new OrderedSet()
+        for t2 in filteredTransitions.toList():
+            if computeExitSet([t1]).hasIntersection(computeExitSet([t2])):
+                if isDescendant(t1.source, t2.source):
+                    transitionsToRemove.add(t2)
+                else: 
+                    t1Preempted = true
+                    break
+        if not t1Preempted:
+            for t3 in transitionsToRemove.toList():
+                filteredTransitions.delete(t3)
+            filteredTransitions.add(t1)
+           
     return filteredTransitions
-</pre>
-
-<h4 id="preemptsTransition"><code>function</code>
-preemptsTransition(t1, t2)</h4>
-
-There are three types of transitions: 1) targetless transitions 2)
-transitions within a single child of &lt;parallel&gt; 3)
-transitions that cross child boundaries (including exiting and
-reentering a single child) and/or leave the parallel region
-altogether. Type 1 transitions do not preempt any other
-transitions. Type 2 transitions preempt subsequent type 3
-transitions (but not other type 2 transitions). Type 3 transitions
-preempt all other transitions. 
-
-<pre>
-function preemptsTransition(t1, t2):   
-       if isType2(t) and isType3(t2): return True
-        elif isType3(t): return True
-        else return False
 </pre>
 
 <h4 id="microstepProcedure"><code>procedure</code>
@@ -5059,7 +5104,7 @@ microstep(enabledTransitions)</h4>
 <p>The purpose of the microstep <code>procedure</code> is to
 process a single set of transitions. These may have been enabled by
 an external event, an internal event, or by the presence or absence
-of certain values in the datamodel at the current point in time.
+of certain values in the data model at the current point in time.
 The processing of the enabled transitions must be done in parallel
 ('lock step') in the sense that their source states must first be
 exited, then their actions must be executed, and finally their
@@ -5082,21 +5127,15 @@ procedure microstep(enabledTransitions):
 <h4 id="exitStates"><code>procedure</code>
 exitStates(enabledTransitions)</h4>
 
-<p>Create an empty statesToExit set. For each transition t in
-enabledTransitions, if t is targetless then do nothing, else then
-let the transition's ancestor state be the source state (in the
-case of internal transitions) or (in the case of external
-transitions) the least common compound ancestor state of the source
-state and target states of t. Add to the statesToExit set all
-states in the configuration that are descendants of the ancestor.
-Next remove all the states on statesToExit from the set of states
-that will have invoke processing done at the start of the next
-macrostep. (Suppose macrostep M1 consists of microsteps m11 and
-m12. We may enter state s in m11 and exit it in m12. We will add s
-to statesToInvoke in m11, and must remove it in m12. In the
-subsequent macrostep M2, we will apply invoke processing to all
-states that were entered, and not exited, in M1.) Then convert
-statesToExit to a list and sort it in exitOrder.</p>
+<p>Compute the set of states to exit. Then remove all the states on
+statesToExit from the set of states that will have invoke
+processing done at the start of the next macrostep. (Suppose
+macrostep M1 consists of microsteps m11 and m12. We may enter state
+s in m11 and exit it in m12. We will add s to statesToInvoke in
+m11, and must remove it in m12. In the subsequent macrostep M2, we
+will apply invoke processing to all states that were entered, and
+not exited, in M1.) Then convert statesToExit to a list and sort it
+in exitOrder.</p>
 
 <p>For each state s in the list, if s has a deep history state h,
 set the history value of h to be the list of all atomic descendants
@@ -5109,33 +5148,46 @@ configuration.</p>
 
 <pre>
 procedure exitStates(enabledTransitions):
-   statesToExit = new OrderedSet()
-   for t in enabledTransitions:
-       if t.target:
-           tstates = getTargetStates(t.target)
-           if t.type == "internal" and isCompoundState(t.source) and tstates.every(lambda s: isDescendant(s,t.source))::
-               ancestor = t.source
+   statesToExit = computeExitSet(enabledTransitions)           
+   for s in statesToExit:
+       statesToInvoke.delete(s)
+   statesToExit = statesToExit.toList().sort(exitOrder)
+   for s in statesToExit:
+       for h in s.history:
+           if h.type == "deep":
+               f = lambda s0: isAtomicState(s0) and isDescendant(s0,s) 
            else:
-               ancestor = findLCCA([t.source].append(getTargetStates(t.target)))
-           for s in configuration:
-               if isDescendant(s,ancestor):
-                   statesToExit.add(s)                    
-    for s in statesToExit:
-        statesToInvoke.delete(s)
-    statesToExit = statesToExit.toList().sort(exitOrder)
-    for s in statesToExit:
-        for h in s.history:
-            if h.type == "deep":
-                f = lambda s0: isAtomicState(s0) and isDescendant(s0,s) 
-            else:
-                f = lambda s0: s0.parent == s
+               f = lambda s0: s0.parent == s
             historyValue[h.id] = configuration.toList().filter(f)
-    for s in statesToExit:
-        for content in s.onexit:
-            executeContent(content)
-        for inv in s.invoke:
-            cancelInvoke(inv)
-        configuration.delete(s)
+   for s in statesToExit:
+       for content in s.onexit:
+           executeContent(content)
+       for inv in s.invoke:
+           cancelInvoke(inv)
+       configuration.delete(s)
+</pre>
+
+<h4 id="computeExitSet"><code>procedure</code>
+computeExitSet(enabledTransitions)</h4>
+
+<p>For each transition t in enabledTransitions, if t is targetless
+then do nothing, else compute the transition's domain. (This will
+be the source state in the case of internal transitions) or the
+least common compound ancestor state of the source state and target
+states of t (in the case of external transitions. Add to the
+statesToExit set all states in the configuration that are
+descendants of the domain.</p>
+
+<pre>
+function computeExitSet(transitions)
+   statesToExit = new OrderedSet
+     for t in transitions:
+         domain = getTransitionDomain(t)
+       for s in configuration:
+           if isDescendant(s,domain):
+               statesToExit.add(s) 
+   return statesToExit   
+   
 </pre>
 
 <h4 id="executeTransitionContent"><code>procedure</code>
@@ -5154,58 +5206,25 @@ procedure executeTransitionContent(enabledTransitions):
 <h4 id="enterStates"><code>procedure</code>
 enterStates(enabledTransitions)</h4>
 
-<p>Create an empty statesToEnter set, and an empty
-statesForDefaultEntry set. For each transition t in
-enabledTransitions, if t is targetless then do nothing, else for
-each target state s, call addStatesToEnter. This will add to
-statesToEnter s plus any descendant states that will have to be
-entered by default once s is entered. (If s is atomic, there will
-not be any such states.) Now for each target state s, add any of
-s's ancestors that must be entered when s is entered. (These will
-be any ancestors of s that are not currently active. Note that
-statesToEnter is a set, so it is harmless if the same ancestor is
-entered multiple times.) In the case where the ancestor state is
-parallel, call addStatesToEnter on any of its child states that do
-not already have a descendant on statesToEnter. (If a child state
-already has a descendant on statesToEnter, it will get added to the
-list when we examine the ancestors of that descendant.)</p>
-
-<p>We now have a complete list of all the states that will be
-entered as a result of taking the transitions in
-enabledTransitions. Add them to statesToInvoke so that invoke
-processing can be done at the start of the next macrostep. Convert
-statesToEnter to a list and sort it in entryOrder. For each state s
-in the list, first add s to the current configuration. Then if we
-are using late binding, and this is the first time we have entered
-s, initialize its data model. Then execute any onentry handlers. If
-s's initial state is being entered by default, execute any
-executable content in the initial transition. Finally, if s is a
-final state, generate relevant Done events. If we have reached a
-top-level final state, set running to false as a signal to stop
-processing.</p>
+<p>First, compute the list of all the states that will be entered
+as a result of taking the transitions in enabledTransitions. Add
+them to statesToInvoke so that invoke processing can be done at the
+start of the next macrostep. Convert statesToEnter to a list and
+sort it in entryOrder. For each state s in the list, first add s to
+the current configuration. Then if we are using late binding, and
+this is the first time we have entered s, initialize its data
+model. Then execute any onentry handlers. If s's initial state is
+being entered by default, execute any executable content in the
+initial transition. Finally, if s is a final state, generate
+relevant Done events. If we have reached a top-level final state,
+set running to false as a signal to stop processing.</p>
 
 <pre>
 procedure enterStates(enabledTransitions):
     statesToEnter = new OrderedSet()
     statesForDefaultEntry = new OrderedSet()
-    for t in enabledTransitions:
-        if t.target:
-            tstates = getTargetStates(t.target)
-            if t.type == "internal" and isCompoundState(t.source) and tstates.every(lambda s: isDescendant(s,t.source)):
-                ancestor = t.source
-            else:
-                ancestor = findLCCA([t.source].append(tstates))
-            for s in tstates:
-                addStatesToEnter(s,statesToEnter,statesForDefaultEntry)
-            for s in tstates:
-                for anc in getProperAncestors(s,ancestor):
-                    statesToEnter.add(anc)
-                    if isParallelState(anc):
-                        for child in getChildStates(anc):
-                            if not statesToEnter.some(lambda s: isDescendant(s,child)):
-                                addStatesToEnter(child,statesToEnter,statesForDefaultEntry)  
-    statesToEnter = statesToEnter.toList().sort(enterOrder)
-    for s in statesToEnter:
+    computeEntrySet(enabledTransitions, statesToEnter, statesForDefaultEntry) 
+    for s in statesToEnter.toList().sort(entryOrder):
         configuration.add(s)
         statesToInvoke.add(s)
         if binding == "late" and s.isFirstEntry:
@@ -5213,59 +5232,116 @@ procedure enterStates(enabledTransitions):
             s.isFirstEntry = false
         for content in s.onentry:
             executeContent(content)
-        if statesForDefaultEntry.member(s):
+        if statesForDefaultEntry.isMember(s):
             executeContent(s.initial.transition)
         if isFinalState(s):
-            parent = s.parent
-            grandparent = parent.parent
-            internalQueue.enqueue(new Event("done.state." + parent.id, s.donedata))
-            if isParallelState(grandparent):
-                if getChildStates(grandparent).every(isInFinalState):
-                    internalQueue.enqueue(new Event("done.state." + grandparent.id))
-    for s in configuration:
-        if isFinalState(s) and isScxmlState(s.parent):
-            running = false
+            if isSCXMLElement(s.parent):
+                running = false
+            else:
+                parent = s.parent
+                grandparent = parent.parent
+                internalQueue.enqueue(new Event("done.state." + parent.id, s.donedata))
+                if isParallelState(grandparent):
+                    if getChildStates(grandparent).every(isInFinalState):
+                        internalQueue.enqueue(new Event("done.state." + grandparent.id))
+ 
 </pre>
 
-<h4 id="addStatesToEnter"><code>procedure</code>
-addStatesToEnter(state,root,statesToEnter,statesForDefaultEntry)</h4>
+<h4 id="computeEntrySet">
+<code>procedure</code>computeEntrySet(transitions, statesToEnter,
+statesForDefaultEntry)</h4>
 
-<p>The purpose of this procedure is to add to statesToEnter state
-and/or any of its descendants that must be entered as a result of
-state being the target of a transition. Note that this procedure
-permanently modifies both statesToEnter and
-statesForDefaultEntry.</p>
+<p>Compute the complete set of states that will be entered as a
+result of taking 'transitions'. This value will be returned in
+'statesToEnter' (which is modified by this procedure). Also place
+in 'statesForDefaultEntry' the set of all states whose default
+initial states were entered. First gather up all the target states
+in 'transitions'. Then add them and, for all that are not atomic
+states, add all of their (default) descendants until we reach one
+or more atomic states. Then add any ancestors that will be entered
+within the domain of the transition. (Ancestors outside of the
+domain of the transition will not have been exited.)</p>
+
+<pre>
+procedure computeEntrySet(transitions, statesToEnter, statesForDefaultEntry)
+   for t in transitions:
+        statesToEnter.union(getTargetStates(t.target))         
+    for s in statesToEnter:
+        addDescendantStatesToEnter(s,statesToEnter,statesForDefaultEntry) 
+    for t in transitions: 
+        ancestor = getTransitionDomain(t) 
+        for s in getTargetStates(t.target)):            
+            addAncestorStatesToEnter(s, ancestor, statesToEnter, statesForDefaultEntry)
+</pre>
+
+<h4 id="addDescendantStatesToEnter"><code>procedure</code>
+addDescendantStatesToEnter(state,statesToEnter,statesForDefaultEntry)</h4>
+
+<p>The purpose of this procedure is to add to statesToEnter 'state'
+and any of its descendants that the state machine will end up
+entering when it enters 'state'. (N.B. If 'state' is a history
+pseudo-state, we dereference it and add the history value instead.)
+Note that this procedure permanently modifies both statesToEnter
+and statesForDefaultEntry.</p>
 
 <p>First, If state is a history state then add either the history
 values associated with state or state's default target to
-statesToEnter. Else (if state is not a history state), add state to
-statesToEnter. Then, if state is a a compound state, add state to
-statesForDefaultEntry and recursively call addStatesToEnter on its
-default initial state(s). Otherwise, if state is a parallel state,
-recursively call addStatesToEnter on each of its child states.</p>
+statesToEnter. Then (since the history value may not be an
+immediate descendant of 'state's parent) add any ancestors between
+the history value and state's parent. Else (if state is not a
+history state), add state to statesToEnter. Then, if state is a
+compound state, add state to statesForDefaultEntry and recursively
+call addStatesToEnter on its default initial state(s). Then, since
+the default initial states may not be children of 'state', add any
+ancestors between the default initial states and 'state'.
+Otherwise, if state is a parallel state, recursively call
+addStatesToEnter on any of its child states that don't already have
+a descendant on statesToEnter.</p>
 
 <pre>
-procedure addStatesToEnter(state,statesToEnter,statesForDefaultEntry):
+procedure addDescendantStatesToEnter(state,statesToEnter,statesForDefaultEntry):
     if isHistoryState(state):
         if historyValue[state.id]:
             for s in historyValue[state.id]:
-                addStatesToEnter(s,statesToEnter,statesForDefaultEntry)
-                for anc in getProperAncestors(s,state):
-                    statesToEnter.add(anc)
+                addDescendantStatesToEnter(s,statesToEnter,statesForDefaultEntry)
+                addAncestorStatesToEnter(s, state.parent, statesToEnter, statesForDefaultEntry)
         else:
             for t in state.transition:
                 for s in getTargetStates(t.target):
-                    addStatesToEnter(s,statesToEnter,statesForDefaultEntry)
+                    addDescendantStatesToEnter(s,statesToEnter,statesForDefaultEntry)
+                    addAncestorStatesToEnter(s, state.parent, statesToEnter, statesForDefaultEntry)
     else:
         statesToEnter.add(state)
         if isCompoundState(state):
             statesForDefaultEntry.add(state)
             for s in getTargetStates(state.initial):
-                addStatesToEnter(s,statesToEnter,statesForDefaultEntry)
-        elif isParallelState(state):
-            for s in getChildStates(state):
-                addStatesToEnter(s,statesToEnter,statesForDefaultEntry)
+                addDescendantStatesToEnter(s,statesToEnter,statesForDefaultEntry)
+                addAncestorStatesToEnter(s, state, statesToEnter, statesForDefaultEntry)
+        else:
+            if isParallelState(state):
+                for child in getChildStates(state):
+                    if not statesToEnter.some(lambda s: isDescendant(s,child)):
+                        addDescendantStatesToEnter(child,statesToEnter,statesForDefaultEntry) 
 
+</pre>
+
+<h4 id="addAncestorStatesToEnter">
+<code>procedure</code>addAncestorStatesToEnter(state, ancestor,
+statesToEnter, statesForDefaultEntry)</h4>
+
+<p>Add to statesToEnter any ancestors of 'state' up to, but not
+including, 'ancestor' that must be entered in order to enter
+'state'. If any of these ancestor states is a parallel state, we
+must fill in its descendants as well.</p>
+
+<pre>
+procedure addAncestorStatesToEnter(state, ancestor, statesToEnter, statesForDefaultEntry)
+   for anc in getProperAncestors(state,ancestor):
+       statesToEnter.add(anc)
+       if isParallelState(anc):
+           for child in getChildStates(anc):
+               if not statesToEnter.some(lambda s: isDescendant(s,child)):
+                   addDescendantStatesToEnter(child,statesToEnter,statesForDefaultEntry) 
 </pre>
 
 <h4 id="isInFinalState"><code>procedure</code>
@@ -5279,11 +5355,29 @@ isInFinalState is true of all its children.</p>
 <pre>
 function isInFinalState(s):
     if isCompoundState(s):
-        return getChildStates(s).some(lambda s: isFinalState(s) and configuration.member(s))
+        return getChildStates(s).some(lambda s: isFinalState(s) and configuration.isMember(s))
     elif isParallelState(s):
         return getChildStates(s).every(isInFinalState)
     else:
         return false
+</pre>
+
+<h4 id="getTransitionDomain"><code>function</code>
+getTransitionDomain(transition)</h4>
+
+<p>Return the compound state such that 1) all states that are
+exited or entered as a result of taking 'transition' are
+descendants of it 2) no descendant of it has this property.</p>
+
+<pre>
+function getTransitionDomain(t)
+  tstates = getTargetStates(t.target)
+  if not tstates
+      return t.source
+    elif t.type == "internal" and isCompoundState(t.source) and tstates.every(lambda s: isDescendant(s,t.source)):
+      return t.source
+  else:
+      return findLCCA([t.source].append(tstates))
 </pre>
 
 <h4 id="findLCCA"><code>function</code> findLCCA(stateList)</h4>
@@ -5310,8 +5404,25 @@ getProperAncestors(state1, state2)</h4>
 
 <p>If state2 is null, returns the set of all ancestors of state1 in
 ancestry order (state1's parent followed by the parent's parent,
-etc.). If state2 is non-null, returns in ancestry order the set of
-all ancestors of state1, up to but not including state2.</p>
+etc. up to an including the &lt;scxml&gt; element). If state2 is
+non-null, returns in ancestry order the set of all ancestors of
+state1, up to but not including state2. (A "proper ancestor" of a
+state is its parent, or the parent's parent, or the parent's
+parent's parent, etc.))If state2 is state1's parent, or equal to
+state1, or a descendant of state1, this returns the empty set.</p>
+
+<h4 id="isDescendant"><code>function</code> isDescendant(state1,
+state2)</h4>
+
+<p>Returns 'true' if state1 is a descendant of state2 (a child, or
+a child of a child, or a child of a child of a child, etc.)
+Otherwise returns 'false'.</p>
+
+<h4 id="getChildStates"><code>function</code>
+getChildStates(state1)</h4>
+
+<p>Returns a list containing all &lt;state&gt;, &lt;final&gt;, and
+&lt;parallel&gt; children of state1.</p>
 </div>
 
 <div class="div1">
@@ -5447,13 +5558,13 @@ Data Model</h3>
 absent or empty data model. In particular:</p>
 
 <div class="div3">
-<h4><a id="N1134C" name="N1134C" />C.1.1 Data Model</h4>
+<h4><a id="N11380" name="N11380" />C.1.1 Data Model</h4>
 
 <p>There is no underlying data model.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N11351" name="N11351" />C.1.2 Conditional
+<h4><a id="N11385" name="N11385" />C.1.2 Conditional
 Expressions</h4>
 
 <p>The boolean expression language consists of the In predicate
@@ -5465,31 +5576,31 @@ configuration.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N11362" name="N11362" />C.1.3 Location Expressions</h4>
+<h4><a id="N11396" name="N11396" />C.1.3 Location Expressions</h4>
 
 <p>There is no location expression language.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N11367" name="N11367" />C.1.4 Value Expressions</h4>
+<h4><a id="N1139B" name="N1139B" />C.1.4 Value Expressions</h4>
 
 <p>There is no value expression language.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N1136C" name="N1136C" />C.1.5 Scripting</h4>
+<h4><a id="N113A0" name="N113A0" />C.1.5 Scripting</h4>
 
 <p>There is no scripting language.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N11371" name="N11371" />C.1.6 System Variables</h4>
+<h4><a id="N113A5" name="N113A5" />C.1.6 System Variables</h4>
 
 <p>System variables are not accessible.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N11376" name="N11376" />C.1.7 Unsupported Elements</h4>
+<h4><a id="N113AA" name="N113AA" />C.1.7 Unsupported Elements</h4>
 
 <p>The &lt;foreach&gt; element and the elements defined in <a
 href="#data-module"><em>5 Data Model and Data Manipulation</em></a>
@@ -5507,7 +5618,7 @@ an ECMAScript data model. Implementations that support this value
 support the third edition of ECMAScript <a
 href="#ECMAScript262">[ECMASCRIPT-262]</a>. Implementations <em
 title="MAY in RFC2119 context" class="RFC2119">MAY</em> support
-ECMAScript for XML (E4X) <a href="#E4X">[E4X]</a>.</p>
+JSON or ECMAScript for XML (E4X) <a href="#E4X">[E4X]</a>.</p>
 
 <div class="div3">
 <h4><a id="ecma_core_module" name="ecma_core_module" />C.2.1 Data
@@ -5517,51 +5628,75 @@ Model</h4>
 Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> create an ECMAScript variable object
 whose name is the value of the 'id' attribute of
-<code>&lt;data&gt;</code>. If either the 'src' attribute or in-line
-content is provided in the &lt;data&gt; element, then if the
-content (whether fetched or provided in-line) is an XML document,
-the SCXML Processor <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> create the corresponding DOM structure
-and assign it as the value of the variable. Otherwise the Processor
-<em title="MUST in RFC2119 context" class="RFC2119">MUST</em> treat
-the content as a space-normalized string literal and assign it as
-the value of the variable. If no value is assigned, the SCXML
-Processor <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> assign the variable the default value
-ECMAScript undefined. Note that the assignment takes place at the
-time indicated by the 'binding' attribute on the &lt;scxml&gt;
-element.</p>
-
-<p>The Processor <em title="MAY in RFC2119 context"
-class="RFC2119">MAY</em> support evaluation of JSON expressions and
-of XML expressions.</p>
+<code>&lt;data&gt;</code>. In cases where the 'src' attribute or
+in-line content is provided in the &lt;data&gt; element, then if an
+indication of the type of the content is available (e.g., via a
+Content-Type header), then the Processor <em
+title="SHOULD in RFC2119 context" class="RFC2119">SHOULD</em> try
+to interpret the content according to that indication. Otherwise if
+the content (whether fetched or provided in-line) is JSON (and the
+Processor supports JSON), the SCXML Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> create
+the corresponding ECMAScript object. Otherwise, if the content is a
+valid XML document, the Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> create
+the corresponding DOM structure and assign it as the value of the
+variable. Otherwise the Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> treat the
+content as a space-normalized string literal and assign it as the
+value of the variable. If no value is assigned, the SCXML Processor
+<em title="MUST in RFC2119 context" class="RFC2119">MUST</em>
+assign the variable the default value ECMAScript undefined. Note
+that the assignment takes place at the time indicated by the
+'binding' attribute on the &lt;scxml&gt; element.</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N113AA" name="N113AA" />Example:
+<div class="exampleHeader"><a id="N113DF" name="N113DF" />Example:
 Datamodel &lt;data&gt; initialization</div>
 
 <div class="exampleInner">
 <pre>
-&lt;scxml version="1.0" datamodel="ecmascript"&gt;
+&lt;scxml version="1.0" xmlns="http://www.w3.org/2005/07/scxml" datamodel="ecmascript"&gt;
   &lt;datamodel&gt;
    &lt;data id="employees" src="http://example.com/employees.json"/&gt;
    &lt;data id="year" expr="2008"/&gt;
-   &lt;data id="CEO" expr="\"Mr Big\""/&gt;
+   &lt;data id="CEO" expr="'Mr Big'"/&gt;
    &lt;data id="profitable" expr="true"/&gt;
   &lt;/datamodel&gt;
 &lt;/scxml&gt;
 </pre>
 </div>
 </div>
+</div>
+
+<div class="div3">
+<h4><a id="ecma-scoping" name="ecma-scoping" />C.2.2 Scoping</h4>
 
 <p>The Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> place all variables in a single global
-ECMAScript scope.</p>
+ECMAScript scope. Specifically, the SCXML Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> allow any
+data element to be accessed from any state. Ordering dependencies
+between &lt;data&gt; elements are not permitted. In the case of
+early binding, the SCXML Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> evaluate
+all &lt;data&gt; elements at initialization time but <em
+title="MAY in RFC2119 context" class="RFC2119">MAY</em> do so in
+any order it chooses. When late binding is selected, the SCXML
+Processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> create data model elements at
+initialization time but <em title="MAY in RFC2119 context"
+class="RFC2119">MAY</em> do so in any order it chooses. Similarly,
+the processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> assign the specified initial values to
+data elements only when the state containing them is first entered,
+but <em title="MAY in RFC2119 context" class="RFC2119">MAY</em> do
+so in any order it chooses.</p>
 </div>
 
 <div class="div3">
 <h4><a id="ecma_cond_expressions"
-name="ecma_cond_expressions" />C.2.2 Conditional Expressions</h4>
+name="ecma_cond_expressions" />C.2.3 Conditional Expressions</h4>
 
 <p>The Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> convert ECMAScript expressions used in
@@ -5572,7 +5707,7 @@ href="#ECMAScript262">[ECMASCRIPT-262]</a>.</p>
 <p>The following example illustrates this usage.</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N113C3" name="N113C3" />Example:
+<div class="exampleHeader"><a id="N11411" name="N11411" />Example:
 Use of a boolean expression to determine whether or not a
 transition is taken.</div>
 
@@ -5614,7 +5749,7 @@ taken from <a href="#MicrowaveParallel"><em>G.3 Microwave Example
 
 <div class="div3">
 <h4><a id="ecma_location_expressions"
-name="ecma_location_expressions" />C.2.3 Location Expressions</h4>
+name="ecma_location_expressions" />C.2.4 Location Expressions</h4>
 
 <p>The SCXML Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> accept any ECMAScript left-hand-side
@@ -5627,7 +5762,7 @@ Processor would raise error.execution and the &lt;assign&gt; would
 have no effect.)</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N113E1" name="N113E1" />Example:
+<div class="exampleHeader"><a id="N1142F" name="N1142F" />Example:
 Use of the location attribute of the assign to update the salary of
 an employee.</div>
 
@@ -5649,16 +5784,14 @@ an employee.</div>
 
 <div class="div3">
 <h4><a id="ecma_value_expressions"
-name="ecma_value_expressions" />C.2.4 Value Expressions</h4>
+name="ecma_value_expressions" />C.2.5 Value Expressions</h4>
 
 <p>The SCXML Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> accept any ECMAScript expression as a
-value expression. The Processor <em title="MAY in RFC2119 context"
-class="RFC2119">MAY</em> convert the expression result to a string
-in contexts where a string is expected,.</p>
+value expression.</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N113F3" name="N113F3" />Example:
+<div class="exampleHeader"><a id="N1143E" name="N1143E" />Example:
 Copying event data into the local data model for the state.</div>
 
 <div class="exampleInner">
@@ -5678,13 +5811,13 @@ Copying event data into the local data model for the state.</div>
 </div>
 
 <div class="div3">
-<h4><a id="ecma_inline_content" name="ecma_inline_content" />C.2.5
+<h4><a id="ecma_inline_content" name="ecma_inline_content" />C.2.6
 &lt;content&gt;</h4>
 
 <p>When &lt;content&gt; is a child of &lt;donedata&gt;, the
 Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> interpret its value as defined in <a
-href="#ecma_eventdata"><em>C.2.7.1 _event.data</em></a>. When
+href="#ecma_eventdata"><em>C.2.8.1 _event.data</em></a>. When
 &lt;content&gt; is a child of &lt;send&gt;, the interpretation of
 its value depends on the Event I/O Processor. When &lt;content&gt;
 is a child of &lt;invoke&gt;, the interpretation of its value is
@@ -5692,22 +5825,22 @@ platform-specific.</p>
 </div>
 
 <div class="div3">
-<h4><a id="ecma_assign" name="ecma_assign" />C.2.6
+<h4><a id="ecma_assign" name="ecma_assign" />C.2.7
 &lt;assign&gt;</h4>
 
 <p>When evaluating an &lt;assign&gt; element in the ECMAScript data
 model, the SCXML Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> replace the existing value at 'location'
 with the value produced by evaluating 'expr'. If it is unable to do
-so (for example, if 'location' evaluates to ECMAScript 'null' or
-'undefined'), it <em title="MUST in RFC2119 context"
+so (for example, if the &lt;assign&gt; element attempts to assign
+to a read-only attribute), it <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> place the error error.execution on the
 internal event queue.</p>
 </div>
 
 <div class="div3">
 <h4><a id="ecma_system_variables"
-name="ecma_system_variables" />C.2.7 System Variables</h4>
+name="ecma_system_variables" />C.2.8 System Variables</h4>
 
 <p>The SCXML Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> define an ECMAScript read-only variable
@@ -5721,33 +5854,49 @@ href="#InternalStructureofEvents"><em>5.10.1 The Internal Structure
 of Events</em></a>: <code>name</code>,<code>type</code>,
 <code>sendid</code>, <code>origin</code>, <code>origintype</code>,
 and <code>invokeid</code> are String values, while
-<code>data</code> is an Object value. For the _ioprocessors system
-variable the Processor <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> create an array with an object for each
-Event I/O processor that it supports, where the name of the object
-is the same as that of the I/O processor. For the SCXML and
-BasicHTTP Event I/O processors, the Processor <em
+<code>data</code> can be of any type. In cases where this
+specification does not specify a value for one of these fields or
+states that the field is empty or has no value, the Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> set the
+value to ECMAScript undefined. As the value of the _ioprocessors
+system variable the Processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> create an object with a named property
+for each Event I/O processor that it supports, where the name of
+the property is the same as that of the I/O processor and the value
+of the property is an object that represents the I/O processor. For
+the SCXML and BasicHTTP Event I/O processors, the Processor <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> create a
-"location" property under the object, assigning the access URI as
+"location" property under that object, assigning the access URI as
 its String value. For example, in systems that support the
 BasicHTTP Event I/O Processor, the access URI of the BasicHTTP
 Event I/O processor can be accessed as
 _ioprocessors['http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor'].location.</p>
 
 <div class="div4">
-<h5><a id="ecma_eventdata" name="ecma_eventdata" />C.2.7.1
+<h5><a id="ecma_eventdata" name="ecma_eventdata" />C.2.8.1
 _event.data</h5>
 
 <p>_event.data is populated with content provided by an external
-event or by &lt;param&gt; or &lt;content&gt;. If the content
-consists of key-value pairs, then for each unique key, the SCXML
+event or by &lt;param&gt; or &lt;content&gt;. In some
+circumstances, the entity that generated the event may have
+indicated how the data is to be interpreted. In such cases, the
+Processor <em title="SHOULD in RFC2119 context"
+class="RFC2119">SHOULD</em> try to format the data according to
+those indications. Otherwise, if the SCXML Processsor can interpret
+the content as key-value pairs, then for each unique key, the
 Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> create a property of _event.data whose
 name is the name of the key-value pair and whose value is the value
 of the key-value pair. In the case of duplicate keys, the behavior
-is platform-specific. Otherwise (i.e., if the content does not
-consist of key-value pairs), if the content is an XML document, the
-Processor <em title="MUST in RFC2119 context"
+is platform-specific. (Note that content specified by &lt;param&gt;
+or delivered as POST parameters via the BasicHTTP Event I/O
+Processor consists unambiguously of key-value pairs.) Otherwise
+(i.e., if the content does not consist of key-value pairs), if the
+Processor supports JSON and it can interpret the content as JSON,
+it <em title="MUST in RFC2119 context" class="RFC2119">MUST</em>
+create the corresponding ECMAScript object(s) as the value of
+_event.data. Otherwise, if the Processor can interpret the content
+as a valid XML document, it <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> create the corresponding DOM structure
 and assign it as the value _event.data. Otherwise, the Processor
 <em title="MUST in RFC2119 context" class="RFC2119">MUST</em> treat
@@ -5766,11 +5915,11 @@ with the name "foo.bar" and the following object payload:</p>
 </pre>
 </div>
 
-<p>Then the underlying ECMAScript datamodel would have the
+<p>Then the underlying ECMAScript data model would have the
 following form:</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N1145B" name="N1145B" />Example:
+<div class="exampleHeader"><a id="N114AF" name="N114AF" />Example:
 Illustration of system injected properties</div>
 
 <div class="exampleInner">
@@ -5806,7 +5955,7 @@ Illustration of system injected properties</div>
 <code>_event</code> variable in that data model.</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N11466" name="N11466" />Example:
+<div class="exampleHeader"><a id="N114BA" name="N114BA" />Example:
 Accessing system _event name in a condition</div>
 
 <div class="exampleInner">
@@ -5822,7 +5971,27 @@ Accessing system _event name in a condition</div>
 </div>
 
 <div class="div3">
-<h4><a id="ecma_script_module" name="ecma_script_module" />C.2.8
+<h4><a id="ecma-serialization" name="ecma-serialization" />C.2.9
+Serialization</h4>
+
+<p>In certain circumstances, e.g. when including data in events
+sent via the BasicHTTP Event I/O Processor, the SCXML Processor is
+required to serialize data from the ECMAScript data model for
+transmission to a remote entity. In such cases, if the Processor
+supports JSON, and is able to serialize the data in sufficient
+detail to allow its reconstruction, the Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> serialize
+the data to JSON. Otherwise, the Processor <em
+title="MAY in RFC2119 context" class="RFC2119">MAY</em> use
+platform-specific methods (including JSON despite the loss of
+information) to serialize the data. The Processor <em
+title="SHOULD in RFC2119 context" class="RFC2119">SHOULD</em>
+provide a warning if the serialization entails loss of information
+or if it is unable to serialize at all.</p>
+</div>
+
+<div class="div3">
+<h4><a id="ecma_script_module" name="ecma_script_module" />C.2.10
 Scripting</h4>
 
 <p>The SCXML Processor <em title="MUST in RFC2119 context"
@@ -5832,7 +6001,7 @@ the content of a &lt;script&gt; element.</p>
 </div>
 
 <div class="div3">
-<h4><a id="ecma_foreach" name="ecma_foreach" />C.2.9
+<h4><a id="ecma_foreach" name="ecma_foreach" />C.2.11
 &lt;foreach&gt;</h4>
 
 <p>In the ECMAScript data model, the SCXML Processor <em
@@ -5841,15 +6010,23 @@ iteration over objects that satisfy instanceof(Array) in
 ECMAScript. It <em title="MAY in RFC2119 context"
 class="RFC2119">MAY</em> support iteration over other types of
 objects. The legal values for the 'item' attribute are legal
-ECMAScript variable names. The iteration order is the order of the
-underlying ECMAScript array, and goes from an index of 0 by
-increments of one to an index of array_name.length - 1. Note that
-since shallow copy is required &lt;foreach&gt; assignment is
-equivalent to item = array_name[index] in ECMAScript. Note also
-that the assigned value could be undefined for a sparse array.</p>
+ECMAScript variable names. In cases where ECMAScript specification
+defines the iteration order for the object, the Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> follow
+that ordering. (For arrays and strings, this goes from 0 to
+length-1.) In cases where the ECMAScript specification does not
+define the iteration order, the Processor <em
+title="MAY in RFC2119 context" class="RFC2119">MAY</em> follow any
+order that it chooses as long as 1) it iterates over the object's
+own enumberable properties only 2) it visits each such property
+once and only once. Note that since the Processor is required to
+behave as if it has made a shallow copy, in the case of an array
+&lt;foreach&gt; assignment is equivalent to item =
+array_name[index] in ECMAScript. Note also that the assigned value
+could be undefined for a sparse array.</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N11484" name="N11484" />Example:
+<div class="exampleHeader"><a id="N114ED" name="N114ED" />Example:
 Logging ISBN of all books in bookstore shopping cart</div>
 
 <div class="exampleInner">
@@ -5896,8 +6073,8 @@ element.</p>
 
 <p>If either the 'src' attribute or in-line content is provided in
 the document &lt;data&gt; element, then if the content (whether
-fetched or provided in-line) is an XML document, the SCXML
-Processor MUST insert the XML as the child of the datamodel
+fetched or provided in-line) is an XML document or node set, the
+SCXML Processor MUST insert the XML as the child of the datamodel
 &lt;data&gt; element. Otherwise the Processor MUST treat the
 content as a space-normalized string literal and insert it as the
 child of the datamodel &lt;data&gt; element. If no value is
@@ -5911,17 +6088,35 @@ empty, as follows:</p>
 </pre>
 </div>
 
-<p>Note that the assignment takes place at the time indicated by
-the 'binding' attribute on the &lt;scxml&gt; element.</p>
+<div class="div3">
+<h4><a id="xpath-scoping" name="xpath-scoping" />C.3.1.1
+Scoping</h4>
 
 <p>The Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> place all variables in a single global
-XPath scope, such that they are subsequently available to all
-expressions within the document.</p>
+XPath scope. Specifically, the SCXML Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> allow any
+data element to be accessed from any state. Ordering dependencies
+between &lt;data&gt; elements are not permitted. In the case of
+early binding, the SCXML Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> evaluate
+all &lt;data&gt; elements at initialization time but <em
+title="MAY in RFC2119 context" class="RFC2119">MAY</em> do so in
+any order it chooses. When late binding is selected, the SCXML
+Processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> create data model elements at
+initialization time but <em title="MAY in RFC2119 context"
+class="RFC2119">MAY</em> do so in any order it chooses. Similarly,
+the processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> assign the specified initial values to
+data elements only when the state containing them is first entered,
+but <em title="MAY in RFC2119 context" class="RFC2119">MAY</em> do
+so in any order it chooses.</p>
+</div>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N114B8" name="N114B8" />Example:
-Syntax for XPath datamodel initialization</div>
+<div class="exampleHeader"><a id="N11538" name="N11538" />Example:
+Syntax for XPath data model initialization</div>
 
 <div class="exampleInner">
 <pre>
@@ -5944,7 +6139,7 @@ Syntax for XPath datamodel initialization</div>
 </div>
 
 <div class="div3">
-<h4><a id="N114BE" name="N114BE" />C.3.2 Conditional
+<h4><a id="N1153E" name="N1153E" />C.3.2 Conditional
 Expressions</h4>
 
 <p>The SCXML Processor <em title="MUST in RFC2119 context"
@@ -5955,7 +6150,7 @@ value as described in section 2.4.3 of the <a href="#">[XPATH2]</a>
 specification. The following example illustrates this usage.</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N114CC" name="N114CC" />Example:
+<div class="exampleHeader"><a id="N1154C" name="N1154C" />Example:
 Use of a boolean expression to determine whether or not a
 transition is taken.</div>
 
@@ -5998,14 +6193,14 @@ state with ID $stateID is one of the currently active states.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N114E7" name="N114E7" />C.3.3 Location Expressions</h4>
+<h4><a id="N11567" name="N11567" />C.3.3 Location Expressions</h4>
 
 <p>The SCXML Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> accept any XPath expression as a location
 expression. The following example illustrates this usage:</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N114EF" name="N114EF" />Example:
+<div class="exampleHeader"><a id="N1156F" name="N1156F" />Example:
 Use of the location attribute of the assign to update the count for
 both Boston and New York.</div>
 
@@ -6031,7 +6226,7 @@ both Boston and New York.</div>
 </div>
 
 <div class="div3">
-<h4><a id="N114F5" name="N114F5" />C.3.4 Value Expressions</h4>
+<h4><a id="N11575" name="N11575" />C.3.4 Value Expressions</h4>
 
 <p>The SCXML Processor <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> allow any XPath expression to be used as
@@ -6043,7 +6238,7 @@ class="RFC2119">MAY</em> convert the expression result to a string
 In contexts where a string is expected.</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N11503" name="N11503" />Example:
+<div class="exampleHeader"><a id="N11583" name="N11583" />Example:
 Copying event data into the local data model for the state.</div>
 
 <div class="exampleInner">
@@ -6080,7 +6275,7 @@ platform-specific.</p>
 <h4><a id="xpath_assign" name="xpath_assign" />C.3.6
 &lt;assign&gt;</h4>
 
-<p>Implementations supporting the XPath datamodel <em
+<p>Implementations supporting the XPath data model <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> support
 the following additional attributes for the &lt;assign&gt;
 element.</p>
@@ -6123,7 +6318,7 @@ for details.</td>
 </table>
 
 <p>The SCXML Processor <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> modify the datamodel as directed by the
+class="RFC2119">MUST</em> modify the data model as directed by the
 'type' attribute as described below. If it is unable to do so, it
 <em title="MUST in RFC2119 context" class="RFC2119">MUST</em> place
 the error error.execution on the internal event queue:</p>
@@ -6333,7 +6528,7 @@ of &lt;book&gt; elements and replace their children with the
 element causes an error to be raised, evaluation of the element
 terminates immediately and the &lt;assign&gt; has no effect. For
 example, the following assignment statement would raise an error
-because the sample datamodel we are using does not have an
+because the sample data model we are using does not have an
 &lt;ISBN&gt; node as a child of &lt;book&gt;:</p>
 
 <div class="exampleOuter">
@@ -6345,12 +6540,12 @@ because the sample datamodel we are using does not have an
 </div>
 
 <div class="div3">
-<h4><a id="N115B6" name="N115B6" />C.3.7 System Variables</h4>
+<h4><a id="N11636" name="N11636" />C.3.7 System Variables</h4>
 
 <p>For each system variable defined in <a
 href="#SystemVariables"><em>5.10 System Variables</em></a>, the
 SCXML Processor <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> create a datamodel &lt;data&gt; element
+class="RFC2119">MUST</em> create a data model &lt;data&gt; element
 with an 'id' attribute whose value is the name of the system
 variable. The Processor also <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> bind an XPath variable whose name is the
@@ -6380,22 +6575,30 @@ _event.data</h5>
 
 <p>The _event variable's &lt;data&gt; child is populated with
 content provided by an external event or by &lt;param&gt; or
-&lt;content&gt;. If the content consists of key-value pairs, then
-for each unique key, the SCXML Processor <em
-title="MUST in RFC2119 context" class="RFC2119">MUST</em> create a
-&lt;data&gt; element as a child of _event's &lt;data&gt; child with
-an 'id' attribute whose value is the name of the key. The Processor
-<em title="MUST in RFC2119 context" class="RFC2119">MUST</em>
-insert the value of the key-value pair as the content of this
-element. In the case of duplicate keys, the behavior is
-platform-specific. Otherwise (i.e., if the content does not consist
-of key-value pairs), if the content is an XML document, the
+&lt;content&gt;. In some circumstances, the entity that generated
+the event may have indicated how the data is to be interpreted. In
+such cases, the Processor <em title="SHOULD in RFC2119 context"
+class="RFC2119">SHOULD</em> try to format the data according to
+those indications. Otherwise, if the SCXML Processor can interpret
+the content as key-value pairs, then for each unique key, the
 Processor <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> insert the XML structure as the content
-of _event's &lt;data&gt; child. Otherwise, the Processor <em
-title="MUST in RFC2119 context" class="RFC2119">MUST</em> treat the
-content as a space-normalized string literal and insert it as the
-content of _event's &lt;data&gt; child.</p>
+class="RFC2119">MUST</em> create a &lt;data&gt; element as a child
+of _event's &lt;data&gt; child with an 'id' attribute whose value
+is the name of the key. The Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> insert
+the value of the key-value pair as the content of this element. In
+the case of duplicate keys, the behavior is platform-specific.
+(Note that content specified by &lt;param&gt; or delivered as POST
+parameters via the BasicHTTP Event I/O Processor consists
+unambiguously of key-value pairs.) Otherwise (i.e., if the content
+does not consist of key-value pairs), if the Processor can
+interpret the content is a valid XML document, the it <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> insert
+the XML structure as the content of _event's &lt;data&gt; child.
+Otherwise, the Processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> treat the content as a space-normalized
+string literal and insert it as the content of _event's
+&lt;data&gt; child.</p>
 </div>
 
 <p>Suppose as part of executing a state machine named "myName" with
@@ -6410,11 +6613,11 @@ with the name "foo.bar" and the following XML payload:</p>
 </pre>
 </div>
 
-<p>Then the underlying XML datamodel would have the following form
+<p>Then the underlying XML data model would have the following form
 (not all the fields of the event are shown):</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N115EA" name="N115EA" />Example:
+<div class="exampleHeader"><a id="N1166D" name="N1166D" />Example:
 Illustration of system injected data</div>
 
 <div class="exampleInner">
@@ -6464,13 +6667,25 @@ Illustration of system injected data</div>
 </div>
 
 <div class="div3">
-<h4><a id="N115F9" name="N115F9" />C.3.8 Scripting</h4>
+<h4><a id="xpath-serialization" name="xpath-serialization" />C.3.8
+Serialization</h4>
+
+<p>In certain circumstances, e.g. when including data in events
+sent via the BasicHTTP Event I/O Processor, the SCXML Processor is
+required to serialize data from the XPath data model for
+transmission to a remote entity. In such cases, the Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> serialize
+the data as a string.</p>
+</div>
+
+<div class="div3">
+<h4><a id="N11685" name="N11685" />C.3.9 Scripting</h4>
 
 <p>There is no scripting language.</p>
 </div>
 
 <div class="div3">
-<h4><a id="XML_foreach" name="XML_foreach" />C.3.9
+<h4><a id="XML_foreach" name="XML_foreach" />C.3.10
 &lt;foreach&gt;</h4>
 
 <p>In the XPath data model, the legal iterable collections are
@@ -6480,7 +6695,7 @@ underlying Node-set, and goes from an index of 1 by increments of
 one to an index of count(node-set).</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N11604" name="N11604" />Example:
+<div class="exampleHeader"><a id="N11690" name="N11690" />Example:
 Logging ISBN of all books in bookstore shopping cart</div>
 
 <div class="exampleInner">
@@ -6495,7 +6710,7 @@ Logging ISBN of all books in bookstore shopping cart</div>
 </div>
 
 <div class="div3">
-<h4><a id="N1160A" name="N1160A" />C.3.10 Unsupported Elements</h4>
+<h4><a id="N11696" name="N11696" />C.3.11 Unsupported Elements</h4>
 
 <p><a href="#script"><em>5.8 &lt;script&gt;</em></a> is not
 supported in the XPath Data Model.</p>
@@ -6516,7 +6731,7 @@ SCXML Event I/O Processor</h3>
 <p>The SCXML Event I/O Processor is intended to transport messages
 between SCXML sessions. This specification defines the mapping
 between the parameters in the sending session and the event that is
-raised in the receving session, but the transport mechanism is
+raised in the receiving session, but the transport mechanism is
 platform-specific.</p>
 
 <p>The sending and receiving SCXML Processors <em
@@ -6535,7 +6750,7 @@ the value of the 'location' field inside the entry for the SCXML
 Event I/O Processor in the _ioprocessors system variable in the
 sending session.</li>
 
-<li>The 'sendid' field of the event raised in the receving session
+<li>The 'sendid' field of the event raised in the receiving session
 <em title="MUST in RFC2119 context" class="RFC2119">MUST</em> match
 the sendid in the sending session, if the author of the sending
 session specifes either the 'id' or 'idlocation' attribute. If the
@@ -6549,11 +6764,18 @@ class="RFC2119">MUST</em> have the value "scxml".</li>
 
 <li>The 'data' field of the event raised in the receiving session
 <em title="MUST in RFC2119 context" class="RFC2119">MUST</em>
-contain any data specified in the 'namelist' attribute or in
-&lt;param&gt; or &lt;content&gt; elements in the sending session.
-The format of the 'data' field will depend on the datamodel of the
+contain a copy of the data specified in the 'namelist' attribute or
+in &lt;param&gt; or &lt;content&gt; elements in the sending
+session. The nature of the copy operation depends on the data model
+in question. However, the Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> ensure
+that changes to the transmitted data in the receiving session do
+not affect the data in the sending session and vice-versa. The
+format of the 'data' field will depend on the data model of the
 receiving session. See <a href="#profiles"><em>C Data
-Models</em></a> for details.</li>
+Models</em></a> for details. If the data models in the sending and
+receiving sessions are different, the mapping between them is
+platform-specific.</li>
 </ol>
 
 <p>When using the SCXML Event I/O Processor, SCXML Processors <em
@@ -6590,7 +6812,10 @@ that session. See <a href="#invoke"><em>6.4 &lt;invoke&gt;</em></a>
 for details.</li>
 </ul>
 
-<br />
+If neither the 'target' nor the 'targetexpr' attribute is
+specified, the SCXML Processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> add the event to the external event queue
+of the sending session.<br />
 <br />
 <p>If the sending SCXML session specifies a session that does not
 exist or is inaccessible, the SCXML Processor <em
@@ -6611,7 +6836,7 @@ and insert the event into the appropriate queue, as defined in <a
 href="#SendTargets"><em>6.2.4 The Target of Send</em></a></p>
 
 <div class="div3">
-<h4><a id="N11689" name="N11689" />D.1.1 _ioprocessors Value</h4>
+<h4><a id="N1171B" name="N1171B" />D.1.1 _ioprocessors Value</h4>
 
 <p>SCXML Processors <em title="MUST in RFC2119 context"
 class="RFC2119">MUST</em> maintain a
@@ -6624,7 +6849,7 @@ session using the SCXML Event I/O Processor.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N11694" name="N11694" />D.1.2 Examples</h4>
+<h4><a id="N11726" name="N11726" />D.1.2 Examples</h4>
 
 <p>Here are some examples of SCXML messages sent between SCXML
 sessions. Each example shows the original &lt;send&gt; element and
@@ -6694,7 +6919,7 @@ Pattern: "xmlns" attribute with explicit inline content
 
   &lt;content&gt;
      &lt;csta:MakeCall&gt;
-       &lt;csta:callingDevice&gt;22343&lt;/csta:callingDevice&gt;
+       &lt;csta:callingDevice&gt;22343&lt;/callingDevice&gt;
        &lt;csta:calledDirectoryNumber&gt;18005551212&lt;/csta:calledDirectoryNumber&gt;
      &lt;/csta:MakeCall&gt;
   &lt;/content&gt;
@@ -6776,7 +7001,7 @@ from external components and SCXML 1.0 implementations. Support for
 the Basic HTTP Event I/O Processor is optional.</p>
 
 <div class="div3">
-<h4><a id="N116C4" name="N116C4" />D.2.1 Receiving Events</h4>
+<h4><a id="N11756" name="N11756" />D.2.1 Receiving Events</h4>
 
 <p>An SCXML Processor that supports the Basic HTTP Event I/O
 Processor <em title="MUST in RFC2119 context"
@@ -6814,20 +7039,24 @@ class="RFC2119">MUST</em> return an HTTP error code as defined in
 </div>
 
 <div class="div3">
-<h4><a id="N116F1" name="N116F1" />D.2.2 Sending Events</h4>
+<h4><a id="N11783" name="N11783" />D.2.2 Sending Events</h4>
 
 <p>An SCXML implementation can send events with the Basic HTTP
 Event I/O Processor using the &lt;send&gt; element (see <a
 href="#send"><em>6.2 &lt;send&gt;</em></a>) with the type attribute
 set to "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor" and
-the target attribute set to the access URI of the target.</p>
+the target attribute set to the access URI of the target. If
+neither the 'target' nor the 'targetexpr' attribute is specified,
+the SCXML Processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> add the event error.communication to the
+internal event queue of the sending session.</p>
 
 <p>The SCXML Processor <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> attempt to deliver the message using HTTP
+class="RFC2119">MUST</em> attempt deliver the message using HTTP
 method "POST" and with parameter values encoded by default in an
 application/x-www-form-urlencoded body (POST method). An SCXML
 Processor <em title="MAY in RFC2119 context"
-class="RFC2119">MAY</em> support other encodings, and allow them to
+class="RFC2119">MAY</em> support other encodings, and allow then to
 be specified in a platform-specific way.</p>
 
 <p>If the 'event' parameter of &lt;send&gt; is defined, the SCXML
@@ -6846,7 +7075,7 @@ message.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N1170F" name="N1170F" />D.2.3 _ioprocessors Value</h4>
+<h4><a id="N117A4" name="N117A4" />D.2.3 _ioprocessors Value</h4>
 
 <p>SCXML Processors that support the BasicHTTP Event I/O Processor
 <em title="MUST in RFC2119 context" class="RFC2119">MUST</em>
@@ -6882,10 +7111,11 @@ not require that the SCXML document be represented in the other
 markup's DOM (though it may be).</p>
 
 <div class="div3">
-<h4><a id="N11723" name="N11723" />D.3.1 Sending Events</h4>
+<h4><a id="N117B8" name="N117B8" />D.3.1 Sending Events</h4>
 
-<p>The SCXML author can send a DOM event to any node in the
-document by selecting the DOM Event I/O processor
+<p>The SCXML Processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> support sending DOM events to any node in
+the document by selecting the DOM Event I/O processor
 (type="http://www.w3.org/TR/scxml/#DOMEventProcessor") and
 specifying the node as the target. Processors <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> support
@@ -6915,41 +7145,36 @@ title="MUST in RFC2119 context" class="RFC2119">MUST</em> be
 'false'. The default value of 'bubbles' <em
 title="MUST in RFC2119 context" class="RFC2119">MUST</em> be
 'true'. The Processor <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> populate any other the attributes of the
-event with the values of any matching keys specified via "namelist"
-or &lt;param&gt;. If the specified DOM event type has a 'details'
-attribute, the Processor <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> populate it with any remaining data
-(i.e., values specified by 'namelist', &lt;param&gt; or
-&lt;content&gt; that are not used to populate the event's other
-attributes.) If the specified event is not a legal DOM event or if
-the specified node cannot be reached, the SCXML Processor <em
-title="MUST in RFC2119 context" class="RFC2119">MUST</em> place the
-error error.communication in the internal event queue.</p>
+class="RFC2119">MUST</em> populate any other initializable
+attributes of the event with the values of any matching keys
+specified via "namelist" or &lt;param&gt;. If the specified DOM
+event type has a 'detail' attribute, the Processor <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> populate
+it with any remaining data (i.e., values specified by 'namelist',
+&lt;param&gt; or &lt;content&gt; that are not used to populate the
+event's initializable attributes.) If the specified event is not a
+legal DOM event or if the specified node cannot be reached, the
+SCXML Processor <em title="MUST in RFC2119 context"
+class="RFC2119">MUST</em> place the error error.communication in
+the internal event queue.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N11757" name="N11757" />D.3.2 Receiving Events</h4>
+<h4><a id="N117EF" name="N117EF" />D.3.2 Receiving Events</h4>
 
-<p>In cases where the SCXML markup is represented in the DOM of the
-containing document, then the &lt;scxml&gt; root node <em
-title="MUST in RFC2119 context" class="RFC2119">MUST</em> implement
-the EventTarget interface. The other nodes in the scxml document
-<em title="MUST NOT in RFC2119 context" class="RFC2119">MUST
-NOT</em> implement EventTarget. The DOM Event I/O Processor
-implementation <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> add a function to the DOM scripting
-environment that takes a DOM event as its argument and adds a
-corresponding event to the SCXML Processor's external event queue.
-The function <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> use the type of the DOM event as the name
-of the SCXML event and <em title="MUST in RFC2119 context"
-class="RFC2119">MUST</em> place a shallow copy of the DOM event in
-_event.data.</p>
+<p>The DOM Event I/O Processor implementation <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> add a
+function to the DOM scripting environment that takes a DOM event as
+its argument and adds a corresponding event to the SCXML
+Processor's external event queue. The function <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> use the
+type of the DOM event as the name of the SCXML event and <em
+title="MUST in RFC2119 context" class="RFC2119">MUST</em> place a
+shallow copy of the DOM event in _event.data.</p>
 </div>
 
 <div class="div3">
-<h4><a id="N1176B" name="N1176B" />D.3.3 _ioprocessors Value</h4>
+<h4><a id="N117FD" name="N117FD" />D.3.3 _ioprocessors Value</h4>
 
 <p>The entry for the DOM Event I/O Processor inside the
 _ioprocessors system variable is platform-specific.</p>
@@ -7003,13 +7228,13 @@ semantically equivalent to Harel statecharts.</p>
 <p>[This section is informative.]</p>
 
 <div class="div2">
-<h3><a id="N1179B" name="N1179B" />G.1 Language Overview</h3>
+<h3><a id="N1182D" name="N1182D" />G.1 Language Overview</h3>
 
 <p>This SCXML document gives an overview of the SCXML language and
 shows the use of its state machine transition flows:</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N117A0" name="N117A0" />Example:
+<div class="exampleHeader"><a id="N11832" name="N11832" />Example:
 Main.scxml</div>
 
 <div class="exampleInner">
@@ -7018,6 +7243,7 @@ Main.scxml</div>
 &lt;!-- A wrapper state that contains all other states in this file
 - it represents the complete state machine --&gt; 
 &lt;scxml xmlns="http://www.w3.org/2005/07/scxml"
+       xmlns:xi="http://www.w3.org/2001/XInclude"
        version="1.0"
        initial="Main"
        datamodel="ecmascript"&gt;
@@ -7087,7 +7313,7 @@ Main.scxml</div>
         &lt;onentry&gt;
           &lt;log expr="'Inside Test3Sub1...'"/&gt;
           &lt;!-- Send our self an event in 5s --&gt;
-          &lt;send event="'Timer'"  delay="'5s'"/&gt;
+          &lt;send event="Timer"  delay="5s"/&gt;
         &lt;/onentry&gt;
         &lt;!-- Transition on to Test4.
              This will exit both us and our parent. --&gt;
@@ -7162,11 +7388,11 @@ Main.scxml</div>
            xmlns:ccxml="http://www.w3.org/2002/09/ccxml"
            xmlns:v3="http://www.w3.org/2005/07/vxml3"&gt;
       &lt;datamodel&gt;
-        &lt;data name="ccxmlid" expr="32459"/&gt;
-        &lt;date name="v3id" expr="17620"/&gt;
-        &lt;data name="dest" expr="'tel:+18315552020'"/&gt;
-        &lt;data name="src" expr="'helloworld2.vxml'"/&gt;
-        &lt;data name="id" expr="'HelloWorld'"/&gt;
+        &lt;data id="ccxmlid" expr="32459"/&gt;
+        &lt;data id="v3id" expr="17620"/&gt;
+        &lt;data id="dest" expr="'tel:+18315552020'"/&gt;
+        &lt;data id="src" expr="'helloworld2.vxml'"/&gt;
+        &lt;data id="id" expr="'HelloWorld'"/&gt;
       &lt;/datamodel&gt;
 
       &lt;onentry&gt;
@@ -7222,7 +7448,7 @@ Main.scxml</div>
 </div>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N117A6" name="N117A6" />Example:
+<div class="exampleHeader"><a id="N11838" name="N11838" />Example:
 Test2Sub1.xml</div>
 
 <div class="exampleInner">
@@ -7242,13 +7468,13 @@ Test2Sub1.xml</div>
 </div>
 
 <div class="div2">
-<h3><a id="N117AC" name="N117AC" />G.2 Microwave Example</h3>
+<h3><a id="N1183E" name="N1183E" />G.2 Microwave Example</h3>
 
 <p>The example below shows the implementation of a simple microwave
 oven using SCXML.</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N117B1" name="N117B1" />Example:
+<div class="exampleHeader"><a id="N11843" name="N11843" />Example:
 microwave-01.scxml</div>
 
 <div class="exampleInner">
@@ -7316,7 +7542,7 @@ Microwave Example (Using parallel)</h3>
 oven using &lt;parallel&gt; and the SCXML In() predicate.</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N117BD" name="N117BD" />Example:
+<div class="exampleHeader"><a id="N1184F" name="N1184F" />Example:
 microwave-02.scxml</div>
 
 <div class="exampleInner">
@@ -7339,7 +7565,9 @@ microwave-02.scxml</div>
 
     &lt;!-- this region tracks the microwave state and timer --&gt;
     &lt;state id="engine"&gt;
+    &lt;initial&gt;
       &lt;transition target="off"/&gt;
+      &lt;/initial&gt;
 
       &lt;state id="off"&gt;
         &lt;!-- off state --&gt;
@@ -7347,7 +7575,10 @@ microwave-02.scxml</div>
       &lt;/state&gt;
       
       &lt;state id="on"&gt;
+      &lt;initial&gt;
         &lt;transition target="idle"/&gt;
+        &lt;/initial&gt;
+        
          &lt;!-- on/pause state --&gt;
         
         &lt;transition event="turn.off" target="off"/&gt;
@@ -7390,13 +7621,13 @@ microwave-02.scxml</div>
 </div>
 
 <div class="div2">
-<h3><a id="N117C3" name="N117C3" />G.4 Calculator Example</h3>
+<h3><a id="N11855" name="N11855" />G.4 Calculator Example</h3>
 
 <p>The example below shows the implementation of a simple
 calculator in SCXML.</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N117C8" name="N117C8" />Example:
+<div class="exampleHeader"><a id="N1185A" name="N1185A" />Example:
 calc.scxml</div>
 
 <div class="exampleInner">
@@ -7565,160 +7796,7 @@ calc.scxml</div>
 </div>
 
 <div class="div2">
-<h3><a id="N117CE" name="N117CE" />G.5 Shale Example</h3>
-
-<p>The example below, which is from the Apache Shale Project. Shale
-is a web application framework based on JavaServer Faces (JSF).
-It's composed of loosely coupled services that provide
-functionality such as application event callbacks, dialogs with
-conversation-scoped state, a view technology called Clay,
-annotation-based functionality to reduce configuration requirements
-and support for remoting. For more information on Shale please see
-<a href="http://shale.apache.org/">http://shale.apache.org/</a>.
-SCXML is used as a "dialog manager" service in Shale (for details
-on the integration of SCXML in Shale please see <a
-href="http://shale.apache.org/shale-dialog-scxml/index.html">http://shale.apache.org/shale-dialog-scxml/index.html</a>).
-It allows Shale application authors to express navigation across
-multiple JSF views and/or other conversations with users of a JSF
-application using the SCXML markup notation. The example below
-describes how the navigation across multiple JSF views can be
-expressed using SCXML. It also shows how a submachine
-(edit-profile-config.scxml) can be used within an SCXML file. The
-binding language used in these examples is EL <a
-href="#EL">[EL]</a>, which is the expression language supported in
-the JSF environment.</p>
-
-<div class="exampleOuter">
-<div class="exampleHeader"><a id="N117E4" name="N117E4" />Example:
-log-on-config.scxml</div>
-
-<img src="SCXMLExamples/logon.png" class="center"
-alt="UML diagram for this example" /> 
-
-<div class="exampleInner">
-<pre>
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;!--
-  Dialog definitions for Shale Use Cases Example Web Application
-  written out as SCXML to demonstrate use of Commons SCXML as one
-  of Shale's Dialog Manager implementations.
-  For details, see: http://shale.apache.org/shale-dialog-scxml/
---&gt;
-&lt;scxml xmlns="http://www.w3.org/2005/07/scxml" xmlns:my="http://scxml.example.com/"
-       version="1.0" initial="checkCookie" datamodel="el" &gt;
-
-  &lt;state id="checkCookie"&gt;
-    &lt;onentry&gt;
-      &lt;my:var name="cookieOutcome" expr="#{profile$logon.check}" /&gt;
-    &lt;/onentry&gt;
-    &lt;transition cond="${cookieOutcome eq 'authenticated'}" target="exit"/&gt;
-    &lt;transition cond="${cookieOutcome eq 'unauthenticated'}" target="logon"/&gt;
-
-  &lt;/state&gt;
-
-  &lt;state id="logon"&gt;
-    &lt;transition event="faces.outcome" cond="${outcome eq 'authenticated'}" target="exit"/&gt;
-    &lt;transition event="faces.outcome" cond="${outcome eq 'create'}" target="createProfile"/&gt;
-  &lt;/state&gt;
-
-
-  &lt;state id="createProfile" src="edit-profile-config.xml" &gt;
-      &lt;transition event="createProfile.done" cond="${outcome eq 'success' or outcome eq 'cancel'}" target="exit"/&gt;
-  &lt;/state&gt;
-
-  &lt;final id="exit"/&gt;
-
-&lt;/scxml&gt;
-</pre>
-</div>
-</div>
-
-<div class="exampleOuter">
-<div class="exampleHeader"><a id="N117F1" name="N117F1" />Example:
-edit-profile-config.scxml</div>
-
-<img src="SCXMLExamples/editprofile.png" class="center"
-alt="UML diagram for this example" /> 
-
-<div class="exampleInner">
-<pre>
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;!--
-  Dialog definitions for Shale Use Cases Example Web Application
-  written out as SCXML to demonstrate use of Commons SCXML as one
-  of Shale's Dialog Manager implementations.
-  For details, see: http://shale.apache.org/shale-dialog-scxml/
---&gt;
-&lt;scxml xmlns="http://www.w3.org/2005/07/scxml" xmlns:my="http://scxml.example.com/"
-       version="1.0" initial="edit" datamodel="el"&gt;
-
-  &lt;state id="edit"&gt;
-    &lt;initial&gt;
-      &lt;transition target="setup"/&gt;
-    &lt;/initial&gt;
-
-    &lt;!-- global transitions (within state "edit") --&gt;
-    &lt;transition event="faces.outcome" cond="${outcome eq 'cancel'}" target="cancel"/&gt;
-    &lt;transition event="faces.outcome" cond="${outcome eq 'finish'}" target="finish"/&gt;
-
-    &lt;state id="setup"&gt;
-      &lt;onentry&gt;
-        &lt;my:var name="setupOutcome" expr="#{profile$edit.setup}" /&gt;
-      &lt;/onentry&gt;
-      &lt;transition cond="${setupOutcome eq 'success'}" target="page1"/&gt;
-    &lt;/state&gt;
-
-    &lt;state id="page1"&gt;
-      &lt;transition event="faces.outcome" cond="${outcome eq 'next'}" target="page2"/&gt;
-    &lt;/state&gt;
-
-    &lt;state id="page2"&gt;
-
-      &lt;transition event="faces.outcome" cond="${outcome eq 'previous'}" target="page1"/&gt;
-      &lt;transition event="faces.outcome" cond="${outcome eq 'next'}" target="page3"/&gt;
-
-    &lt;/state&gt;
-
-    &lt;state id="page3"&gt;
-      &lt;transition event="faces.outcome" cond="${outcome eq 'previous'}" target="page2"/&gt;
-      &lt;transition event="faces.outcome" cond="${outcome eq 'next'}" target="editExit"/&gt;
-    &lt;/state&gt;
-
-  &lt;/state&gt;
-
-  &lt;state id="cancel"&gt;
-
-  &lt;onentry&gt;
-      &lt;my:var name="cancelOutcome" expr="#{profile$edit.cancel}" /&gt;
-    &lt;/onentry&gt;
-    &lt;transition cond="${cancelOutcome eq 'success'}" target="editExit"&gt;
-      &lt;my:var name="outcome" expr="cancel"/&gt;
-    &lt;/transition&gt;
-  &lt;/state&gt; 
-
-  &lt;state id="finish"&gt;
-
-    &lt;onentry&gt;
-      &lt;my:var name="finishOutcome" expr="#{profile$edit.finish}" /&gt;
-    &lt;/onentry&gt;
-
-    &lt;transition cond="${finishOutcome eq 'username'}" target="page1"/&gt;
-    &lt;transition cond="${finishOutcome eq 'password'}" target="page1"/&gt;
-    &lt;transition cond="${finishOutcome eq 'success'}" target="editExit"&gt;
-      &lt;my:var name="outcome" expr="success"/&gt;
-    &lt;/transition&gt;
-  &lt;/state&gt;
-
-  &lt;final id="editExit"/&gt;
-
-&lt;/scxml&gt;
-</pre>
-</div>
-</div>
-</div>
-
-<div class="div2">
-<h3><a id="invokeex" name="invokeex" />G.6 Examples of Invoke and
+<h3><a id="invokeex" name="invokeex" />G.5 Examples of Invoke and
 finalize</h3>
 
 <p>The following two SCXML documents demonstrate the use of Invoke
@@ -7726,7 +7804,7 @@ and finalize. The first example shows the control flow for a voice
 portal offering traffic reports.</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N11804" name="N11804" />Example:
+<div class="exampleHeader"><a id="N11866" name="N11866" />Example:
 Traffic Report</div>
 
 <div class="exampleInner">
@@ -7827,7 +7905,7 @@ Traffic Report</div>
 game.</p>
 
 <div class="exampleOuter">
-<div class="exampleHeader"><a id="N1180C" name="N1180C" />Example:
+<div class="exampleHeader"><a id="N1186E" name="N1186E" />Example:
 Blackjack</div>
 
 <div class="exampleInner">
@@ -7940,7 +8018,7 @@ Blackjack</div>
 
 <div class="div2">
 <h3><a id="content_and_namespaces"
-name="content_and_namespaces" />G.7 Inline Content and
+name="content_and_namespaces" />G.6 Inline Content and
 Namespaces</h3>
 
 <p>Since SCXML documents are XML documents, normal XML namespace
@@ -8030,7 +8108,7 @@ without namespaces:</p>
 </div>
 
 <div class="div2">
-<h3><a id="custom_action" name="custom_action" />G.8 Custom Action
+<h3><a id="custom_action" name="custom_action" />G.7 Custom Action
 Elements</h3>
 
 <p>Custom Action Elements can be defined in other
@@ -8112,12 +8190,17 @@ Action Element specifications.</p>
 submitted to the IESG for review, approval, and registration with
 IANA.</p>
 
+<div class="div2">
+<h3><a id="media-type-registration"
+name="media-type-registration" />H.1 Registration of MIME media
+type application/scxml+xml</h3>
+
 <dl>
-<dt class="label">Type name:</dt>
+<dt class="label">MIME media type name:</dt>
 
 <dd><code>application</code></dd>
 
-<dt class="label">Subtype name:</dt>
+<dt class="label">MIME subtype name:</dt>
 
 <dd><code>scxml+xml</code></dd>
 
@@ -8147,19 +8230,19 @@ considerations when sent as "application/scxml+xml"as does XML. See
 
 <dt class="label">Security considerations:</dt>
 
-<dd>Several SCXML instructions may cause arbitrary URIs to be
-dereferenced. In this case, the security issues of <a
-href="#RFC3986">[RFC 3986]</a> section 7, should be considered. In
-addition, because of the extensibility features for SCXML, it is
-possible that "<code>application/scxml+xml</code>" may describe
-content that has security implications beyond those described here.
-However, if the processor follows only the normative semantics of
-this specification, this content will be ignored. Only in the case
-where the processor recognizes and processes the additional
-content, or where further processing of that content is dispatched
-to other processors, would security issues potentially arise. And
-in that case, they would fall outside the domain of this
-registration document.</dd>
+<dd>SCXML elements may include arbitrary URIs. Therefore, the
+security issues of <a href="#RFC3986">[RFC 3986]</a> section 7
+should be considered. In addition, because of the extensibility
+features for SCXML, it is possible that
+"<code>application/scxml+xml</code>" may describe content that has
+security implications beyond those described here. However, if the
+processor follows only the normative semantics of this
+specification, this content will be ignored. Only in the case where
+the processor recognizes and processes the additional content, or
+where further processing of that content is dispatched to other
+processors, would security issues potentially arise. And in that
+case, they would fall outside the domain of this registration
+document.</dd>
 
 <dt class="label">Interoperability considerations:</dt>
 
@@ -8208,6 +8291,10 @@ href="mailto:ashimura@w3.org">ashimura@w3.org</a>&gt;.</dd>
 
 <dd>COMMON</dd>
 
+<dt class="label">Restrictions on usage:</dt>
+
+<dd>None</dd>
+
 <dt class="label">Author:</dt>
 
 <dd>The SCXML specification is a work product of the World Wide Web
@@ -8217,6 +8304,16 @@ Consortium's Voice Browser Working Group.</dd>
 
 <dd>The W3C has change control over these specifications.</dd>
 </dl>
+</div>
+
+<div class="div2">
+<h3><a id="media-type-fragid" name="media-type-fragid" />H.2
+Fragment Identifiers</h3>
+
+<p>For documents labeled as "<code>application/scxml+xml</code>",
+the fragment identifier notation is exactly that for
+"<code>application/xml</code>", as specified in RFC 3023.</p>
+</div>
 </div>
 
 <div class="div1">
