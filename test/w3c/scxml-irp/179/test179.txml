@@ -7,7 +7,7 @@
 <state id="s0">
   <onentry>
    <send event="event1">
-   <content>123</content>
+   <content>'123'</content>
    </send>
     </onentry>
     
