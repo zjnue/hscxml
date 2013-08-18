@@ -294,13 +294,12 @@ class Interp extends Base {
 		for( state in atomicStates )
 			for( s in [state].toList().append(getProperAncestors(state, null)) ) {
 				var exitLoop = false;
-				for( t in s.transition() ) {
+				for( t in s.transition() )
 					if( !t.exists("event") && conditionMatch(t) ) {
 						enabledTransitions.add(t);
 						exitLoop = true;
 						break;
 					}
-				}
 				if( exitLoop )
 					break;
 			}
@@ -1048,10 +1047,12 @@ class Interp extends Base {
 	}
 	
 	inline function getFileContent( src : String ) : String {
-		#if (js || flash)
-		return null;
-		#else		
 		var file = src.substr(5);
+		#if js
+		return DataTools.trim( haxe.Http.requestUrl(path + file) );
+		#elseif flash
+		return null;
+		#else
 		var fullPath = sys.FileSystem.fullPath( path ) + "/" + file;
 		return DataTools.trim( sys.io.File.getContent(fullPath) );
 		#end
