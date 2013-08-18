@@ -541,16 +541,6 @@ class Interp extends Base {
 		return true;
 	}
 	
-	function getDefaultInitialState( s : Node ) : Node {
-		var childStates = s.getChildStates();
-		var initial = s.initial();
-		if( initial.hasNext() ) {
-			var id = initial.next().transition().next().get("target");
-			return childStates.filter(function(s0) return s0.get("id") == id).iterator().next(); // optimize
-		} else
-			return childStates.iterator().next();
-	}
-	
 	function cancelInvoke( inv : Node ) {
 		var id = inv.exists("id") ? inv.get("id") : null;
 		if( id == null ) {
