@@ -233,6 +233,7 @@ class Run {
 		try {
 			sm = new hsm.Scxml( cwd + src + "/" + path );
 			sm.log = smLog;
+			sm.path = src;
 			sm.parentEventHandler = parentEventHandler;
 			sm.init( null, function() {
 				if( evt != null ) {
