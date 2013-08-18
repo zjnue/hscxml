@@ -386,8 +386,6 @@ class Interp extends Base {
 	function computeExitSet( transitions : List<Node> ) {
 		var statesToExit = new Set<Node>();
 		for( t in transitions ) {
-			if( !t.exists("target") ) // ZB: added
-				continue;
 			var domain = getTransitionDomain(t);
 			for( s in configuration )
 				if( s.isDescendant(domain) )
@@ -515,8 +513,6 @@ class Interp extends Base {
 	
 	function getProperAncestors( state1 : Node, state2 : Null<Node> = null ) : List<Node> {
 		var l = new List<Node>();
-		if( state1.isTScxml() ) // ZB: added
-			l.add(state1);
 		while( state1.parent != state2 )
 			l.add( state1 = state1.parent );
 		return l;
