@@ -31,7 +31,10 @@ class Convert {
 			out = "xpath";
 				
 		case "hscript":
-			throw "Not yet supported";
+			if( !sys.FileSystem.exists(cwd + "xsl/confHScript.xsl") )
+				throw "stylesheet xsl/confHScript.xsl not found.";
+			xsl = "confHScript.xsl";
+			out = "hscript";
 			
 		default:
 			throw "Unknown target " + Std.string(args[0]) +". Usage:\nneko convert.n [ecma|xpath|hscript]\n";
@@ -45,12 +48,21 @@ class Convert {
 		var stamp : Float;
 		var fileName : String;
 		
+		// create output directory if it does not exist
+		if( !sys.FileSystem.exists(cwd + out) )
+			sys.FileSystem.createDirectory(cwd + out);
+		
 		for( path in sys.FileSystem.readDirectory(cwd + "txml") ) {
 			
 			var parts = path.split(".");
-			if( parts.pop() != "txml" )
+			var ext = parts.pop();
+			if( ext != "txml" ) {
+				if( ext == "txt" ) {
+					sys.io.File.copy(cwd + "txml/" + path, cwd + out + "/" + parts.join("") + "." + ext);
+				}
 				continue;
-				
+			}
+			
 			Sys.print("converting.. " + path);
 			
 			fileName = parts.join("") + ".scxml";
@@ -58,6 +70,7 @@ class Convert {
 			
 			// grab a stable build of the open-source saxon xslt 2.0 processor and place it in this folder
 			// http://sourceforge.net/projects/saxon/files/Saxon-HE/9.4/SaxonHE9-4-0-7J.zip/download
+			// http://sourceforge.net/projects/saxon/files/Saxon-HE/9.5/SaxonHE9-5-1-1J.zip/download
 			
 			Sys.command("java", ["-jar", "saxon9he.jar", "-xsltversion:2.0", "-s:txml/" + path, "-xsl:xsl/" + xsl, "-o:" + out + "/" + fileName]);
 			

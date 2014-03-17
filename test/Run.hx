@@ -117,7 +117,9 @@ class Run {
 				throw "source folder xpath not found.";
 				
 		case "hscript":
-			throw "Not yet supported";
+			src = "hscript";
+			if( !sys.FileSystem.exists(cwd + "hscript") )
+				throw "source folder hscript not found.";
 			
 		default:
 			throw "Unknown target " + Std.string(args[1]) +". Usage:\nneko run.n [ecma|xpath|hscript]\n";
@@ -169,6 +171,8 @@ class Run {
 			"test482.scxml",
 			"test483.scxml",
 			"test537.scxml",
+			"test539.scxml",
+			"test540.scxml",
 			"test542.scxml",
 			"test543.scxml",
 			"test544.scxml",
