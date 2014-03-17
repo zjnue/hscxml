@@ -187,16 +187,14 @@ or annotating specifications. </p>
                      <a href="http://twitter.com/W3C" title="Follow W3C on Twitter">
                         <img src="/2008/site/images/twitter-bird" alt="Twitter" width="78" height="83" class="social-icon" />
                      </a>
-                     <a href="http://identi.ca/w3c" title="See W3C on Identica">
-                        <img src="/2008/site/images/identica-logo" alt="Identica" width="91" height="83" class="social-icon" />
-                     </a>
+                     
                   </li></ul>
             </div>
             <p class="copyright">Copyright &#xA9; 2012 W3C <sup>&#xAE;</sup> (<a href="http://www.csail.mit.edu/">
                   <acronym title="Massachusetts Institute of Technology">MIT</acronym>
                </a>, <a href="http://www.ercim.org/">
                   <acronym title="European Research Consortium for Informatics and Mathematics"> ERCIM</acronym>
-               </a>, <a href="http://www.keio.ac.jp/">Keio</a>, <a href="http://ev.buaa.edu.cn/">Beihang</a>) <a href="/Consortium/Legal/ipr-notice">Usage policies apply</a>.</p>
+               </a>, <a href="http://www.keio.ac.jp/">Keio</a>, <a href="http://ev.buaa.edu.cn/">Beihang</a>, <a href="http://ev.buaa.edu.cn/">Beihang</a>) <a href="/Consortium/Legal/ipr-notice">Usage policies apply</a>.</p>
          </div>
       </div><!-- Generated from data/scripts.php, ../../smarty/{scripts.tpl} --><!-- At the bottom for performance reasons --><div id="w3c_scripts">
          <script type="text/javascript" src="/2008/site/js/main" xml:space="preserve"><!-- --></script>

@@ -117,34 +117,71 @@ to ensure that people can interact with the site with confidence. Please find be
 
 	                       <h2 id="disclaimers"><span id="Legal_Disclaimer">Disclaimers</span></h2>
 
-			       <p>Unless otherwise noted, all materials contained in this Site are
-copyrighted and may not be used except as provided in these terms and
-conditions or in the copyright notice (<a href="/Consortium/Legal/copyright-documents">documents</a>
+			       <p>Unless otherwise noted, all
+materials contained in this Site are copyrighted and may not be used
+except as provided in these terms and conditions or in the copyright
+notice (<a href="/Consortium/Legal/copyright-documents">documents</a>
 and <a href="/Consortium/Legal/copyright-software">software</a>) or
 other proprietary notice provided with the relevant materials.</p>
 
-                        <p>The materials contained in the Site may be downloaded or copied
-provided that ALL copies retain the copyright and any other proprietary
-notices contained on the materials. No material may be modified, edited or
-taken out of context such that its use creates a false or misleading
-statement or impression as to the positions, statements or actions of W3C.</p>
+                        <p>The materials contained in the Site may be
+downloaded or copied provided that ALL copies retain the copyright and
+any other proprietary notices contained on the materials. No material
+may be modified, edited or taken out of context such that its use
+creates a false or misleading statement or impression as to the
+positions, statements or actions of W3C.</p>
 
-                        <p>The name and trademarks of copyright holders may NOT be used in
-advertising or publicity pertaining to the Web site, its content,
-specifications, or software without specific, written prior permission. Title
-to copyright in Web site documents will at all times remain with copyright
-holders. Use of W3C trademarks and service marks is covered by the <a href="/Consortium/Legal/trademark-license">W3C Trademark and
+                        <p>The name and trademarks of copyright
+holders may NOT be used in advertising or publicity pertaining to the
+Web site, its content, specifications, or software without specific,
+written prior permission. Title to copyright in Web site documents
+will at all times remain with copyright holders. Use of W3C trademarks
+and service marks is covered by
+the <a href="/Consortium/Legal/trademark-license">W3C Trademark and
 Servicemark License</a>.</p>
 
-                        <p>Caches of W3C materials should comply with the "maximum time to live"
-information provided with the materials. After such materials have expired
-they should not be served from caches without first validating the contents
-of the W3C Site. Organizations that want to mirror W3C content must abide by
-the <a href="/1999/10/21-mirroring-policy">W3C Mirroring
-Policy.</a>
+                        <p>Caches of W3C materials should comply with
+the "maximum time to live" information provided with the
+materials. After such materials have expired they should not be served
+from caches without first validating the contents of the W3C
+Site. Organizations that want to mirror W3C content must abide by
+the <a href="/1999/10/21-mirroring-policy">W3C Mirroring Policy.</a>
                         </p>
 
+	                       <h3 id="infringement">Reporting
+	                       Copyright Infringement</h3>
 
+<p>
+If you are or represent a copyright owner and material on Web Platform
+Docs infringes your copyrights, you may file a notification of claimed
+infringement under the Digital Millennium Copyright Act (DMCA).
+</p>
+<p>
+A notification of claimed infringement must be a written communication that includes:
+</p>
+<ul class="show_items"><li> A physical or electronic signature of a person authorized to act on behalf of the owner of an exclusive right that is allegedly infringed.
+</li><li> Identification of the copyrighted work claimed to have been infringed.
+</li><li> Identification of the material that is claimed to be infringing and information reasonably sufficient to permit the service provider to locate the material&mdash; the page URL, including a more specific reference if only a portion of the page is claimed to be infringing.
+</li><li> Information reasonably sufficient to permit the service provider to contact the complaining party, such as an address, telephone number, and, if available, an electronic mail address at which the complaining party may be contacted.
+</li><li> A statement that the complaining party has a good faith belief that use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law.
+</li><li> A statement that the information in the notification is accurate, and under penalty of perjury, that the complaining party is authorized to act on behalf of the owner of an exclusive right that is allegedly infringed.
+</li></ul><p>
+Notifications of claimed infringement may be sent by email to copyright@w3.org or by mail to:
+</p>
+<p>
+Wendy Seltzer<br/>
+W3C<br/>
+32 Vassar Street 32-G528<br/>
+Cambridge, MA 02139<br/>
+USA
+</p>
+<p>
+If you knowingly misrepresent that material or activity is infringing, you may be subject to liability for damages.
+</p>
+<h3 id="RepeatInfringers">Repeat Infringers</h3>
+<p>
+It is site policy to terminate, in appropriate circumstances, the accounts of repeat infringers.
+</p>
 
                      </div>
 
@@ -255,16 +292,14 @@ Policy.</a>
                      <a href="http://twitter.com/W3C" title="Follow W3C on Twitter">
                         <img src="/2008/site/images/twitter-bird" alt="Twitter" width="78" height="83" class="social-icon" />
                      </a>
-                     <a href="http://identi.ca/w3c" title="See W3C on Identica">
-                        <img src="/2008/site/images/identica-logo" alt="Identica" width="91" height="83" class="social-icon" />
-                     </a>
+                     
                   </li></ul>
             </div>
             <p class="copyright">Copyright &#xA9; 2012 W3C <sup>&#xAE;</sup> (<a href="http://www.csail.mit.edu/">
                   <acronym title="Massachusetts Institute of Technology">MIT</acronym>
                </a>, <a href="http://www.ercim.org/">
                   <acronym title="European Research Consortium for Informatics and Mathematics"> ERCIM</acronym>
-               </a>, <a href="http://www.keio.ac.jp/">Keio</a>) <a href="/Consortium/Legal/ipr-notice">Usage policies apply</a>.</p>
+               </a>, <a href="http://www.keio.ac.jp/">Keio</a>, <a href="http://ev.buaa.edu.cn/">Beihang</a>) <a href="/Consortium/Legal/ipr-notice">Usage policies apply</a>.</p>
          </div>
       </div><!-- Generated from data/scripts.php, ../../smarty/{scripts.tpl} --><!-- At the bottom for performance reasons --><div id="w3c_scripts">
          <script type="text/javascript" src="/2008/site/js/main" xml:space="preserve"><!-- --></script>

@@ -146,6 +146,7 @@
   </test>  
    </assert> 
    
+  
          <assert id="407"  specnum="3.13" specid="#SelectingTransitions">
       <![CDATA[ To exit a state, the SCXML Processor MUST execute the executable content in the state's <onexit> handler.]]>
        <test id="407" conformance="mandatory" manual="false">

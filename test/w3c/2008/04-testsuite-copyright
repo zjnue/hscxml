@@ -231,13 +231,13 @@ PERFORMANCE OR IMPLEMENTATION OF THE CONTENTS THEREOF.</p>
 <h3>W3C Updates</h3>
 <ul class="footer_follow_nav">
 <li><a href="http://twitter.com/W3C" title="Follow W3C on Twitter"><img src="/2008/site/images/twitter-bird" alt="Twitter" class="social-icon" width="78" height="83" /></a>
-<a href="http://identi.ca/w3c" title="See W3C on Identica"><img src="/2008/site/images/identica-logo" alt="Identica" class="social-icon" width="91" height="83" /></a></li>
+</li>
 </ul>
 </div>
 <!-- #footer address / page signature -->
 <p>Questions to site-policy@w3.org</p>
 <p class="copyright">Copyright &#xA9; 2012 W3C <sup>&#xAE;</sup> (<a href="http://www.csail.mit.edu/"><acronym title="Massachusetts Institute of Technology">MIT</acronym></a>, <a href="http://www.ercim.org/"><acronym title="European Research Consortium for Informatics and Mathematics">ERCIM</acronym></a>,
-<a href="http://www.keio.ac.jp/">Keio</a>) <a href="/Consortium/Legal/ipr-notice">Usage policies
+<a href="http://www.keio.ac.jp/">Keio</a>, <a href="http://ev.buaa.edu.cn/">Beihang</a>) <a href="/Consortium/Legal/ipr-notice">Usage policies
 apply</a>.</p>
 </div>
 </div>

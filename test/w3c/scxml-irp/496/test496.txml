@@ -1,20 +1,19 @@
 <?xml version="1.0"?>
-<!-- we test that <content> can be used to populate body of a message -->
 
 <scxml initial="s0" version="1.0" conf:datamodel=""  xmlns="http://www.w3.org/2005/07/scxml" xmlns:conf="http://www.w3.org/2005/scxml-conformance">
 
   
 <state id="s0">
-  <onentry>
-   <send event="event1">
-   <content>123</content>
-   </send>
-    </onentry>
-    
-  <transition event="event1" conf:eventdataVal="123" conf:targetpass=""/>
+   <onentry>
+     <send  type="http://www.w3.org/TR/scxml/#SCXMLEventProcessor" event="event" conf:unreachableTarget=""/>
+     <raise event="foo"/>
+     </onentry>
+   <transition event="error.communication" conf:targetpass=""/>
   <transition event="*" conf:targetfail=""/>
  </state>
-   
+    
+
+  
    <conf:pass/>
    <conf:fail/>
 
