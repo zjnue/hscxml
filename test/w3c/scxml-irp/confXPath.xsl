@@ -66,6 +66,11 @@
 	<xsl:attribute name="location">$Var<xsl:value-of select="." /></xsl:attribute>
 </xsl:template>
 
+<!-- names an invalid location for <assign>, etc. -->
+<xsl:template match="//@conf:invalidLocation">
+	<xsl:attribute name="location">foo.bar.baz /></xsl:attribute>
+</xsl:template>
+
 <!-- uses system var as location for <assign>, etc. -->
 <xsl:template match="//@conf:systemVarLocation"> 
 	<xsl:attribute name="location">$<xsl:value-of select="." /></xsl:attribute>

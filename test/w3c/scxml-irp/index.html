@@ -68,7 +68,7 @@ table.attrs {margin-top: 5px}
 "rect"><img src="http://www.w3.org/Icons/w3c_home" alt="W3C"
 height="48" width="72" /></a>
 <h1 id="h_ir">SCXML 1.0 Implementation Report Plan</h1>
-<p><b>Version</b>: 13 March 2014 </p>
+<p><b>Version</b>: 17 March 2014 </p>
 <p><b>Contributors</b>:</p>
 <dl>
 <dd>
@@ -131,7 +131,7 @@ use</a> rules apply.</p>
 <p>The <a title="SCXML 1.0 Specification" 
 href="http://www.w3.org/TR/2014/CR-scxml-20140313/">SCXML 
 1.0 Specification</a>&nbsp;entered the Candidate Recommendation period 
-on&nbsp;13 March 2014.</p>
+on&nbsp;13March 2014.</p>
 
 <p>
 Preparation of an Implementation Report is a key criterion for moving beyond 
@@ -3221,6 +3221,20 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
                   
                </td>
             </tr>
+                  <tr>
+               <td>193</td>
+               <td><a href="193/test193.txml">test193.txml</a></td>
+               <td><a href="http://www.w3.org/TR/scxml/#SCXMLEventProcessor">D.1</a></td>
+               <td>optional</td>
+               <td>false</td>
+               <td>
+                  	     If neither the 'target' nor the 'targetexpr' attribute is specified, the SCXML
+                  Processor MUST add the event to the external event queue of the
+                  sending session. 
+                  
+                  
+               </td>
+            </tr>
             <tr>
                <td>347</td>
                <td><a href="347/test347.txml">test347.txml</a></td>
@@ -3384,20 +3398,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
                   
                </td>
             </tr>
-            <tr>
-               <td>193</td>
-               <td><a href="193/test193.txml">test193.txml</a></td>
-               <td><a href="http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor">D.2</a></td>
-               <td>optional</td>
-               <td>false</td>
-               <td>
-                  	     If neither the 'target' nor the 'targetexpr' attribute is specified, the SCXML
-                  Processor MUST add the event error.communication to the internal event queue of the
-                  sending session. 
-                  
-                  
-               </td>
-            </tr>
+      
             <tr>
                <td>509</td>
                <td><a href="509/test509.txml">test509.txml</a></td>

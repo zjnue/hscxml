@@ -26,7 +26,7 @@
 <state id="s2">
    <onentry>
    <!-- this will generate an error, which is a platform event -->
-     <assign conf:location="2" conf:expr="1"/>
+     <assign conf:invalidLocation="" conf:expr="1"/>
    </onentry>
    <transition event="error"  target="s3">
      <assign conf:location="1" conf:eventType=""/>
