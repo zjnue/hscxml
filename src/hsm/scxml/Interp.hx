@@ -595,9 +595,10 @@ class Interp extends Base {
 				throw "check";
 			if( content.length > 1 )
 				throw "Send may contain only one content child.";
-			if( content.length > 0 )
-				val = parseContent( content );
-			else {
+			if( content.length > 0 ) {
+				var strVal = parseContent( content );
+				val = datamodel.doVal( getTypedDataStr( strVal ));
+			} else {
 				try {
 					val = DataTools.copyFrom( {}, parseParams(params) );
 				} catch( e:Dynamic ) {
@@ -749,7 +750,7 @@ class Interp extends Base {
 					contentVal = parseContent( content );
 					if( !content[0].exists("expr") ) {
 						// TODO report test 179 (worked around here), where 123 should be '123' for consistent evaluation
-						contentVal = datamodel.doVal( getTypedDataStr( contentVal, false ) );
+						contentVal = datamodel.doVal( getTypedDataStr( contentVal ));//, false ) );
 					}
 				} else {
 					paramsData = parseParams(params);
