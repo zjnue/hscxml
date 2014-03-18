@@ -189,6 +189,7 @@ class HScriptModel extends Model {
 		supportsScript = true;
 		
 		hparse = new hscript.Parser();
+		hparse.allowJSON = true;
 		hinterp = new hscript.Interp();
 		
 		var _sessionId = getSessionId();
