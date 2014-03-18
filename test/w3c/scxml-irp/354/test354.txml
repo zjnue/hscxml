@@ -44,7 +44,7 @@ and that correct values are used -->
       <content>foo</content>
       </send>
      </onentry>
-  <transition event="event2" conf:eventdataVal="foo" conf:targetpass=""/>
+  <transition event="event2" conf:eventdataVal="'foo'" conf:targetpass=""/>
   <transition event="*" conf:targetfail=""/>
 
 </state>
