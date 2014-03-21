@@ -1506,6 +1506,13 @@ this assertion has not been written yet.]]>
   </test>
   </assert>
   
+    <assert id="193"  specnum="D.1" specid="#SCXMLEventProcessor">
+ 	     <![CDATA[If neither the 'target' nor the 'targetexpr' attribute is specified, the SCXML Processor MUST add the event to the external event queue of the sending session.  ]]>
+    <test id="193" conformance="optional" manual="false">
+    <start uri="193/test193.txml"/>
+  </test>
+  </assert>
+  
    <assert id="347"  specnum="D.1" specid="#SCXMLEventProcessor">
  	     <![CDATA[SCXML Processors MUST support sending messages to and receiving messages from other SCXML sessions using the SCXML Event I/O Processor.]]>
     <test id="347" conformance="mandatory" manual="false">
@@ -1584,12 +1591,7 @@ this assertion has not been written yet.]]>
   </assert>
   
 
-  <assert id="193"  specnum="D.2" specid="#BasicHTTPEventProcessor">
- 	     <![CDATA[If neither the 'target' nor the 'targetexpr' attribute is specified, the SCXML Processor MUST add the event error.communication to the internal event queue of the sending session. ]]>
-    <test id="193" conformance="optional" manual="false">
-    <start uri="193/test193.txml"/>
-  </test>
-  </assert>
+
   
    <assert id="509"  specnum="D.2" specid="#BasicHTTPEventProcessor">
  	     <![CDATA[An SCXML Processor that supports the Basic HTTP Event I/O Processor MUST accept messages at the access URI as HTTP POST requests]]>
