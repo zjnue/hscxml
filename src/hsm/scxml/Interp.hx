@@ -905,7 +905,8 @@ class Interp extends Base {
 				if( !(datamodel.supportsVal && datamodel.supportsProps) )
 					return;
 				
-				var arr : Array<Dynamic> = datamodel.doVal(c.get("array")).copy();
+				var tmp : Array<Dynamic> = datamodel.doVal(c.get("array"));
+				var arr = tmp.copy();
 				var item = c.exists("item") ? c.get("item") : null;
 				
 				if( !datamodel.isLegalVar(item) )
