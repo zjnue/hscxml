@@ -385,6 +385,8 @@ class Interp extends Base {
 	function computeExitSet( transitions : List<Node> ) {
 		var statesToExit = new Set<Node>();
 		for( t in transitions ) {
+			if( !t.exists("target") )
+				continue;
 			var domain = getTransitionDomain(t);
 			for( s in configuration )
 				if( s.isDescendant(domain) )
@@ -495,7 +497,7 @@ class Interp extends Base {
 		var targetStates = getTargetStates(transition);
 		var sourceState = getSourceState(transition);
 		if( targetStates.isEmpty() )
-			return sourceState;
+			return null;
 		else if( transition.get("type") == "internal" && sourceState.isCompound() 
 				&& targetStates.every(function(s) return s.isDescendant(sourceState)) )
 			return sourceState;
