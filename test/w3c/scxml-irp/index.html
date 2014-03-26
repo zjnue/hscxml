@@ -68,7 +68,7 @@ table.attrs {margin-top: 5px}
 "rect"><img src="http://www.w3.org/Icons/w3c_home" alt="W3C"
 height="48" width="72" /></a>
 <h1 id="h_ir">SCXML 1.0 Implementation Report Plan</h1>
-<p><b>Version</b>: 17 March 2014 </p>
+<p><b>Version</b>: 24 March 2014 </p>
 <p><b>Contributors</b>:</p>
 <dl>
 <dd>
@@ -327,11 +327,11 @@ or "<code>fail</code>" to reflect actual submitted implementation results.</p>
 Test Suite License</a> and the <a href="http://www.w3.org/Consortium/Legal/2008/03-bsd-license">W3C 3-clause BSD License</a>. 
 See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-copyright">explanation of the licenses</a>.</p>
 
-     <table cellspacing="2" cellpadding="2" summary="assertions and tests">
+      <table cellspacing="2" cellpadding="2" summary="assertions and tests">
          <tbody>
             <tr>
                <th>Assertion Number</th>
-               <th>Test</th>
+               <td>Test</td>
                <th>Spec</th>
                <th>Conformance</th>
                <th>Test Type</th>
@@ -373,7 +373,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
                   Definition: The default initial state(s) of a compound state are those specified by
                   the 'initial' attribute or initial element, if either is present. Otherwise it is
                   the state's first child state in document order. If a compound state is entered either
-                  as an initial state or as the target of a transition (i.e. and no descendant of it
+                  as an initial state or as the target of a transition (i.e. and no descendent of it
                   is specified), then the SCXML Processor MUST enter the default initial state(s) after
                   it enters the parent state. 
                   
@@ -830,7 +830,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
                <td>false</td>
                <td>
                   if [a transition's] 'type' is "external", its exit set consists of all active states
-                  that are proper descendants of the Least Common Compound Ancestor (LCCA) of the source
+                  that are proper descendents of the Least Common Compound Ancestor (LCCA) of the source
                   and target states. 
                   
                   
@@ -844,8 +844,8 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
                <td>false</td>
                <td>
                   Otherwise, if the transition has 'type' "internal", its source state is a compound
-                  state and all its target states are proper descendants of its source state, the target
-                  set consists of all active states that are proper descendants of its source state.
+                  state and all its target states are proper descendents of its source state, the target
+                  set consists of all active states that are proper descendents of its source state.
                   
                   
                </td>
@@ -858,7 +858,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
                <td>false</td>
                <td>
                   If a transition has 'type' of "internal", but its source state is not a compound state
-                  or its target states are not all proper descendants of its source state, its exit
+                  or its target states are not all proper descendents of its source state, its exit
                   set is defined as if it had 'type' of "external".
                   
                   
@@ -1035,7 +1035,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
                <td>mandatory</td>
                <td>false</td>
                <td>
-                  The SCXML processor MUST execute the elements of a block of executable content in document
+                  The SCXML processor MUST execute the elements of a block of executable contentin document
                   order.
                   
                   
@@ -1056,7 +1056,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
             </tr>
             <tr>
                <td>276</td>
-               <td><a href="276/test276.txml">test276.txml</a><br/><a href="276/test276sub1.txml">test276sub1.txml</a></td>
+               <td><a href="276/test276.txml">test276.txml</a><br><a href="276/test276sub1.txml">test276sub1.txml</a></td>
                <td><a href="http://www.w3.org/TR/scxml/#data">5.3</a></td>
                <td>mandatory</td>
                <td>false</td>
@@ -1143,7 +1143,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
             </tr>
             <tr>
                <td>552</td>
-               <td><a href="552/test552.txml">test552.txml</a><br/><a href="552/test552.txt">test552.txt</a></td>
+               <td><a href="552/test552.txml">test552.txml</a><br><a href="552/test552.txt">test552.txt</a></td>
                <td><a href="http://www.w3.org/TR/scxml/#data">5.3</a></td>
                <td>mandatory</td>
                <td>false</td>
@@ -1764,7 +1764,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
                <td>mandatory</td>
                <td>false</td>
                <td>
-                  	     If 'typeexpr' is present, the SCXML Processor MUST evaluate it when the parent
+                  	     If 'typexpr' is present, the SCXML Processor MUST evaluate it when the parent
                   send element is evaluated and treat the result as if it had been entered as the value
                   of 'type'. 
                   
@@ -2040,7 +2040,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
             </tr>
             <tr>
                <td>216</td>
-               <td><a href="216/test216.txml">test216.txml</a><br/><a href="216/test216sub1.txml">test216sub1.txml</a></td>
+               <td><a href="216/test216.txml">test216.txml</a><br><a href="216/test216sub1.txml">test216sub1.txml</a></td>
                <td><a href="http://www.w3.org/TR/scxml/#invoke">6.4</a></td>
                <td>mandatory</td>
                <td>false</td>
@@ -2108,13 +2108,13 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
             </tr>
             <tr>
                <td>226</td>
-               <td><a href="226/test226.txml">test226.txml</a><br/><a href="226/test226sub1.txml">test226sub1.txml</a></td>
+               <td><a href="226/test226.txml">test226.txml</a><br><a href="226/test226sub1.txml">test226sub1.txml</a></td>
                <td><a href="http://www.w3.org/TR/scxml/#invoke">6.4</a></td>
                <td>mandatory</td>
                <td>false</td>
                <td>
                   	     When the invoke element is executed, the SCXML Processor MUST start a new logical
-                  instance of the external service specified in 'type' or 'typeexpr', passing it the
+                  instance of the external service specified in 'type' or 'typexpr', passing it the
                   URL specified by 'src' or the data specified by content, or param. 
                   
                   
@@ -2242,7 +2242,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
             </tr>
             <tr>
                <td>239</td>
-               <td><a href="239/test239.txml">test239.txml</a><br/><a href="239/test239sub1.txml">test239sub1.txml</a></td>
+               <td><a href="239/test239.txml">test239.txml</a><br><a href="239/test239sub1.txml">test239sub1.txml</a></td>
                <td><a href="http://www.w3.org/TR/scxml/#invoke">6.4</a></td>
                <td>mandatory</td>
                <td>false</td>
@@ -2283,7 +2283,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
             </tr>
             <tr>
                <td>242</td>
-               <td><a href="242/test242.txml">test242.txml</a><br/><a href="242/test242sub1.txml">test242sub1.txml</a></td>
+               <td><a href="242/test242.txml">test242.txml</a><br><a href="242/test242sub1.txml">test242sub1.txml</a></td>
                <td><a href="http://www.w3.org/TR/scxml/#invoke">6.4</a></td>
                <td>mandatory</td>
                <td>false</td>
@@ -2331,7 +2331,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
                <td>false</td>
                <td>
                   	     If the invoked process is of type http://www.w3.org/TR/scxml/, and the name
-                  of a param element or the key of of a namelist item do not match the name of a data
+                  of a param element or the key of of a namelis item do not match the name of a data
                   element in the invoked process, the Processor MUST NOT add the value of the param
                   element or namelist key/value pair to the invoked session's data model.
                   
@@ -2567,7 +2567,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
                <td>false</td>
                <td>
                   	     In the ECMAScript data model, if either the 'src' attribute or in-line content
-                  is provided in the &lt;data&gt; element, then if the content (whether fetched or provided
+                  is provided in the &lt;data&gt; elemenet, then if the content (whether fetched or provided
                   in-line) is JSON and the processor supports JSON, the SCXML Processor MUST create
                   the corresponding ECMAScript structure and assign it as the value of the data element.
                   
@@ -2576,7 +2576,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
             </tr>
             <tr>
                <td>557</td>
-               <td><a href="557/test557.txml">test557.txml</a><br/><a href="557/test557.txt">test557.txt</a></td>
+               <td><a href="557/test557.txml">test557.txml</a><br><a href="557/test557.txt">test557.txt</a></td>
                <td><a href="http://www.w3.org/TR/scxml/#ecma-profile">C.2</a></td>
                <td>optional</td>
                <td>false</td>
@@ -2591,7 +2591,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
             </tr>
             <tr>
                <td>558</td>
-               <td><a href="558/test558.txml">test558.txml</a><br/><a href="558/test558.txt">test558.txt</a></td>
+               <td><a href="558/test558.txml">test558.txml</a><br><a href="558/test558.txt">test558.txt</a></td>
                <td><a href="http://www.w3.org/TR/scxml/#ecma-profile">C.2</a></td>
                <td>optional</td>
                <td>false</td>
@@ -2613,7 +2613,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
                <td>false</td>
                <td>
                   	     In the ECMAScript data model, if the content provided to populate _event.data
-                  can be interpreted as key-value pairs, then for each unique key, the SCXML Processor
+                  can be interpeted as key-value pairs, then for each unique key, the SCXML Processor
                   MUST create a property of _event.data whose name is the name of the key-value pair
                   and whose value is the value of the key-value pair.
                   
@@ -3020,7 +3020,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
             </tr>
             <tr>
                <td>539</td>
-               <td><a href="539/test539.txml">test539.txml</a><br/><a href="539/test539.txt">test539.txt</a></td>
+               <td><a href="539/test539.txml">test539.txml</a><br><a href="539/test539.txt">test539.txt</a></td>
                <td><a href="http://www.w3.org/TR/scxml/#xpath-profile">C.3</a></td>
                <td>optional</td>
                <td>false</td>
@@ -3035,7 +3035,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
             </tr>
             <tr>
                <td>540</td>
-               <td><a href="540/test540.txml">test540.txml</a><br/><a href="540/test540.txt">test540.txt</a></td>
+               <td><a href="540/test540.txml">test540.txml</a><br><a href="540/test540.txt">test540.txt</a></td>
                <td><a href="http://www.w3.org/TR/scxml/#xpath-profile">C.3</a></td>
                <td>optional</td>
                <td>false</td>
@@ -3095,7 +3095,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
             </tr>
             <tr>
                <td>545</td>
-               <td><a href="545/test545.txml">test545.txml</a></td>
+               <td><a href="545/tests545.txml">tests545.txml</a></td>
                <td><a href="http://www.w3.org/TR/scxml/#xpath-profile">C.3</a></td>
                <td>optional</td>
                <td>false</td>
@@ -3221,16 +3221,16 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
                   
                </td>
             </tr>
-                  <tr>
+            <tr>
                <td>193</td>
                <td><a href="193/test193.txml">test193.txml</a></td>
                <td><a href="http://www.w3.org/TR/scxml/#SCXMLEventProcessor">D.1</a></td>
                <td>optional</td>
                <td>false</td>
                <td>
-                  	     If neither the 'target' nor the 'targetexpr' attribute is specified, the SCXML
-                  Processor MUST add the event to the external event queue of the
-                  sending session. 
+                  	     [When using the scxml event i/o processor] If neither the 'target' nor the 'targetexpr'
+                  attribute is specified, the SCXML Processor MUST add the event to the external event
+                  queue of the sending session.  
                   
                   
                </td>
@@ -3356,7 +3356,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
             </tr>
             <tr>
                <td>496</td>
-               <td><a href="496/test496.txml">test496.txml</a></td>
+               <td><a href="496/496.txml">496.txml</a></td>
                <td><a href="http://www.w3.org/TR/scxml/#SCXMLEventProcessor">D.1</a></td>
                <td>mandatory</td>
                <td>false</td>
@@ -3398,7 +3398,6 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
                   
                </td>
             </tr>
-      
             <tr>
                <td>509</td>
                <td><a href="509/test509.txml">test509.txml</a></td>
@@ -3428,7 +3427,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
             </tr>
             <tr>
                <td>513</td>
-               <td><a href="513/test513.txml">test513.txml</a><br/><a href=""></a></td>
+               <td><a href="513/test513.txml">test513.txml</a><br><a href=""></a></td>
                <td><a href="http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor">D.2</a></td>
                <td>optional</td>
                <td>false</td>
@@ -3549,7 +3548,7 @@ See W3C Legal's <a href="http://www.w3.org/Consortium/Legal/2008/04-testsuite-co
             </tr>
             <tr>
                <td>577</td>
-               <td><a href="577/test577.txml">test577.txml</a></td>
+               <td><a href="577/577.txml">577.txml</a></td>
                <td><a href="http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor">D.2</a></td>
                <td>optional</td>
                <td>false</td>

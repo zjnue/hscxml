@@ -1507,7 +1507,7 @@ this assertion has not been written yet.]]>
   </assert>
   
     <assert id="193"  specnum="D.1" specid="#SCXMLEventProcessor">
- 	     <![CDATA[If neither the 'target' nor the 'targetexpr' attribute is specified, the SCXML Processor MUST add the event to the external event queue of the sending session.  ]]>
+ 	     <![CDATA[[When using the scxml event i/o processor] If neither the 'target' nor the 'targetexpr' attribute is specified, the SCXML Processor MUST add the event to the external event queue of the sending session.  ]]>
     <test id="193" conformance="optional" manual="false">
     <start uri="193/test193.txml"/>
   </test>
