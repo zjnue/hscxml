@@ -176,6 +176,7 @@ class Run {
 			"test542.scxml",
 			"test543.scxml",
 			"test544.scxml",
+			"test545.scxml",
 			"test546.scxml",
 			"test547.scxml",
 			"test555.scxml",
