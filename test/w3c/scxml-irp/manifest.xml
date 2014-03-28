@@ -75,13 +75,24 @@
     <start uri="387/test387.txml"/>
   </test>
   </assert> 
+   <assert id="579"  specnum="3.10" specid="#history">
+      <![CDATA[Before the parent state has been visited for the first time, if a transition is executed that takes the history state as its target, 
+      the SCXML processor MUST execute any executable content in the transition
+      after the parent state's onentry content and any content in a possible
+      initial transition. ]]>
+      <test id="579" conformance="mandatory" manual="false">
+    <start uri="579/test579.txml"/>
+  </test>
+  </assert> 
   
      <assert id="388"  specnum="3.10" specid="#history">
-      <![CDATA[If a transition is executed that takes the history state as its target, the SCXML processor MUST behave as if the transition had taken the stored state configuration as its target. ]]>
+      <![CDATA[After the parent state has been visited for the first time, if a transition is executed that takes the history state as its target, the SCXML processor MUST behave as if the transition had taken the stored state configuration as its target. ]]>
       <test id="388" conformance="mandatory" manual="false">
     <start uri="388/test388.txml"/>
   </test>
   </assert> 
+  
+ 
   
      <assert id="396"  specnum="3.12" specid="#events">
       <![CDATA[The SCXML processor MUST use this same name value [the one reflected in the event variable] to match against the 'event' attribute of transitions.]]>
