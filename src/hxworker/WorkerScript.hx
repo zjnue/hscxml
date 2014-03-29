@@ -110,7 +110,7 @@ class WorkerScript {
 		untyped __js__("self.internalQueue = script.internalQueue");
 		untyped __js__("self.externalQueue = script.externalQueue");
 		untyped __js__("self.historyValue = script.historyValue");
-//		untyped __js__("self.defaultHistoryContent = script.defaultHistoryContent");
+		untyped __js__("self.defaultHistoryContent = script.defaultHistoryContent");
 		untyped __js__("self.running = script.running");
 		untyped __js__("self.binding = script.binding");
 		untyped __js__("self.genStateId = script.genStateId");
