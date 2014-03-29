@@ -57,6 +57,7 @@ class Base extends hxworker.WorkerScript {
 	var internalQueue : Queue<Event>;
 	var externalQueue : BlockingQueue<Event>;
 	var historyValue : Hash<List<Node>>;
+	var defaultHistoryContent : Hash<Iterable<Node>>;
 	var running : Bool;
 	var binding : String;
 	
