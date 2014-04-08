@@ -85,6 +85,13 @@
   </test>
   </assert> 
   
+   <assert id="580"  specnum="3.10" specid="#history">
+      <![CDATA[It follows from the semantics of history states that they never end up in the state configuration]]>
+      <test id="580" conformance="mandatory" manual="false">
+    <start uri="579/test580.txml"/>
+  </test>
+  </assert> 
+  
      <assert id="388"  specnum="3.10" specid="#history">
       <![CDATA[After the parent state has been visited for the first time, if a transition is executed that takes the history state as its target, the SCXML processor MUST behave as if the transition had taken the stored state configuration as its target. ]]>
       <test id="388" conformance="mandatory" manual="false">
