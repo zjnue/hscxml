@@ -88,7 +88,7 @@
    <assert id="580"  specnum="3.10" specid="#history">
       <![CDATA[It follows from the semantics of history states that they never end up in the state configuration]]>
       <test id="580" conformance="mandatory" manual="false">
-    <start uri="579/test580.txml"/>
+    <start uri="580/test580.txml"/>
   </test>
   </assert> 
   
@@ -132,14 +132,10 @@
       <assert id="403"  specnum="3.13" specid="#SelectingTransitions">
       <![CDATA[To execute a microstep, the SCXML Processor MUST execute the transitions in the corresponding optimal enabled transition set, where the optimal transition set enabled by event E in state configuration C is the largest set of transitions such that a) each transition in the set is optimally enabled by E in an atomic state in C b) no transition conflicts with another transition in the set c) there is no optimally enabled transition outside 
       the set that has a higher priority than some member of the set.]]>
-    <test id="403a" conformance="mandatory" manual="false">
+    <test id="403" conformance="mandatory" manual="false">
     <start uri="403/test403a.txml"/>
-  </test>
-   <test id="403b" conformance="mandatory" manual="false">
-    <start uri="403/test403b.txml"/>
-  </test>
-   <test id="403c" conformance="mandatory" manual="false">
-    <start uri="403/test403c.txml"/>
+   <start uri="403/test403b.txml"/>
+   <start uri="403/test403c.txml"/>
   </test>
     </assert>   
   
@@ -162,11 +158,10 @@
        <test id="406" conformance="mandatory" manual="false">
     <start uri="406/test406.txml"/>
   </test>  
-   </assert> 
+   </assert>
    
-  
-         <assert id="407"  specnum="3.13" specid="#SelectingTransitions">
-      <![CDATA[ To exit a state, the SCXML Processor MUST execute the executable content in the state's <onexit> handler.]]>
+<assert id="407"  specnum="3.13" specid="#SelectingTransitions">
+      <![CDATA[ To exit a state, the SCXML Processor MUST execute the executable content in the state's onexit handler.]]>
        <test id="407" conformance="mandatory" manual="false">
     <start uri="407/test407.txml"/>
   </test>  
@@ -187,29 +182,29 @@
    </assert> 
    
           <assert id="412"  specnum="3.13" specid="#SelectingTransitions">
-      <![CDATA[If the state is a default entry state and has an <initial> child, the SCXML Processor MUST then [after doing the active state add and the onentry handlers] execute the executable content in the <initial> child's <transition>. ]]>
+      <![CDATA[If the state is a default entry state and has an initial child, the SCXML Processor MUST then [after doing the active state add and the onentry handlers] execute the executable content in the initial child's transition. ]]>
        <test id="412" conformance="mandatory" manual="false">
     <start uri="412/test412.txml"/>
   </test>  
    </assert> 
    
           <assert id="413"  specnum="3.13" specid="#SelectingTransitions">
-      <![CDATA[At startup, the SCXML Processor MUST place the state machine in the configuration specified by the 'initial' attribute of the <scxml> element.]]>
+      <![CDATA[At startup, the SCXML Processor MUST place the state machine in the configuration specified by the 'initial' attribute of the scxml element.]]>
        <test id="413" conformance="mandatory" manual="false">
     <start uri="413/test413.txml"/>
   </test>  
    </assert> 
    
           <assert id="415"  specnum="3.13" specid="#SelectingTransitions">
-      <![CDATA[If it [the SCXML Processor] has entered a <final> state that is a child of <scxml> [during the last microstep], it MUST halt processing.]]>
-       <test id="406" conformance="mandatory" manual="true">
+      <![CDATA[If it [the SCXML Processor] has entered a final state that is a child of scxml [during the last microstep], it MUST halt processing.]]>
+       <test id="415" conformance="mandatory" manual="true">
     <start uri="415/test415.txml"/>
   </test>  
    </assert> 
    
       
           <assert id="416"  specnum="3.13" specid="#SelectingTransitions">
-      <![CDATA[If it [the SCXML processor] has entered a <final> state that is a child of a compound state [during the last microstep], it MUST generate the event done.state.id, where id is the id of the compound state.]]>
+      <![CDATA[If it [the SCXML processor] has entered a final state that is a child of a compound state [during the last microstep], it MUST generate the event done.state.id, where id is the id of the compound state.]]>
        <test id="416" conformance="mandatory" manual="false">
     <start uri="416/test416.txml"/>
   </test>  
@@ -217,7 +212,7 @@
    
       
           <assert id="417"  specnum="3.13" specid="#SelectingTransitions">
-      <![CDATA[If the compound state [which has the final element that we entered this microstep] is itself the child of a <parallel> element, and all the <parallel> element's other children are in final states, the Processor MUST generate the event done.state.id, where id is the id of the <parallel> elements.]]>
+      <![CDATA[If the compound state [which has the final element that we entered this microstep] is itself the child of a parallel element, and all the parallel element's other children are in final states, the Processor MUST generate the event done.state.id, where id is the id of the parallel element.]]>
        <test id="417" conformance="mandatory" manual="false">
     <start uri="417/test417.txml"/>
   </test>  
@@ -243,7 +238,7 @@
    
       
    <assert id="422"  specnum="3.13" specid="#SelectingTransitions">
-      <![CDATA[After completing a macrostep, the SCXML Processor MUST execute in document order the <invoke> handlers in all states that have been entered (and not exited) since the completion of the last macrostep.]]>
+      <![CDATA[After completing a macrostep, the SCXML Processor MUST execute in document order the invoke handlers in all states that have been entered (and not exited) since the completion of the last macrostep.]]>
        <test id="422" conformance="mandatory" manual="false">
     <start uri="422/test422.txml"/>
   </test>  
@@ -300,21 +295,21 @@
    </assert>  
    
       <assert id="147"  specnum="4.3" specid="#if">
-      <![CDATA[When the <if> element is executed, the SCXML processor MUST execute the first partition in document order that is defined by a tag whose 'cond' attribute evaluates to true, if there is one.]]>
+      <![CDATA[When the if element is executed, the SCXML processor MUST execute the first partition in document order that is defined by a tag whose 'cond' attribute evaluates to true, if there is one.]]>
        <test id="147" conformance="mandatory" manual="false">
     <start uri="147/test147.txml"/>
   </test>  
    </assert>  
    
       <assert id="148"  specnum="4.3" specid="#if">
-      <![CDATA[When the <if> element is executed, if no 'cond'attribute evaluates to true, the SCXML Processor must execute the partition defined by the <else> tag, if there is one.]]>
+      <![CDATA[When the if element is executed, if no 'cond'attribute evaluates to true, the SCXML Processor must execute the partition defined by the else tag, if there is one.]]>
        <test id="148" conformance="mandatory" manual="false">
     <start uri="148/test148.txml"/>
   </test>  
    </assert>  
    
       <assert id="149"  specnum="4.3" specid="#if">
-      <![CDATA[When it executes an <if> element, if no 'cond' attribute evaluates to true and there is no <else> element, the SCXML processor must not evaluate any executable content within the element. ]]>
+      <![CDATA[When it executes an if element, if no 'cond' attribute evaluates to true and there is no else element, the SCXML processor must not evaluate any executable content within the element. ]]>
        <test id="149" conformance="mandatory" manual="false">
     <start uri="149/test149.txml"/>
   </test>  
@@ -335,7 +330,7 @@
    </assert>   
  
   <assert id="152"  specnum="4.6" specid="#foreach">
-      <![CDATA[In the foreach element, if 'array' does not evaluate to a legal iterable collection, or if 'item' does not specify a legal variable name, the SCXML processor MUST terminate execution of the <foreach> element and the block that contains it, and place the error error.execution on the internal event queue. ]]>
+      <![CDATA[In the foreach element, if 'array' does not evaluate to a legal iterable collection, or if 'item' does not specify a legal variable name, the SCXML processor MUST terminate execution of the foreach element and the block that contains it, and place the error error.execution on the internal event queue. ]]>
        <test id="152" conformance="mandatory" manual="false">
     <start uri="152/test152.txml"/>
   </test>  
@@ -356,14 +351,14 @@
    </assert>   
  
   <assert id="156"  specnum="4.6" specid="#foreach">
-      <![CDATA[If the evaluation of any child element of foreach causes an error, the processor MUST cease execution of the <foreach> element and the block that contains it. ]]>
+      <![CDATA[If the evaluation of any child element of foreach causes an error, the processor MUST cease execution of the foreach element and the block that contains it. ]]>
        <test id="156" conformance="mandatory" manual="false">
     <start uri="156/test156.txml"/>
   </test>  
    </assert>   
  
   <assert id="525"  specnum="4.6" specid="#foreach"> 
-      <![CDATA[The SCXML processor MUST act as if it has made a shallow copy of the collection produced by the evaluation of 'array'. Specifically, modifications to the collection during the execution of <foreach> MUST NOT affect the iteration behavior.]]>
+      <![CDATA[The SCXML processor MUST act as if it has made a shallow copy of the collection produced by the evaluation of 'array'. Specifically, modifications to the collection during the execution of foreach MUST NOT affect the iteration behavior.]]>
        <test id="525" conformance="mandatory" manual="false">
     <start uri="525/test525.txml"/>
   </test>  
@@ -406,7 +401,7 @@
   </assert>
   
   <assert id="280"  specnum="5.3" specid="#data">
- 	     <![CDATA[When 'binding' attribute on the scxml element is assigned the value "late", the SCXML Processor MUST create the data elements at document initialization time, but MUST assign the specified initial value to a given data element only when the state that contains it is entered for the first time, before any <onentry> markup.]]>
+ 	     <![CDATA[When 'binding' attribute on the scxml element is assigned the value "late", the SCXML Processor MUST create the data elements at document initialization time, but MUST assign the specified initial value to a given data element only when the state that contains it is entered for the first time, before any onentry markup.]]>
     <test id="280" conformance="mandatory" manual="false">
     <start uri="280/test280.txml"/>
   </test>
@@ -427,7 +422,7 @@
   </assert>
   
   <assert id="552"  specnum="5.3" specid="#data">
- 	     <![CDATA[If the 'src' attribute is present, the Platform MUST fetch the specified object at the time specified by the 'binding' attribute of <scxml> and MUST assign it as the value of the data element.]]>
+ 	     <![CDATA[If the 'src' attribute is present, the Platform MUST fetch the specified object at the time specified by the 'binding' attribute of scxml and MUST assign it as the value of the data element.]]>
     <test id="552" conformance="mandatory" manual="false">
     <start uri="552/test552.txml"/>
     <dep uri="552/test552.txt"/>
@@ -442,9 +437,16 @@
   </assert>
   
    <assert id="287"  specnum="5.4" specid="#assign">
- 	     <![CDATA[If the location expression of an assign denotes a valid location in the datamodel and if the value specified (by 'expr' or children) is a legal value for the location specified, the processor MUST place the specified value at the specified location.]]>
+ 	     <![CDATA[If the location expression of an assign denotes a valid location in the datamodel and if the value specified by 'expr' is a legal value for the location specified, the processor MUST place the specified value at the specified location.]]>
     <test id="287" conformance="mandatory" manual="false">
     <start uri="287/test287.txml"/>
+  </test>
+  </assert>
+  
+    <assert id="288"  specnum="5.4" specid="#assign">
+ 	     <![CDATA[If the location expression of an assign denotes a valid location in the datamodel and if the value specified  children is a legal value for the location specified, the processor MUST place the specified value at the specified location.]]>
+    <test id="288" conformance="mandatory" manual="false">
+    <start uri="288/test288.txml"/>
   </test>
   </assert>
   
@@ -456,7 +458,7 @@
   </assert>
   
    <assert id="294"  specnum="5.5" specid="#donedata">
- 	     <![CDATA[In cases where the SCXML Processor generates a 'done' event upon entry into the final state, it MUST evaluate the <donedata> elements param or content children and place the resulting data in the _event.data field. The exact format of that data will be determined by the datamodel]]>
+ 	     <![CDATA[In cases where the SCXML Processor generates a 'done' event upon entry into the final state, it MUST evaluate the donedata elements param or content children and place the resulting data in the _event.data field. The exact format of that data will be determined by the datamodel]]>
     <test id="294" conformance="mandatory" manual="false">
     <start uri="294/test294.txml"/>
   </test>
@@ -621,14 +623,14 @@
   </assert>
   
        <assert id="323"  specnum="5.10" specid="#SystemVariables">
- 	     <![CDATA[The Processor MUST bind the variable _name at load time to the value of the 'name' attribute of the <scxml> element. 	a]]>
+ 	     <![CDATA[The Processor MUST bind the variable _name at load time to the value of the 'name' attribute of the scxml element. 	a]]>
     <test id="323" conformance="mandatory" manual="false">
     <start uri="323/test323.txml"/>
   </test>
   </assert>
   
        <assert id="324"  specnum="5.10" specid="#SystemVariables">
- 	     <![CDATA[The Processor MUST keep the _name variable bound to the value of the 'name' attribute of the <scxml> element until the session terminates.]]>
+ 	     <![CDATA[The Processor MUST keep the _name variable bound to the value of the 'name' attribute of the scxml element until the session terminates.]]>
     <test id="324" conformance="mandatory" manual="false">
     <start uri="324/test324.txml"/>
   </test>
@@ -663,14 +665,14 @@
   </assert>
   
        <assert id="331"  specnum="5.10" specid="#SystemVariables">
- 	     <![CDATA[The SCXML Processor MUST set the type property of _event to: "platform" (for events raised by the platform itself, such as error events), "internal" (for events raised by <raise> and <send> with target '_internal') or "external" (for all other events).]]>
+ 	     <![CDATA[The SCXML Processor MUST set the type property of _event to: "platform" (for events raised by the platform itself, such as error events), "internal" (for events raised by raise and send with target '_internal') or "external" (for all other events).]]>
     <test id="331" conformance="mandatory" manual="false">
     <start uri="331/test331.txml"/>
   </test>
   </assert>
   
        <assert id="332"  specnum="5.10" specid="#SystemVariables">
- 	     <![CDATA[ If the sending entity has specified a value for this, the Processor MUST set this field to that value.  Otherwise, in the case of error events triggered by a failed attempt to send an event, the Processor MUST set the sendid field to the send id of the triggering <send> element.]]>
+ 	     <![CDATA[ If the sending entity has specified a value for this, the Processor MUST set this field to that value.  Otherwise, in the case of error events triggered by a failed attempt to send an event, the Processor MUST set the sendid field to the send id of the triggering send element.]]>
     <test id="332" conformance="mandatory" manual="false">
     <start uri="332/test332.txml"/>
   </test>
@@ -692,7 +694,7 @@
   </assert>
   
        <assert id="336"  specnum="5.10" specid="#SystemVariables">
- 	     <![CDATA[For external events, the SCXML Processor SHOULD set the origintype field to a value which, in combination with the 'origin' field, will allow the receiver of the event to <send> a response back to the originating entity.]]>
+ 	     <![CDATA[For external events, the SCXML Processor SHOULD set the origintype field to a value which, in combination with the 'origin' field, will allow the receiver of the event to send a response back to the originating entity.]]>
     <test id="336" conformance="mandatory" manual="false">
     <start uri="336/test336.txml"/>
   </test>
@@ -776,7 +778,7 @@
   </assert>
   
   <assert id="179"  specnum="6.2" specid="#send">
- 	     <![CDATA[The SCXML Processor MUST evaluate the content element when the parent <send> element is evaluated and pass the resulting data unmodified to the external service when the message is delivered. ]]>
+ 	     <![CDATA[The SCXML Processor MUST evaluate the content element when the parent send element is evaluated and pass the resulting data unmodified to the external service when the message is delivered. ]]>
     <test id="179" conformance="mandatory" manual="false">
     <start uri="179/test179.txml"/>
   </test>
@@ -846,17 +848,6 @@
   </test>
   </assert>
 
-<!-- 
-  <assert id="202"  specnum="6.2" specid="#send">
- 	     <![CDATA[Processors that support DOM event delivery must use the value 
-http://www.w3.org/TR/scxml/#DOMEventProcessor for the "type" attribute.  Note: The test for
-this assertion has not been written yet.]]>
-    <test id="" conformance="optional" manual="false">
-    <start uri=""/>
-  </test>
-  </assert>
-  
-  -->
   
   <assert id="205"  specnum="6.2" specid="#send">
  	     <![CDATA[The sending SCXML Interpreter MUST not alter the content of the send
@@ -898,7 +889,7 @@ this assertion has not been written yet.]]>
   </assert>
   
     <assert id="210"  specnum="6.3" specid="#cancel">
- 	     <![CDATA[If the 'sendidexpr' attribute is present, the SCXML Processor MUST evaluate it when the parent <cancel> element is evaluated and treat the result as if it had been entered as the value of 'sendid'. ]]>
+ 	     <![CDATA[If the 'sendidexpr' attribute is present, the SCXML Processor MUST evaluate it when the parent cancel element is evaluated and treat the result as if it had been entered as the value of 'sendid'. ]]>
     <test id="210" conformance="mandatory" manual="false">
     <start uri="210/test210.txml"/>
   </test>
@@ -986,7 +977,7 @@ this assertion has not been written yet.]]>
   </assert>
   
     <assert id="233"  specnum="6.4" specid="#invoke">
- 	     <![CDATA[If there is a <finalize> handler in the instance of invoke that created the service that generated the event, the SCXML Processor MUST execute the code in that finalize handler right before it removes the event from the event queue for processing.]]>
+ 	     <![CDATA[If there is a finalize handler in the instance of invoke that created the service that generated the event, the SCXML Processor MUST execute the code in that finalize handler right before it removes the event from the event queue for processing.]]>
     <test id="233" conformance="mandatory" manual="false">
     <start uri="233/test233.txml"/>
   </test>
@@ -1014,7 +1005,7 @@ this assertion has not been written yet.]]>
   </assert>
   
     <assert id="237"  specnum="6.4" specid="#invoke">
- 	     <![CDATA[If the invoking session takes a transition out of the state containing the <invoke> before it receives the 'done.invoke.id' event, the SCXML Processor MUST automatically cancel the invoked component and stop its processing.]]>
+ 	     <![CDATA[If the invoking session takes a transition out of the state containing the invoke before it receives the 'done.invoke.id' event, the SCXML Processor MUST automatically cancel the invoked component and stop its processing.]]>
     <test id="237" conformance="mandatory" manual="false">
     <start uri="237/test237.txml"/>
   </test>
@@ -1051,7 +1042,7 @@ this assertion has not been written yet.]]>
   </assert>
   
     <assert id="243"  specnum="6.4" specid="#invoke">
- 	     <![CDATA[If the invoked process is of type http://www.w3.org/TR/scxml/ and 'name' of a param element in the invoke matches the 'id' of a <data> element in the top-level data declarations of the invoked session, the SCXML Processor MUST use the value of the param element as the initial value of the corresponding data element. ]]>
+ 	     <![CDATA[If the invoked process is of type http://www.w3.org/TR/scxml/ and 'name' of a param element in the invoke matches the 'id' of a data element in the top-level data declarations of the invoked session, the SCXML Processor MUST use the value of the param element as the initial value of the corresponding data element. ]]>
     <test id="243" conformance="mandatory" manual="false">
     <start uri="243/test243.txml"/>
   </test>
@@ -1114,7 +1105,7 @@ this assertion has not been written yet.]]>
   </assert>
   
     <assert id="436"  specnum="C.1" specid="#minimal-profile">
- 	     <![CDATA[When the "datamodel" attribute of the <scxml> element has the value "null", the In() predicate must return 'true' if and only if that state is in the current state configuration.]]>
+ 	     <![CDATA[When the "datamodel" attribute of the scxml element has the value "null", the In() predicate must return 'true' if and only if that state is in the current state configuration.]]>
     <test id="436" conformance="mandatory" manual="false">
     <start uri="436/test436.txml"/>
   </test>
@@ -1191,9 +1182,10 @@ this assertion has not been written yet.]]>
   </assert>
   
    <assert id="446"  specnum="C.2" specid="#ecma-profile">
- 	     <![CDATA[In the ECMAScript data model, if either the 'src' attribute or in-line content is provided in the <data> elemenet, then if the content (whether fetched or provided in-line) is JSON and the processor supports JSON, the SCXML Processor MUST create the corresponding ECMAScript structure and assign it as the value of the data element.]]>
+ 	     <![CDATA[In the ECMAScript data model, if either the 'src' attribute or in-line content is provided in the data elemenet, then if the content (whether fetched or provided in-line) is JSON and the processor supports JSON, the SCXML Processor MUST create the corresponding ECMAScript structure and assign it as the value of the data element.]]>
     <test id="446" conformance="optional" manual="false">
     <start uri="446/test446.txml"/>
+        <dep uri="446/test446.txt"/>
   </test>
   </assert>
   
@@ -1453,7 +1445,7 @@ this assertion has not been written yet.]]>
   </assert>
   
    <assert id="544"  specnum="C.3" specid="#xpath-profile">
- 	     <![CDATA[In the XPath datamodel,  if the content provided to populate _event.data can be interpreted as key-value pairs, then for each unique key, the SCXML Processor MUST create a &lt;data&gt; element as a child of _event's <data> child with an 'id' attribute whose value is the name of the key. The Processor MUST insert the value of the key-value pair as the content of this element. ]]>
+ 	     <![CDATA[In the XPath datamodel,  if the content provided to populate _event.data can be interpreted as key-value pairs, then for each unique key, the SCXML Processor MUST create a &lt;data&gt; element as a child of _event's data child with an 'id' attribute whose value is the name of the key. The Processor MUST insert the value of the key-value pair as the content of this element. ]]>
     <test id="544" conformance="optional" manual="false">
     <start uri="544/test544.txml"/>
   </test>
@@ -1464,7 +1456,7 @@ this assertion has not been written yet.]]>
    <assert id="545"  specnum="C.3" specid="#xpath-profile">
  	     <![CDATA[In the XPath datamodel,if the content provided to populate _event.data can be interpreted as a valid XML document (and not as key-value pairs), the Processor MUST insert the XML structure as the content of _event's &lt;data&gt; child.]]>
     <test id="545" conformance="optional" manual="false">
-    <start uri="545/tests545.txml"/>
+    <start uri="545/test545.txml"/>
   </test>
   </assert>
   
@@ -1518,7 +1510,7 @@ this assertion has not been written yet.]]>
   </assert>
   
    <assert id="192"  specnum="D.1" specid="#SCXMLEventProcessor">
- 	     <![CDATA[[When using the scxml event i/o processor] If the target is the special term '#_invokeid', where invokeid is the invokeid of an SCXML session that the sending session has created by <invoke>, the Processor MUST must add the event to the external queue of that session.]]>
+ 	     <![CDATA[[When using the scxml event i/o processor] If the target is the special term '#_invokeid', where invokeid is the invokeid of an SCXML session that the sending session has created by invoke, the Processor MUST must add the event to the external queue of that session.]]>
     <test id="192" conformance="mandatory" manual="false">
     <start uri="192/test192.txml"/>
   </test>
@@ -1553,14 +1545,14 @@ this assertion has not been written yet.]]>
   </assert>
   
    <assert id="350"  specnum="D.1" specid="#SCXMLEventProcessor">
- 	     <![CDATA[target'. The sending SCXML Processor MUST take the value of this attribute from the 'target' attribute of the <send> element. The receiving SCXML Processor MUST use this value to determine which session to deliver the message to.]]>
+ 	     <![CDATA[target'. The sending SCXML Processor MUST take the value of this attribute from the 'target' attribute of the send element. The receiving SCXML Processor MUST use this value to determine which session to deliver the message to.]]>
     <test id="350" conformance="mandatory" manual="false">
     <start uri="350/test350.txml"/>
   </test>
   </assert>
   
    <assert id="351"  specnum="D.1" specid="#SCXMLEventProcessor">
- 	     <![CDATA[sendid'. the sending SCXML Processor MUST populate this attribute with the identifier specified in the 'id' attribute or automatically generated by the platform when the send tag is executed in the sending session. (See 6.2 <send>.) The receiving SCXML Processor MUST use this value as the value of the 'sendid' field in the event that it generates. If the author of the sending session did not specify either the 'id' or 'idlocation' attribute, the sending SCXML Processor MUST leave this attribute empty.]]>
+ 	     <![CDATA[sendid'. the sending SCXML Processor MUST populate this attribute with the identifier specified in the 'id' attribute or automatically generated by the platform when the send tag is executed in the sending session. (See 6.2 send.) The receiving SCXML Processor MUST use this value as the value of the 'sendid' field in the event that it generates. If the author of the sending session did not specify either the 'id' or 'idlocation' attribute, the sending SCXML Processor MUST leave this attribute empty.]]>
     <test id="351" conformance="mandatory" manual="false">
     <start uri="351/test351.txml"/>
   </test>
@@ -1574,7 +1566,7 @@ this assertion has not been written yet.]]>
   </assert>
   
    <assert id="354"  specnum="D.1" specid="#SCXMLEventProcessor">
- 	     <![CDATA[The 'data' field of the event raised in the receiving session MUST contain a copy of the data specified in the 'namelist' attribute or in <param> or <content> elements in the sending session. The nature of the copy operation depends on the datamodel in question. However, the Processor MUST ensure that changes to the transmitted data in the receiving session do not affect the data in the sending session and vice-versa. The format of the 'data' field will depend on the datamodel of the receiving session.]]>
+ 	     <![CDATA[The 'data' field of the event raised in the receiving session MUST contain a copy of the data specified in the 'namelist' attribute or in param or content elements in the sending session. The nature of the copy operation depends on the datamodel in question. However, the Processor MUST ensure that changes to the transmitted data in the receiving session do not affect the data in the sending session and vice-versa. The format of the 'data' field will depend on the datamodel of the receiving session.]]>
     <test id="354" conformance="mandatory" manual="false">
     <start uri="354/test354.txml"/>
   </test>
@@ -1590,7 +1582,7 @@ this assertion has not been written yet.]]>
    <assert id="496"  specnum="D.1" specid="#SCXMLEventProcessor">
  	     <![CDATA[If the sending SCXML session specifies a session that does not exist or is inaccessible, the SCXML Processor MUST place the error error.communication on the internal event queue of the sending session.]]>
     <test id="496" conformance="mandatory" manual="false">
-    <start uri="496/496.txml"/>
+    <start uri="496/test496.txml"/>
   </test>
   </assert>
   
@@ -1627,21 +1619,20 @@ this assertion has not been written yet.]]>
   
    <assert id="513"  specnum="D.2" specid="#BasicHTTPEventProcessor">
  	     <![CDATA[After it adds the received message to the appropriate event queue, the SCXML Processor MUST then indicate the result to the external component via a success response code 2XX. ]]>
-    <test id="513" conformance="optional" manual="false">
-    <start uri="513/test513.txml"/>
-    <dep uri=""/>
+    <test id="513" conformance="optional" manual="true">
+    <start uri="513/test513.txt"/>
   </test>
   </assert>
   
    <assert id="518"  specnum="D.2" specid="#BasicHTTPEventProcessor">
- 	     <![CDATA[If the namelist attribute is defined [in <send>], the SCXML Processor MUST map its variable names and values to HTTP POST parameters]]>
+ 	     <![CDATA[If the namelist attribute is defined [in send], the SCXML Processor MUST map its variable names and values to HTTP POST parameters]]>
     <test id="518" conformance="optional" manual="false">
     <start uri="518/test518.txml"/>
   </test>
   </assert>
   
    <assert id="519"  specnum="D.2" specid="#BasicHTTPEventProcessor">
- 	     <![CDATA[If one or more <param> children are present [in <send>], the SCXML Processor MUST map their names (i.e. name attributes) and values to HTTP POST parameters]]>
+ 	     <![CDATA[If one or more param children are present [in send], the SCXML Processor MUST map their names (i.e. name attributes) and values to HTTP POST parameters]]>
     <test id="519" conformance="optional" manual="false">
     <start uri="519/test519.txml"/>
   </test>
@@ -1692,22 +1683,7 @@ this assertion has not been written yet.]]>
    <assert id="577"  specnum="D.2" specid="#BasicHTTPEventProcessor">
  	     <![CDATA[ If neither the 'target' nor the 'targetexpr' attribute is specified, the SCXML Processor MUST add the event error.communication to the internal event queue of the sending session. ]]>
     <test id="577" conformance="optional" manual="false">
-    <start uri="577/577.txml"/>
+    <start uri="577/test577.txml"/>
   </test>
-  </assert>
-  
-  
-
-  <!--
-    <assert id=""  specnum="C.3" specid="#xpath-profile">
- 	     <![CDATA[]]>
-    <test id="" conformance="optional" manual="false">
-    <start uri=""/>
-    <dep uri=""/>
-  </test>
-  </assert>
-  -->
-  
- 
-  
+  </assert> 
 </assertions>

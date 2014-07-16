@@ -68,7 +68,7 @@
 
 <!-- names an invalid location for <assign>, etc. -->
 <xsl:template match="//@conf:invalidLocation">
-	<xsl:attribute name="location">foo.bar.baz /></xsl:attribute>
+	<xsl:attribute name="location">foo.bar.baz </xsl:attribute>
 </xsl:template>
 
 <!-- uses system var as location for <assign>, etc. -->
@@ -204,6 +204,7 @@ is of the same type as array123 -->
 	<content xmlns="http://www.w3.org/2005/07/scxml">foo</content>
 </xsl:template>
 
+<xsl:template match="//conf:someInlineVal">123</xsl:template>
 
 
 <!-- this returns something that is guaranteed not to be the ID of the current session -->
@@ -239,8 +240,14 @@ is of the same type as array123 -->
 </xsl:template>
 
 <!-- delayexpr takes the value of the specified variable -->
-<xsl:template match="//@conf:delayExpr"> 
+<xsl:template match="//@conf:delayFromVar"> 
 	<xsl:attribute name="delayexpr">$Var<xsl:value-of select="." /></xsl:attribute>
+</xsl:template>
+
+<!-- returns a delayexpr.  this lets platforms determine how long to delay timeout
+events which cause the test to fail.  The default value provided here is pretty long -->
+<xsl:template match="//@conf:delay">
+	<xsl:attribute name="delayexpr">'<xsl:value-of select="."/>s'</xsl:attribute>
 </xsl:template>
 
 <!--  the specified variable is used as idlocation -->
@@ -261,6 +268,11 @@ is of the same type as array123 -->
 <!--  the specified variable is used as namelist -->
 <xsl:template match="//@conf:namelist"> 
 	<xsl:attribute name="namelist">$Var<xsl:value-of select="." /></xsl:attribute>
+</xsl:template>
+
+<!-- this produces a reference to an invalid namelist, i.e. on that should cause an error -->
+<xsl:template match="//@conf:invalidNamelist">
+	<xsl:attribute name="namelist">"foo"</xsl:attribute>
 </xsl:template>
 
 <!-- exprs that return the value of the event fields -->
@@ -298,7 +310,7 @@ is of the same type as array123 -->
 
 <!-- returns the value of a KVP specified by Namelist from  _event.data  -->
 <xsl:template match="//@conf:eventDataNamelistValue"> 
-	<xsl:attribute name="expr">$_event/data/data[@id='<xsl:value-of select="."/>']/data/text()</xsl:attribute>
+	<xsl:attribute name="expr">$_event/data/data[@id=Var'<xsl:value-of select="."/>']/data/text()</xsl:attribute>
 </xsl:template>
 
 <!-- returns the location of the scxml event i/o processor -->
@@ -412,6 +424,11 @@ know if we can make this strong in XPath 1.0 -->
 </xsl:attribute>
 </xsl:template> 
 
+<!-- test that the specified var has the value specified by <conf:someInlineVal> -->
+<xsl:template match="//@conf:idSomeVal">
+	<xsl:attribute name="cond">Var<xsl:value-of select="." /> = 123</xsl:attribute>
+</xsl:template>
+
 <!-- test on the value of two vars -->
 <xsl:template match="//@conf:compareIDVal"> 
 		<xsl:attribute name="cond">
@@ -505,6 +522,11 @@ is the second argument -->
 <xsl:template match="//@conf:eventdataVal"> 
 		<xsl:attribute name="cond">$_event/data = <xsl:value-of select="."/></xsl:attribute>
 </xsl:template> 
+
+<!-- test that _event.data is set to the value specified by <conf:someInlineVal> -->
+<xsl:template match="//@conf:eventdataSomeVal">
+	<xsl:attribute name="cond">_event.data = 123</xsl:attribute>
+</xsl:template>
 
 <xsl:template match="//@conf:emptyEventData"> 
 		<xsl:attribute name="cond">not($_event/data/*)</xsl:attribute>

@@ -61,6 +61,7 @@
 <assert id="552" res="pass|fail|not-impl">OPTIONAL-NOTES-HERE</assert>
 <assert id="286" res="pass|fail|not-impl">OPTIONAL-NOTES-HERE</assert>
 <assert id="287" res="pass|fail|not-impl">OPTIONAL-NOTES-HERE</assert>
+<assert id="288" res="pass|fail|not-impl">OPTIONAL-NOTES-HERE</assert>
 <assert id="487" res="pass|fail|not-impl">OPTIONAL-NOTES-HERE</assert>
 <assert id="294" res="pass|fail|not-impl">OPTIONAL-NOTES-HERE</assert>
 <assert id="527" res="pass|fail|not-impl">OPTIONAL-NOTES-HERE</assert>

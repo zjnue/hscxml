@@ -68,7 +68,7 @@
 
 <!-- names an invalid location for <assign>, etc. -->
 <xsl:template match="//@conf:invalidLocation">
-	<xsl:attribute name="location">foo.bar.baz /></xsl:attribute>
+	<xsl:attribute name="location">foo.bar.baz </xsl:attribute>
 </xsl:template>
 
 <!-- uses system var as location for <assign>, etc. -->
@@ -165,6 +165,8 @@
 	<content xmlns="http://www.w3.org/2005/07/scxml">foo</content>
 </xsl:template>
 
+<xsl:template match="//conf:someInlineVal">123</xsl:template>
+
 <!-- this returns something that is guaranteed not to be the ID of the current session -->
 <xsl:template match="//@conf:invalidSessionID">
 	<xsl:attribute name="expr">27</xsl:attribute>
@@ -215,7 +217,7 @@
 </xsl:template>
 <!-- returns the value of a KVP specified by <param> from  _event.data  -->
 <xsl:template match="//@conf:eventDataNamelistValue">
-	<xsl:attribute name="expr">_event.data.<xsl:value-of select="."/></xsl:attribute>
+	<xsl:attribute name="expr">_event.data.Var<xsl:value-of select="."/></xsl:attribute>
 </xsl:template>
 
 <!-- returns the location of the scxml event i/o processor -->
@@ -241,8 +243,14 @@
 </xsl:template>
 
 <!-- delayexpr takes the value of the specified variable -->
-<xsl:template match="//@conf:delayExpr">
+<xsl:template match="//@conf:delayFromVar">
 	<xsl:attribute name="delayexpr">Var<xsl:value-of select="." /></xsl:attribute>
+</xsl:template>
+
+<!-- computes a delayexpr based on the value passed in.  this lets platforms determine how long to delay timeout
+events which cause the test to fail.  The default value provided here is pretty long -->
+<xsl:template match="//@conf:delay">
+	<xsl:attribute name="delayexpr">'<xsl:value-of select="."/>s'</xsl:attribute>
 </xsl:template>
 
 <!--  the specified variable is used as idlocation -->
@@ -264,6 +272,12 @@
 <xsl:template match="//@conf:namelist">
 	<xsl:attribute name="namelist">Var<xsl:value-of select="." /></xsl:attribute>
 </xsl:template>
+
+<!-- this produces a reference to an invalid namelist, i.e. on that should cause an error -->
+<xsl:template match="//@conf:invalidNamelist">
+	<xsl:attribute name="namelist">&#34;foo</xsl:attribute>
+</xsl:template>
+
 
 
 
@@ -372,6 +386,10 @@
 	</xsl:attribute>
 </xsl:template> 
 
+<!-- test that the specified var has the value specified by <conf:someInlineVal> -->
+<xsl:template match="//@conf:idSomeVal">
+	<xsl:attribute name="cond">Var<xsl:value-of select="." /> == 123</xsl:attribute>
+</xsl:template>
 
 <!-- test that the event's name fieldhas the value specified -->
 <xsl:template match="//@conf:eventNameVal">
@@ -418,6 +436,11 @@ is the second argument -->
 
 <xsl:template match="//@conf:eventdataVal">
 	<xsl:attribute name="cond">_event.data == <xsl:value-of select="."/></xsl:attribute>
+</xsl:template>
+
+<!-- test that _event.data is set to the value specified by <conf:someInlineVal> -->
+<xsl:template match="//@conf:eventdataSomeVal">
+	<xsl:attribute name="cond">_event.data == 123</xsl:attribute>
 </xsl:template>
 
 <xsl:template match="//@conf:emptyEventData">
@@ -674,7 +697,7 @@ the basic http tests.  In the case of python, we have to import the regexp modul
 <!-- returns true if _event/raw contains the param with the specified value -->
 <xsl:template match="//@conf:eventNamedParamHasValue">
  <xsl:attribute name="cond"><xsl:analyze-string select="." regex="(\S+)(\s+)(\S+)">
- <xsl:matching-substring>_event.raw.search(/Var<xsl:value-of select="regex-group(1)"/>=<xsl:value-of select="regex-group(3)"/>/) !== -1</xsl:matching-substring></xsl:analyze-string></xsl:attribute>
+ <xsl:matching-substring>_event.raw.search('<xsl:value-of select="regex-group(1)"/>=<xsl:value-of select="regex-group(3)"/>') !== -1</xsl:matching-substring></xsl:analyze-string></xsl:attribute>
 </xsl:template>
 
 <xsl:template match="//@conf:messageBodyEquals">

@@ -196,6 +196,7 @@ class HScriptModel extends Model {
 		var _name = doc.exists("name") ? doc.get("name") : null;
 		hinterp.variables.set("_sessionid", _sessionId);
 		hinterp.variables.set("_name", _name);
+		hinterp.variables.set("Array", Array);
 		hinterp.variables.set("Std", Std);
 		hinterp.variables.set("Type", Type);
 		hinterp.variables.set("Xml", Xml);
@@ -288,6 +289,11 @@ class HScriptModel extends Model {
 			}
 			expr = r.matchedLeft() + "search('" + matched + "')" + r.matchedRight();
 		}
+		
+		// var1 instanceof Array
+		var r = ~/([a-zA-Z0-9\._]+) instanceof ([a-zA-Z0-9\._]+)/;
+		while( r.match(expr) )
+			expr = 	r.matchedLeft() + "Std.is(" + r.matched(1) + ", " + r.matched(2) + ") " + r.matchedRight();
 		
 		var r = ~/typeof ([a-zA-Z0-9\._]+) /;
 		while( r.match(expr) )
