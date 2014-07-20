@@ -401,14 +401,13 @@ class Interp extends Base {
 	
 	function computeExitSet( transitions : List<Node> ) {
 		var statesToExit = new Set<Node>();
-		for( t in transitions ) {
-			if( !t.exists("target") )
-				continue;
-			var domain = getTransitionDomain(t);
-			for( s in configuration )
-				if( s.isDescendant(domain) )
-					statesToExit.add(s);
-		}
+		for( t in transitions )
+			if( t.exists("target") ) {
+				var domain = getTransitionDomain(t);
+				for( s in configuration )
+					if( s.isDescendant(domain) )
+						statesToExit.add(s);
+			}
 		return statesToExit;
 	}
 	
@@ -420,6 +419,7 @@ class Interp extends Base {
 	function enterStates( enabledTransitions : List<Node> ) {
 		var statesToEnter = new Set<Node>();
 		var statesForDefaultEntry = new Set<Node>();
+		// initialize the temporary table for default content in history states
 		var defaultHistoryContent = new Hash<Iterable<Node>>();
 		computeEntrySet( enabledTransitions, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
 		for( s in statesToEnter.toList().sort(entryOrder) ) {
@@ -452,29 +452,42 @@ class Interp extends Base {
 	}
 	
 	function computeEntrySet( transitions : List<Node>, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node>, defaultHistoryContent : Hash<Iterable<Node>> ) {
-		for( t in transitions )
-			statesToEnter.union( Set.ofList(getTargetStates(t, defaultHistoryContent)) );
-		for( s in statesToEnter )
-			addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
 		for( t in transitions ) {
+			for( s in getTargetStates(t) )
+				addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
 			var ancestor = getTransitionDomain(t);
-			for( s in getTargetStates(t, defaultHistoryContent) )
+			for( s in getEffectiveTargetStates(t) )
 				addAncestorStatesToEnter( s, ancestor, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
 		}
 	}
 	
-	function addDescendantStatesToEnter( state : Node, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node>, ?defaultHistoryContent : Hash<Iterable<Node>> ) {
-		statesToEnter.add(state);
-		if( state.isCompound() ) {
-			statesForDefaultEntry.add(state);
-			for( s in getTargetStates(state.initial().next().transition().next(), defaultHistoryContent) ) {
-				addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry );
-				addAncestorStatesToEnter( s, state, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+	function addDescendantStatesToEnter( state : Node, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node>, defaultHistoryContent : Hash<Iterable<Node>> ) {
+		if( state.isTHistory() )
+			if( historyValue.exists(state.get("id")) )
+				for( s in historyValue.get(state.get("id")) ) {
+					addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+					addAncestorStatesToEnter( s, state.parent, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+				}
+			else {
+				defaultHistoryContent.set(state.parent.get("id"), state.transition().next());
+				for( s in getTargetStates(state.transition().next()) ) {
+					addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+					addAncestorStatesToEnter( s, state.parent, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+				}
 			}
-		} else if( state.isTParallel() )
-			for( child in state.getChildStates() )
-				if( !statesToEnter.l.some(function(s) return s.isDescendant(child)) )
-					addDescendantStatesToEnter( child, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+		else {
+			statesToEnter.add(state);
+			if( state.isCompound() ) {
+				statesForDefaultEntry.add(state);
+				for( s in getEffectiveTargetStates(state.initial().next().transition().next()) ) {
+					addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+					addAncestorStatesToEnter( s, state, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+				}
+			} else if( state.isTParallel() )
+				for( child in state.getChildStates() )
+					if( !statesToEnter.l.some(function(s) return s.isDescendant(child)) )
+						addDescendantStatesToEnter( child, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+		}
 	}
 	
 	function addAncestorStatesToEnter( state : Node, ancestor : Node, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node>, defaultHistoryContent : Hash<Iterable<Node>> ) {
@@ -498,7 +511,7 @@ class Interp extends Base {
 	}
 	
 	function getTransitionDomain( transition : Node ) {
-		var targetStates = getTargetStates(transition);
+		var targetStates = getEffectiveTargetStates(transition);
 		var sourceState = getSourceState(transition);
 		if( targetStates.isEmpty() )
 			return null;
@@ -514,6 +527,26 @@ class Interp extends Base {
 			if( stateList.tail().every(function(s) return s.isDescendant(anc)) )
 				return anc;
 		return null;
+	}
+	
+	function getEffectiveTargetStates( transition : Node ) : List<Node> {
+		var targets = new Set<Node>();
+		for( s in getTargetStates(transition) )
+			if( s.isTHistory() ) {
+				if( historyValue.exists(s.get("id")) )
+					targets.union( Set.ofList(historyValue.get(s.get("id"))) );
+				else
+					targets.union( Set.ofList(getEffectiveTargetStates(s.transition().next())) );
+			} else
+				targets.add(s);
+		return targets.l;
+	}
+	
+	function getTargetStates( transition : Node ) : List<Node> {
+		var l = new List<Node>();
+		if( transition.exists("target") )
+			l = [for( id in transition.get("target").split(" ") ) nodeMap.get(id)].toList();
+		return l;
 	}
 	
 	function getProperAncestors( state1 : Node, state2 : Null<Node> = null ) : List<Node> {
@@ -1054,30 +1087,6 @@ class Interp extends Base {
 		var fullPath = sys.FileSystem.fullPath( path ) + "/" + file;
 		return DataTools.trim( sys.io.File.getContent(fullPath) );
 		#end
-	}
-	
-	inline function getStateList( transition : Node ) {
-		var l = new List<Node>();
-		if( transition.exists("target") )
-			l = [for( id in transition.get("target").split(" ") ) nodeMap.get(id)].toList();
-		return l;
-	}
-	
-	function getTargetStates( transition : Node, ?defaultHistoryContent : Hash<Iterable<Node>> ) : List<Node> {
-		var stateList = getStateList(transition);
-		var allTargets = new Set<Node>();
-		for( state in stateList )
-			if( state.isTHistory() )
-				if( historyValue.exists(state.get("id")) )
-					allTargets.union( Set.ofList(historyValue.get(state.get("id"))) );
-				else {
-					allTargets.union( Set.ofList(getTargetStates( state.transition().next(), defaultHistoryContent )) );
-					if( defaultHistoryContent != null )
-						defaultHistoryContent.set(state.parent.get("id"), state.transition().next());
-				}
-			else
-				allTargets.add(state);
-		return allTargets.toList();
 	}
 	
 	public static function main() {
