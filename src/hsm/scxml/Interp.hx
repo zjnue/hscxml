@@ -156,7 +156,7 @@ class Interp extends Base {
 					if( d.exists("expr") )
 						val = d.get("expr");
 					else
-						val = getTypedDataStr( cast(d, Data).content );
+						val = datamodel.getTypedDataStr( cast(d, Data).content );
 					try {
 						datamodel.set(id, datamodel.doVal(val));
 					} catch( e:Dynamic ) {
@@ -636,7 +636,7 @@ class Interp extends Base {
 				throw "Send may contain only one content child.";
 			if( content.length > 0 ) {
 				var strVal = parseContent( content );
-				val = datamodel.doVal( getTypedDataStr( strVal ));
+				val = datamodel.doVal( datamodel.getTypedDataStr( strVal ));
 			} else {
 				try {
 					val = DataTools.copyFrom( {}, parseParams(params) );
@@ -788,7 +788,7 @@ class Interp extends Base {
 				if( content.length > 0 ) {
 					contentVal = parseContent( content );
 					if( !content[0].exists("expr") )
-						contentVal = datamodel.doVal( getTypedDataStr( contentVal ));
+						contentVal = datamodel.doVal( datamodel.getTypedDataStr( contentVal ));
 				} else {
 					paramsData = parseParams(params);
 					data = data.concat(paramsData);
@@ -895,7 +895,7 @@ class Interp extends Base {
 				if( c.exists("expr") )
 					datamodel.doAssign( c.get("location"), c.get("expr") );
 				else
-					datamodel.doAssign( c.get("location"), getTypedDataStr( cast(c, Assign).content ) );
+					datamodel.doAssign( c.get("location"), datamodel.getTypedDataStr( cast(c, Assign).content ) );
 			case "if":
 				if( !datamodel.supportsCond )
 					return;
@@ -1066,7 +1066,7 @@ class Interp extends Base {
 	function setFromSrc( id : String, src : String ) {
 		var val = null;
 		if( src.indexOf("file:") >= 0 )
-			val = getTypedDataStr( getFileContent(src) );
+			val = datamodel.getTypedDataStr( getFileContent(src) );
 		try {
 			datamodel.set(id, datamodel.doVal(val));
 		} catch( e:Dynamic ) {

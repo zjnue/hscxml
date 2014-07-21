@@ -120,6 +120,33 @@ class Model {
 	public function toString() {
 		return "[Model]";
 	}
+	
+	public function getTypedDataStr( content : String ) : String {
+		if( content == null || content == "" )
+			return content;
+		var isNum = Std.parseInt(content) != null;
+		if( !isNum ) isNum = !Math.isNaN( Std.parseFloat(content) );
+		if( isNum ) return content;
+		var isObj = false;
+		try {
+			var tmp = doVal(content);
+			isObj = Reflect.isObject(tmp);
+		} catch( e:Dynamic ) isObj = false;
+		if( isObj ) return content;
+		var isXml = false;
+		try {
+			var tmp = Xml.parse(content);
+			isXml = Std.is( tmp.firstElement(), Xml );
+		} catch( e:Dynamic ) isXml = false;
+		if( isXml ) return "Xml.parse( '" + content.split("'").join("\\'") + "' ).firstElement()";
+		var isArray = false;
+		try {
+			var tmp = doVal(content);
+			isArray = Std.is( tmp, Array );
+		} catch( e:Dynamic ) isArray = false;
+		if( isArray ) return content;
+		return "'" + content.split("'").join("\\'") + "'";
+	}
 }
 
 class NullModel extends Model {
