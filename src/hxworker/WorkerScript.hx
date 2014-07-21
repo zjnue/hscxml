@@ -184,7 +184,9 @@ class WorkerScript {
 		untyped __js__("self.setFromSrc = script.setFromSrc");
 		untyped __js__("self.getFileContent = script.getFileContent");
 		untyped __js__("self.getTargetStates = script.getTargetStates");
-		untyped __js__("self.getTargetState = script.getTargetState");
+		untyped __js__("self.getEffectiveTargetStates = script.getEffectiveTargetStates");
+		untyped __js__("self.setLookups = script.setLookups");
+		untyped __js__("self.mapNode = script.mapNode");
 		untyped __js__("self.setWorker = script.setWorker");
 		untyped __js__("self.getWorker = script.getWorker");
 		untyped __js__("self.hasWorker = script.hasWorker");
