@@ -479,13 +479,13 @@ class Interp extends Base {
 			statesToEnter.add(state);
 			if( state.isCompound() ) {
 				statesForDefaultEntry.add(state);
-				for( s in getEffectiveTargetStates(state.initial().next().transition().next()) ) {
+				for( s in getTargetStates(state.initial().next().transition().next()) ) {
 					addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
 					addAncestorStatesToEnter( s, state, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
 				}
 			} else if( state.isTParallel() )
 				for( child in state.getChildStates() )
-					if( !statesToEnter.l.some(function(s) return s.isDescendant(child)) )
+					if( !statesToEnter.some(function(s) return s.isDescendant(child)) )
 						addDescendantStatesToEnter( child, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
 		}
 	}
@@ -495,7 +495,7 @@ class Interp extends Base {
 			statesToEnter.add(anc);
 			if( anc.isTParallel() )
 				for( child in anc.getChildStates() )
-					if( !statesToEnter.l.some(function(s) return s.isDescendant(child)) )
+					if( !statesToEnter.some(function(s) return s.isDescendant(child)) )
 						addDescendantStatesToEnter( child, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
 		}
 	}
@@ -519,7 +519,7 @@ class Interp extends Base {
 				&& targetStates.every(function(s) return s.isDescendant(sourceState)) )
 			return sourceState;
 		else
-			return findLCCA( [sourceState].toList().append(targetStates) );
+			return findLCCA( [sourceState].toList().append(targetStates.toList()) );
 	}
 	
 	function findLCCA( stateList : List<Node> ) {
@@ -529,17 +529,17 @@ class Interp extends Base {
 		return null;
 	}
 	
-	function getEffectiveTargetStates( transition : Node ) : List<Node> {
+	function getEffectiveTargetStates( transition : Node ) : Set<Node> {
 		var targets = new Set<Node>();
 		for( s in getTargetStates(transition) )
 			if( s.isTHistory() ) {
 				if( historyValue.exists(s.get("id")) )
 					targets.union( Set.ofList(historyValue.get(s.get("id"))) );
 				else
-					targets.union( Set.ofList(getEffectiveTargetStates(s.transition().next())) );
+					targets.union( getEffectiveTargetStates(s.transition().next()) );
 			} else
 				targets.add(s);
-		return targets.l;
+		return targets;
 	}
 	
 	function getTargetStates( transition : Node ) : List<Node> {

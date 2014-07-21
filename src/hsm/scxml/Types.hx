@@ -67,6 +67,8 @@ class Set<T> {
 	public inline function add( i : T ) { if( !Lambda.has(l, i) ) l.add( i ); }
 	public inline function delete( i : T ) { return l.remove( i ); }
 	public inline function union( s : Set<T> ) { for( i in s ) add(i); }
+	public inline function some( f : T -> Bool ) { return l.some(f); }
+	public inline function every( f : T -> Bool ) { return l.every(f); }
 	public inline function isMember( i : T ) { return Lambda.has(l, i); }
 	public function hasIntersection( s : Set<T> ) {
 		for( i in s )
