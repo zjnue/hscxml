@@ -93,14 +93,12 @@ class Base extends hxworker.WorkerScript {
 		datamodel.setEvent(evt);
 	}
 	
-	function getTypedDataStr( content : String, checkNum : Bool = true ) : String {
+	function getTypedDataStr( content : String ) : String {
 		if( content == null || content == "" )
 			return content;
-		if( checkNum ) {
-			var isNum = Std.parseInt(content) != null;
-			if( !isNum ) isNum = !Math.isNaN( Std.parseFloat(content) );
-			if( isNum ) return content;
-		}
+		var isNum = Std.parseInt(content) != null;
+		if( !isNum ) isNum = !Math.isNaN( Std.parseFloat(content) );
+		if( isNum ) return content;
 		var isObj = false;
 		try {
 			var tmp = datamodel.doVal(content);

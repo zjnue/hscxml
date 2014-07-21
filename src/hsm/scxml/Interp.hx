@@ -787,10 +787,8 @@ class Interp extends Base {
 				var paramsData = null;
 				if( content.length > 0 ) {
 					contentVal = parseContent( content );
-					if( !content[0].exists("expr") ) {
-						// TODO report test 179 (worked around here), where 123 should be '123' for consistent evaluation
-						contentVal = datamodel.doVal( getTypedDataStr( contentVal ));//, false ) );
-					}
+					if( !content[0].exists("expr") )
+						contentVal = datamodel.doVal( getTypedDataStr( contentVal ));
 				} else {
 					paramsData = parseParams(params);
 					data = data.concat(paramsData);
