@@ -13,13 +13,17 @@ class Copy {
 		
 		var cwd = Sys.getCwd();
 		
-		var src = cwd + "w3c";
+		var src = cwd + "files/w3c";
 		var destTest = cwd + "txml";
 		var destXsl = cwd + "xsl";
 		
+		// w3c tests
 		copy( src, destTest, ["txml", "txt"] );
 		copy( src, destXsl, ["xsl"] );
 		
+		// custom tests
+		copy( cwd + "files/ext/txml", destTest, ["txml", "txt"] );
+		copy( cwd + "files/ext/xsl", destXsl, ["xsl"] );
 	}
 	
 	public static function copy( path : String, dest : String, exts : Array<String> ) {
