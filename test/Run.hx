@@ -126,7 +126,6 @@ class Run {
 		}
 		
 		failsJs = [
-			"test330.scxml", // "JavaScript 'in' operator not supported yet."
 			"test452.scxml", // "JavaScript object function 'new testobject();' not supported yet."
 		];
 		

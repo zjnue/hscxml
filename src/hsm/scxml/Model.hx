@@ -186,9 +186,83 @@ class NullModel extends Model {
 	}
 }
 
-class EcmaScriptModel extends Model {
+class EcmaScriptModel extends HScriptModel {
+	
 	public function new( doc : Node ) {
 		super(doc);
+	}
+	
+	override function eval( expr : String ) : Dynamic {
+		var r = ~/_ioprocessors\['([:\/\.a-zA-Z0-9#]+)'\]/;
+		while( r.match(expr) )
+			expr = 	r.matchedLeft() + "_ioprocessors." + encProcKey(r.matched(1)) + r.matchedRight();
+		
+		// [].concat(Var1, [4]) becomes Var1.concat([4])
+		var r = ~/\[\].concat\((.+),[ ]*(.+)[ ]*\)/;
+		while( r.match(expr) )
+			expr = 	r.matchedLeft() + r.matched(1) + ".concat(" + r.matched(2) + ")" + r.matchedRight();
+		
+		expr = expr.split("!==").join("!=");
+		expr = expr.split("===").join("==");
+		expr = expr.split("String(").join("Std.string(");
+		expr = expr.split(".slice(").join(".substr(");
+		expr = expr.split("'undefined'").join("null");
+		expr = expr.split("undefined").join("null");
+		
+		// _event.raw.search(/Var1=2/) or _event.raw.search(/Varparam1=1/)
+		var r = ~/search\(\/(.*)\/\)/;
+		while( r.match(expr) ) {
+			var matched = r.matched(1);
+			if( matched.indexOf("Var") == 0 ) {
+				var tmp = r.matched(1).substr(3).split("=");
+				if( ~/^[a-zA-Z_][a-zA-Z0-9_]*/.match(tmp[0]) )
+					matched = tmp[0] + "=" + tmp[1];
+			}
+			expr = r.matchedLeft() + "search('" + matched + "')" + r.matchedRight();
+		}
+		
+		// var1 instanceof Array
+		var r = ~/([a-zA-Z0-9\._]+) instanceof ([a-zA-Z0-9\._]+)/;
+		while( r.match(expr) )
+			expr = 	r.matchedLeft() + "Std.is(" + r.matched(1) + ", " + r.matched(2) + ") " + r.matchedRight();
+		
+		// 'name' in _event
+		var r = ~/(['a-zA-Z0-9\._]+) in ([a-zA-Z0-9\._]+)/;
+		while( r.match(expr) )
+			expr = 	r.matchedLeft() + "Reflect.hasField(" + r.matched(2) + ", " + r.matched(1) + ") " + r.matchedRight();
+		
+		var r = ~/typeof ([a-zA-Z0-9\._]+) /;
+		while( r.match(expr) )
+			if( !exists(r.matched(1)) )
+				expr = r.matchedLeft() + "null " + r.matchedRight();
+			else
+				expr = r.matchedLeft() + "(try Type.getClassName(Type.getClass(" + r.matched(1) + ")) catch(e:Dynamic) null) " + r.matchedRight();
+		
+		// for obj['Var'] access
+		var r = ~/([a-zA-Z0-9\._]+)\['(.*)'\]/;
+		while( r.match(expr) )
+			expr = 	r.matchedLeft() + r.matched(1) + "." + r.matched(2) + r.matchedRight();
+		
+		// converts _event.data.getElementsByTagName('book')[1].getAttribute('title') etc
+		var r = ~/[ ]*([a-zA-Z0-9\._]+).getElementsByTagName\((.*)\)\[(.*)\]/;
+		while( r.match(expr) )
+			expr = 	r.matchedLeft() + "Lambda.array({iterator:function() return " + r.matched(1) + ".elementsNamed(" + r.matched(2) + ")})[" + r.matched(3) + "]" + r.matchedRight();
+		expr = expr.split("getAttribute").join("get");
+		
+		var program = hparse.parseString(expr);
+		var bytes = hscript.Bytes.encode(program);
+		program = hscript.Bytes.decode(bytes);
+		return hinterp.execute(program);
+	}
+	
+	override public function doScript( expr : String ) : Dynamic {
+		expr = StringTools.trim(expr);
+		expr = expr.split("var ").join(""); // tmp workaround - see test 302
+		return eval(expr);
+	}
+	
+	override public function toString() {
+		return "[EcmaScriptModel: " + Std.string(hinterp.variables) + "]";
 	}
 }
 
@@ -227,6 +301,7 @@ class HScriptModel extends Model {
 		hinterp.variables.set("Std", Std);
 		hinterp.variables.set("Type", Type);
 		hinterp.variables.set("Xml", Xml);
+		hinterp.variables.set("Reflect", Reflect);
 		hinterp.variables.set("Lambda", Lambda);
 		hinterp.variables.set("_ioprocessors", {});
 		
@@ -293,52 +368,10 @@ class HScriptModel extends Model {
 		while( r.match(expr) )
 			expr = 	r.matchedLeft() + "_ioprocessors." + encProcKey(r.matched(1)) + r.matchedRight();
 		
-		// [].concat(Var1, [4]) becomes Var1.concat([4])
-		var r = ~/\[\].concat\((.+),[ ]*(.+)[ ]*\)/;
-		while( r.match(expr) )
-			expr = 	r.matchedLeft() + r.matched(1) + ".concat(" + r.matched(2) + ")" + r.matchedRight();
-		
-		expr = expr.split("!==").join("!=");
-		expr = expr.split("===").join("==");
-		expr = expr.split("String(").join("Std.string(");
-		expr = expr.split(".slice(").join(".substr(");
-		expr = expr.split("'undefined'").join("null");
-		expr = expr.split("undefined").join("null");
-		
-		// _event.raw.search(/Var1=2/) or _event.raw.search(/Varparam1=1/)
-		var r = ~/search\(\/(.*)\/\)/;
-		while( r.match(expr) ) {
-			var matched = r.matched(1);
-			if( matched.indexOf("Var") == 0 ) {
-				var tmp = r.matched(1).substr(3).split("=");
-				if( ~/^[a-zA-Z_][a-zA-Z0-9_]*/.match(tmp[0]) )
-					matched = tmp[0] + "=" + tmp[1];
-			}
-			expr = r.matchedLeft() + "search('" + matched + "')" + r.matchedRight();
-		}
-		
-		// var1 instanceof Array
-		var r = ~/([a-zA-Z0-9\._]+) instanceof ([a-zA-Z0-9\._]+)/;
-		while( r.match(expr) )
-			expr = 	r.matchedLeft() + "Std.is(" + r.matched(1) + ", " + r.matched(2) + ") " + r.matchedRight();
-		
-		var r = ~/typeof ([a-zA-Z0-9\._]+) /;
-		while( r.match(expr) )
-			if( !exists(r.matched(1)) )
-				expr = r.matchedLeft() + "null " + r.matchedRight();
-			else
-				expr = r.matchedLeft() + "(try Type.getClassName(Type.getClass(" + r.matched(1) + ")) catch(e:Dynamic) null) " + r.matchedRight();
-		
 		// for obj['Var'] access
 		var r = ~/([a-zA-Z0-9\._]+)\['(.*)'\]/;
 		while( r.match(expr) )
 			expr = 	r.matchedLeft() + r.matched(1) + "." + r.matched(2) + r.matchedRight();
-		
-		// converts _event.data.getElementsByTagName('book')[1].getAttribute('title') etc
-		var r = ~/[ ]*([a-zA-Z0-9\._]+).getElementsByTagName\((.*)\)\[(.*)\]/;
-		while( r.match(expr) )
-			expr = 	r.matchedLeft() + "Lambda.array({iterator:function() return " + r.matched(1) + ".elementsNamed(" + r.matched(2) + ")})[" + r.matched(3) + "]" + r.matchedRight();
-		expr = expr.split("getAttribute").join("get");
 		
 		var program = hparse.parseString(expr);
 		var bytes = hscript.Bytes.encode(program);
@@ -379,8 +412,6 @@ class HScriptModel extends Model {
 	}
 	
 	override public function doScript( expr : String ) : Dynamic {
-		expr = StringTools.trim(expr);
-		expr = expr.split("var ").join(""); // tmp workaround - see test 302
 		return eval(expr);
 	}
 	

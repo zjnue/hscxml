@@ -26,9 +26,9 @@ class Event {
 	public var name : String;
 	public var type : String;
 	public var sendid : String;
-	public var origin : String;
-	public var origintype : String;
-	public var invokeid : String;
+	public var origin : String = null;
+	public var origintype : String = null;
+	public var invokeid : String = null;
 	public var data : Dynamic;
 	public var raw : RawEvent;
 	public function new( name : String, data : Dynamic = null, sendid : String = null, type : String = "platform" ) {

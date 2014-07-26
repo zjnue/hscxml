@@ -93,7 +93,7 @@ class Interp extends Base {
 		
 		extraInit();
 		
-		var model = "hscript";//d.exists("datamodel") ? d.get("datamodel") : "hscript";
+		var model = d.exists("datamodel") ? d.get("datamodel") : "hscript";
 		switch( model ) {
 			case "null":
 				datamodel = new NullModel(d);
@@ -677,10 +677,7 @@ class Interp extends Base {
 	}
 	
 	inline function isValidAndSupportedSendTarget( target : String ) {
-		return if( Lambda.has(["#_internal", "#_parent", "#_scxml_" + datamodel.get("_sessionid")], target) || hasWorker(target.substr(2)) )
-			true;
-		else
-			datamodel.exists(target);
+		return Lambda.has(["#_internal", "#_parent", "#_scxml_" + datamodel.get("_sessionid")], target) || hasWorker(target.substr(2)) || datamodel.exists(target);
 	}
 	
 	inline function isValidAndSupportedSendType( type : String ) {
