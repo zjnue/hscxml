@@ -29,16 +29,7 @@ class Interp extends Base {
 	}
 	
 	public function start() {
-		#if (js || flash)
 		mainEventLoop();
-		#else
-		mainThread = Thread.create(mainEventLoop);
-		mainThread.sendMessage(Thread.current());
-		Thread.readMessage(true);
-		
-		// TODO check if timer needs to stop earlier
-		timerThread.quit();
-		#end
 	}
 	
 	public function stop() {
@@ -88,7 +79,7 @@ class Interp extends Base {
 		configuration = new Set();
 		statesToInvoke = new Set();
 		internalQueue = new Queue();
-		externalQueue = new BlockingQueue( #if (js || flash) checkBlockingQueue #end );
+		externalQueue = new BlockingQueue( checkBlockingQueue );
 		historyValue = new Hash();
 		
 		extraInit();
@@ -112,17 +103,23 @@ class Interp extends Base {
 					return true;
 			return false;
 		};
-		
+		var me = this;
 		binding = d.exists("binding") ? d.get("binding") : "early";
-		initializeDatamodel( datamodel, result.data, (binding != "early") );
-		
-		initTimer();
-		running = true;
-		executeGlobalScriptElements(d);
-		
-		enterStates( [d.initial().next().transition().next()].toList() );
-		if( onInit != null )
-			onInit();
+		initializeDatamodel( datamodel, result.data, (binding != "early"), function() {
+			initTimer();
+			running = true;
+			try {
+				executeGlobalScriptElements(d);
+			} catch( e:Dynamic ) {
+				stopTimers();
+				parentEventHandler(new Event("done.invoke"));
+				return;
+			}
+			enterStates( [d.initial().next().transition().next()].toList(), function() {
+				if( me.onInit != null )
+					me.onInit();
+			});
+		});
 	}
 	
 	function valid( doc : Xml ) {
@@ -141,9 +138,17 @@ class Interp extends Base {
 			executeContent(script);
 	}
 	
-	function initializeDatamodel( datamodel : Model, dms : Iterable<DataModel>, setValsToNull : Bool = false ) {
-		if( !(datamodel.supportsVal && datamodel.supportsProps) )
-			return;
+	var initLoadAsyncNum : Int;
+	var initLoadCb : Void->Void;
+	var startChecking : Bool;
+	
+	function initializeDatamodel( datamodel : Model, dms : Iterable<DataModel>, setValsToNull : Bool = false, cb : Void->Void ) {
+		if( !(datamodel.supportsVal && datamodel.supportsProps) ) {
+			cb(); return;
+		}
+		initLoadAsyncNum = 0;
+		initLoadCb = cb;
+		startChecking = false;
 		for( dm in dms )
 			for( d in dm ) {
 				var id = d.get("id");
@@ -165,10 +170,17 @@ class Interp extends Base {
 					}
 				}
 			}
+		startChecking = true;
+		checkInitLoadAsync( false );
+	}
+	
+	function checkInitLoadAsync( dec : Bool ) {
+		if( dec ) initLoadAsyncNum--;
+		if( !startChecking ) return;
+		if( initLoadAsyncNum == 0 ) initLoadCb();
 	}
 	
 	function checkBlockingQueue() {
-		#if (js || flash)
 		var externalEvent = externalQueue.dequeue();
 		if( externalEvent != null ) {
 			if( isCancelEvent(externalEvent) ) {
@@ -186,36 +198,44 @@ class Interp extends Base {
 				}
 			var enabledTransitions = selectTransitions(externalEvent);
 			if( !enabledTransitions.isEmpty() )
-				microstep(enabledTransitions.toList());
-			mainEventLoop();
+				microstep(enabledTransitions.toList(), mainEventLoop);
+			else
+				mainEventLoop();
 		}
 		else if( running ) 
 			externalQueue.callOnNewContent = true;
 		else
 			log("checkBlockingQueue: externalEvent = " + Std.string(externalEvent) + " running = " + Std.string(running));
-		#end
 	}
-	
-	#if (js || flash)
 	
 	function mainEventLoop() {
 		if( running ) {
 			var enabledTransitions : Set<Node> = null;
 			var macrostepDone = false;
-			while( running && !macrostepDone ) {
-				enabledTransitions = selectEventlessTransitions();
-				if( enabledTransitions.isEmpty() ) {
-					if( internalQueue.isEmpty() )
-						macrostepDone = true;
-					else {
-						var internalEvent = internalQueue.dequeue();
-						setEvent(internalEvent);
-						enabledTransitions = selectTransitions(internalEvent);
-					}
+			mainEventLoopNext(enabledTransitions, macrostepDone);
+		} else {
+			stopTimers();
+			exitInterpreter();
+		}
+	}
+	
+	function mainEventLoopNext( enabledTransitions : Set<Node>, macrostepDone : Bool ) {
+		if( running && !macrostepDone ) {
+			enabledTransitions = selectEventlessTransitions();
+			if( enabledTransitions.isEmpty() ) {
+				if( internalQueue.isEmpty() )
+					macrostepDone = true;
+				else {
+					var internalEvent = internalQueue.dequeue();
+					setEvent(internalEvent);
+					enabledTransitions = selectTransitions(internalEvent);
 				}
-				if( !enabledTransitions.isEmpty() )
-					microstep(enabledTransitions.toList());
 			}
+			if( !enabledTransitions.isEmpty() ) {
+				microstep(enabledTransitions.toList(), mainEventLoopNext.bind(enabledTransitions, macrostepDone));
+			} else
+				mainEventLoopNext(enabledTransitions, macrostepDone);
+		} else {
 			if( !running ) {
 				mainEventLoop();
 				return;
@@ -229,64 +249,8 @@ class Interp extends Base {
 				return;
 			}
 			checkBlockingQueue();
-		} else {
-			exitInterpreter();
-			for( t in timers )
-				t.stop();
 		}
 	}
-	
-	#else
-	
-	function mainEventLoop() {
-		var main = Thread.readMessage(true);
-		while( running ) {
-			var enabledTransitions : Set<Node> = null;
-			var macrostepDone = false;
-			while( running && !macrostepDone ) {
-				enabledTransitions = selectEventlessTransitions();
-				if( enabledTransitions.isEmpty() ) {
-					if( internalQueue.isEmpty() )
-						macrostepDone = true;
-					else {
-						var internalEvent = internalQueue.dequeue();
-						setEvent(internalEvent);
-						enabledTransitions = selectTransitions(internalEvent);
-					}
-				}
-				if( !enabledTransitions.isEmpty() )
-					microstep(enabledTransitions.toList());
-			}
-			if( !running )
-				break;
-			for( state in statesToInvoke )
-				for( inv in state.invoke() )
-					invoke(inv);
-			statesToInvoke.clear();
-			if( !internalQueue.isEmpty() )
-				continue;
-			var externalEvent = externalQueue.dequeue();
-			if( isCancelEvent(externalEvent) ) {
-				running = false;
-				continue;
-			}
-			setEvent(externalEvent);
-			for( state in configuration )
-				for( inv in state.invoke() ) {
-					if( inv.get("invokeid") == externalEvent.invokeid )
-						applyFinalize(inv, externalEvent);
-					if( inv.exists("autoforward") && inv.get("autoforward") == "true" )
-						send(inv.get("id"), externalEvent);
-				}
-			enabledTransitions = selectTransitions(externalEvent);
-			if( !enabledTransitions.isEmpty() )
-				microstep(enabledTransitions.toList());
-		}
-		exitInterpreter();
-		main.sendMessage("done");
-	}
-	
-	#end
 	
 	function isCancelEvent( evt : Event ) {
 		return (evt.sendid != null && cancelledSendIds.exists(evt.sendid));
@@ -365,10 +329,10 @@ class Interp extends Base {
 		return filteredTransitions;
 	}
 	
-	function microstep( enabledTransitions : List<Node> ) {
+	function microstep( enabledTransitions : List<Node>, cb : Void->Void ) {
 		exitStates(enabledTransitions);
 		executeTransitionContent(enabledTransitions);
-		enterStates(enabledTransitions);
+		enterStates(enabledTransitions, cb);
 	}
 	
 	function exitStates( enabledTransitions : List<Node> ) {
@@ -416,63 +380,77 @@ class Interp extends Base {
 			executeBlock(t);
 	}
 	
-	function enterStates( enabledTransitions : List<Node> ) {
+	function enterStates( enabledTransitions : List<Node>, cb : Void->Void ) {
 		var statesToEnter = new Set<Node>();
 		var statesForDefaultEntry = new Set<Node>();
 		// initialize the temporary table for default content in history states
-		var defaultHistoryContent = new Hash<Iterable<Node>>();
-		computeEntrySet( enabledTransitions, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
-		for( s in statesToEnter.toList().sort(entryOrder) ) {
-			configuration.add(s);
-			statesToInvoke.add(s);
-			if( binding == "late" && s.isFirstEntry ) {
-				var dms : Iterator<DataModel> = cast s.datamodel();
-				initializeDatamodel( datamodel, {iterator:function() return dms}, false );
-				s.isFirstEntry = false;
-			}
-			for( onentry in s.onentry() )
-				executeBlock(onentry);
-			if( statesForDefaultEntry.isMember(s) )
-				executeBlock(s.initial().next().transition().next());
-			if( s.exists("id") && defaultHistoryContent.exists(s.get("id")) )
-				executeBlock(defaultHistoryContent.get(s.get("id")));
-			if( s.isTFinal() ) {
-				if( s.parent.isTScxml() )
-					running = false;
-				else {
-					var parent = s.parent;
-					var grandparent = parent.parent;
-					internalQueue.enqueue( new Event("done.state." + parent.get("id"), getDoneData(s)) );
-					if( grandparent.isTParallel() )
-						if( grandparent.getChildStates().every(isInFinalState) )
-							internalQueue.enqueue( new Event("done.state." + grandparent.get("id")) );
-				}
-			}
-		}
+		defaultHistoryContent = new Hash<Iterable<Node>>();
+		computeEntrySet( enabledTransitions, statesToEnter, statesForDefaultEntry );
+		var states : List<Node> = statesToEnter.toList().sort(entryOrder);
+		enterStatesNext(states, statesToEnter, statesForDefaultEntry, cb);
 	}
 	
-	function computeEntrySet( transitions : List<Node>, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node>, defaultHistoryContent : Hash<Iterable<Node>> ) {
+	function enterStatesNext( states : List<Node>, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node>, cb : Void->Void ) {
+		if( states.length == 0 ) {
+			cb(); return;
+		}
+		var s = states.pop();
+		configuration.add(s);
+		statesToInvoke.add(s);
+		if( binding == "late" && s.isFirstEntry ) {
+			s.isFirstEntry = false;
+			var dms : Iterator<DataModel> = cast s.datamodel();
+			initializeDatamodel( datamodel, {iterator:function() return dms}, false, 
+				enterStatesNextContinued.bind(s, states, statesToEnter, statesForDefaultEntry, cb)
+			);
+		} else
+			enterStatesNextContinued(s, states, statesToEnter, statesForDefaultEntry, cb);
+	}
+	
+	function enterStatesNextContinued( s : Node, states : List<Node>, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node>, cb : Void->Void ) {
+		for( onentry in s.onentry() )
+			executeBlock(onentry);
+		if( statesForDefaultEntry.isMember(s) )
+			executeBlock(s.initial().next().transition().next());
+		if( s.exists("id") && defaultHistoryContent.exists(s.get("id")) )
+			executeBlock(defaultHistoryContent.get(s.get("id")));
+		if( s.isTFinal() ) {
+			if( s.parent.isTScxml() )
+				running = false;
+			else {
+				var parent = s.parent;
+				var grandparent = parent.parent;
+				internalQueue.enqueue( new Event("done.state." + parent.get("id"), getDoneData(s)) );
+				if( grandparent.isTParallel() )
+					if( grandparent.getChildStates().every(isInFinalState) )
+						internalQueue.enqueue( new Event("done.state." + grandparent.get("id")) );
+			}
+		}
+		enterStatesNext( states, statesToEnter, statesForDefaultEntry, cb );
+	}
+	
+	function computeEntrySet( transitions : List<Node>, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node> ) {
 		for( t in transitions ) {
 			for( s in getTargetStates(t) )
-				addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+				addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry );
 			var ancestor = getTransitionDomain(t);
 			for( s in getEffectiveTargetStates(t) )
-				addAncestorStatesToEnter( s, ancestor, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+				addAncestorStatesToEnter( s, ancestor, statesToEnter, statesForDefaultEntry );
 		}
 	}
 	
-	function addDescendantStatesToEnter( state : Node, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node>, defaultHistoryContent : Hash<Iterable<Node>> ) {
+	function addDescendantStatesToEnter( state : Node, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node> ) {
 		if( state.isTHistory() )
 			if( historyValue.exists(state.get("id")) )
 				for( s in historyValue.get(state.get("id")) ) {
-					addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
-					addAncestorStatesToEnter( s, state.parent, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+					addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry );
+					addAncestorStatesToEnter( s, state.parent, statesToEnter, statesForDefaultEntry );
 				}
 			else {
 				defaultHistoryContent.set(state.parent.get("id"), state.transition().next());
 				for( s in getTargetStates(state.transition().next()) ) {
-					addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
-					addAncestorStatesToEnter( s, state.parent, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+					addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry );
+					addAncestorStatesToEnter( s, state.parent, statesToEnter, statesForDefaultEntry );
 				}
 			}
 		else {
@@ -480,23 +458,23 @@ class Interp extends Base {
 			if( state.isCompound() ) {
 				statesForDefaultEntry.add(state);
 				for( s in getTargetStates(state.initial().next().transition().next()) ) {
-					addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
-					addAncestorStatesToEnter( s, state, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+					addDescendantStatesToEnter( s, statesToEnter, statesForDefaultEntry );
+					addAncestorStatesToEnter( s, state, statesToEnter, statesForDefaultEntry );
 				}
 			} else if( state.isTParallel() )
 				for( child in state.getChildStates() )
 					if( !statesToEnter.some(function(s) return s.isDescendant(child)) )
-						addDescendantStatesToEnter( child, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+						addDescendantStatesToEnter( child, statesToEnter, statesForDefaultEntry );
 		}
 	}
 	
-	function addAncestorStatesToEnter( state : Node, ancestor : Node, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node>, defaultHistoryContent : Hash<Iterable<Node>> ) {
+	function addAncestorStatesToEnter( state : Node, ancestor : Node, statesToEnter : Set<Node>, statesForDefaultEntry : Set<Node> ) {
 		for( anc in getProperAncestors(state,ancestor) ) {
 			statesToEnter.add(anc);
 			if( anc.isTParallel() )
 				for( child in anc.getChildStates() )
 					if( !statesToEnter.some(function(s) return s.isDescendant(child)) )
-						addDescendantStatesToEnter( child, statesToEnter, statesForDefaultEntry, defaultHistoryContent );
+						addDescendantStatesToEnter( child, statesToEnter, statesForDefaultEntry );
 		}
 	}
 	
@@ -1039,20 +1017,10 @@ class Interp extends Base {
 			
 			if( src != null ) {
 				if( src.indexOf("file:") >= 0 )
-					contentVal = getFileContent(src);
-			} else
+					getFileContent(src, invokeContentReady.bind(invokeid, type, data, _));
+			} else {
 				contentVal = Std.string( parseContent(content) );
-			
-			switch( type ) {
-				
-				case Const.INV_TYPE_SCXML, Const.INV_TYPE_SCXML_SHORT:
-				
-					if( hasWorker(invokeid) )
-						throw "Invoke id already exists: " + invokeid;
-					
-					createSubInst( contentVal, data, invokeid, type );
-					
-				default:
+				invokeContentReady(invokeid, type, data, contentVal);
 			}
 			
 		} catch( e : Dynamic ) {
@@ -1060,27 +1028,62 @@ class Interp extends Base {
 		}
 	}
 	
+	function invokeContentReady( invokeid : String, type : String, data : Array<{value:Dynamic, key:String}>, contentVal : String ) {
+		try {
+			switch( type ) {
+				case Const.INV_TYPE_SCXML, Const.INV_TYPE_SCXML_SHORT:
+					if( hasWorker(invokeid) )
+						throw "Invoke id already exists: " + invokeid;
+					createSubInst( contentVal, data, invokeid, type );
+				default:
+			}
+		} catch( e : Dynamic ) {
+			raise( new Event( Event.ERROR_EXEC ) );
+		}
+	}
+	
 	function setFromSrc( id : String, src : String ) {
 		var val = null;
-		if( src.indexOf("file:") >= 0 )
-			val = datamodel.getTypedDataStr( getFileContent(src) );
+		if( src.indexOf("file:") >= 0 ) {
+			getFileContent(src, setFromSrcContinued.bind(id, true, _));
+		} else
+			setFromSrcContinued(id, false, val );
+	}
+	
+	function setFromSrcContinued( id : String, wasFileLoad : Bool, data : String ) {
+		var val = wasFileLoad ? datamodel.getTypedDataStr( data ) : null;
 		try {
 			datamodel.set(id, datamodel.doVal(val));
 		} catch( e:Dynamic ) {
 			datamodel.set(id, null);
 			raise( new Event( Event.ERROR_EXEC ) );
 		}
+		if( wasFileLoad )
+			checkInitLoadAsync(true);
 	}
 	
-	inline function getFileContent( src : String ) : String {
+	inline function getFileContent( src : String, dataCb : String->Void ) {
 		var file = src.substr(5);
-		#if js
-		return DataTools.trim( haxe.Http.requestUrl(path + file) );
-		#elseif flash
-		return null;
+		initLoadAsyncNum++;
+		
+		#if (js || flash)
+		
+		var h = new haxe.Http( path + file );
+		h.onData = function(data) { 
+			log("getFileContent: data = " + data);
+			dataCb(data);
+		}
+		h.onError = function(msg) {
+			log("getFileContent: msg = " + msg);
+			dataCb(null);
+		}
+		h.request(false);
+		
 		#else
+		
 		var fullPath = sys.FileSystem.fullPath( path ) + "/" + file;
-		return DataTools.trim( sys.io.File.getContent(fullPath) );
+		dataCb( DataTools.trim(sys.io.File.getContent(fullPath)) );
+		
 		#end
 	}
 	

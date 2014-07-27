@@ -61,6 +61,7 @@ class Base extends hxworker.WorkerScript {
 	var binding : String;
 	
 	var cancelledSendIds : Hash<Bool>;
+	var defaultHistoryContent : Hash<Iterable<Node>>;
 
 	public function new() {
 		super();
@@ -74,6 +75,15 @@ class Base extends hxworker.WorkerScript {
 		timers = [];
 		#else
 		timerThread = new TimerThread();
+		#end
+	}
+	
+	inline function stopTimers() {
+		#if (js || flash)
+		for( t in timers )
+			t.stop();
+		#else
+		timerThread.quit();
 		#end
 	}
 	

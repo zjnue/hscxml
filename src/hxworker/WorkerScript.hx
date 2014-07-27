@@ -186,6 +186,17 @@ class WorkerScript {
 		untyped __js__("self.getTargetStates = script.getTargetStates");
 		untyped __js__("self.getEffectiveTargetStates = script.getEffectiveTargetStates");
 		untyped __js__("self.setLookups = script.setLookups");
+		untyped __js__("self.defaultHistoryContent = script.defaultHistoryContent");
+		untyped __js__("self.checkInitLoadAsync = script.checkInitLoadAsync");
+		untyped __js__("self.initLoadAsyncNum = script.initLoadAsyncNum");
+		untyped __js__("self.initLoadCb = script.initLoadCb");
+		untyped __js__("self.startChecking = script.startChecking");
+		untyped __js__("self.mainEventLoopNext = script.mainEventLoopNext");
+		untyped __js__("self.enterStatesNext = script.enterStatesNext");
+		untyped __js__("self.enterStatesNextContinued = script.enterStatesNextContinued");
+		untyped __js__("self.invokeContentReady = script.invokeContentReady");
+		untyped __js__("self.setFromSrcContinued = script.setFromSrcContinued");
+		untyped __js__("self.stopTimers = script.stopTimers");
 		untyped __js__("self.mapNode = script.mapNode");
 		untyped __js__("self.setWorker = script.setWorker");
 		untyped __js__("self.getWorker = script.getWorker");

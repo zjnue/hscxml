@@ -100,7 +100,6 @@ class Queue<T> {
 	}
 }
 
-#if (js || flash)
 class BlockingQueue<T> {
 	var l : List<T>;
 	public function new( ?onNew : Void -> Void ) { l = new List<T>(); onNewContent = onNew; callOnNewContent = false; }
@@ -117,14 +116,8 @@ class BlockingQueue<T> {
 		return l.pop();
 	}
 }
-#else
-class BlockingQueue<T> {
-	var dq : Deque<T>;
-	public function new() { dq = new Deque<T>(); }
-	public inline function enqueue( i : T ) { dq.add( i ); }
-	public inline function dequeue() { return dq.pop(true); }
-}
 
+#if !(js || flash)
 typedef TTimerData = {
 	time : Float,
 	func : Void->Void	
