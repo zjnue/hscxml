@@ -859,6 +859,8 @@ class Interp extends Base {
 			case "log":
 				if( datamodel.supportsVal )
 					log( (c.exists("label") ? c.get("label") + ": " : "") + Std.string( datamodel.doVal(c.get("expr")) ) );
+				else
+					log( (c.exists("label") ? c.get("label") + ": " : "") + c.get("expr") );
 			case "raise":
 				var evt = new Event(c.get("event"));
 				evt.type = "internal";

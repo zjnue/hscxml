@@ -175,7 +175,7 @@ class NullModel extends Model {
 	override public function doCond( expr : String ) : Bool {
 		if( expr == "" )
 			return true;
-		var r = ~/$In\(['"]*([a-zA-Z0-9._]+)['"]*\)/;
+		var r = ~/In\(['"]+([a-zA-Z0-9._]+)['"]+\)/;
 		if( r.match(expr.split(" ").join("")) )
 			return isInState(r.matched(1));
 		return false;
