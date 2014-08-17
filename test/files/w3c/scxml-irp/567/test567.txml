@@ -24,7 +24,7 @@ _event.data.  -->
  </state>
   
   <state id="s1">
-    <transition conf:idVal="1=2" conf:targetpass=""/>
+    <transition conf:idVal="1='2'" conf:targetpass=""/>
     <transition conf:targetfail=""/>
     </state>
    <conf:pass/>
