@@ -826,22 +826,27 @@ class Interp extends Base {
 
 						var h = new haxe.Http(target);
 						
-						// TODO content specification a bit vague in general - can it specify multi params here for instance?
+						// make encoding explicit here
+						h.setHeader("Content-Type", "application/x-www-form-urlencoded");
+						
+						//var enc = function(data) return haxe.Serializer.run(data);
+						var enc = function(data) return StringTools.urlEncode(Std.string(data));
+						
 						if( contentVal != null ) {
 							var tmp = contentVal.split("=");
 							if( tmp[0] == "_scxmleventname" )
-								h.setParameter("_scxmleventname", tmp[1]);
+								h.setParameter("_scxmleventname", enc(tmp[1]));
 							else
-								h.setParameter("__data__", contentVal);
+								h.setParameter("__data__", enc(contentVal));
 						} else {
 							for( d in data ) {
-								h.setParameter(d.key, haxe.Serializer.run(d.value));
+								h.setParameter(d.key, enc(d.value));
 							}
 						}
 						if( event != null )
-							h.setParameter("_scxmleventname", event);
+							h.setParameter("_scxmleventname", enc(event));
 						if( c.exists("httpResponse") )
-							h.setParameter("httpResponse", c.get("httpResponse"));
+							h.setParameter("httpResponse", enc(c.get("httpResponse")));
 						
 						h.request(true);
 						

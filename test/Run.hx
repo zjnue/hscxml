@@ -38,6 +38,9 @@ class Run {
 		if( isFirstRequest ) {
 			isFirstRequest = false;
 		} else {
+			//var dec = function(data) return haxe.Unserializer.run(data);
+			var dec = function(data) return data;
+			
 			var params = haxe.web.Request.getParams();
 			if( params.keys().hasNext() ) {
 				var name = null;
@@ -45,21 +48,20 @@ class Run {
 				var data = [];
 				for( key in params.keys() ) {
 					if( key == "_scxmleventname" ) {
-						name = params.get(key);
-						data.push({key:key, value:params.get(key)});
+						name = dec(params.get(key));
+						data.push({key:key, value:dec(params.get(key))});
 					} else if( key == "__data__" ) {
-						contentVal = params.get(key);
+						contentVal = dec(params.get(key));
 						break;
 					} else {
-						log("params.get(key) = " + params.get(key));
-						data.push({key:key, value:haxe.Unserializer.run(params.get(key))});
+						data.push({key:key, value:dec(params.get(key))});
 					}
 				}
 				if( name == null )
 					name = "HTTP.POST";
-				if( params.exists("httpResponse") && params.get("httpResponse") == "true" )
+				if( params.exists("httpResponse") && dec(params.get("httpResponse")) == "true" )
 					name = "HTTP.2.00";
-				data.push({key:"hmm", value:"POST"}); // FIXME check
+				data.push({key:"method", value:neko.Web.getMethod()});
 				
 				evt = new Event( name );
 				if( contentVal == null )
@@ -90,6 +92,8 @@ class Run {
 	static var failsXPath : Array<String>;
 	static var failsTodo : Array<String>;
 	static var failsAll : Array<String>;
+	
+	static var skipTests : Array<String>;
 	
 	static var from : String = null;
 	static var fromFound : Bool = false;
@@ -125,29 +129,32 @@ class Run {
 			throw "Unknown target " + Std.string(args[1]) +". Usage:\nneko run.n [ecma|xpath|hscript]\n";
 		}
 		
-		failsJs = [
-			"test452.scxml", // "JavaScript object function 'new testobject();' not supported yet."
-		];
+		failsJs = [];
+		failsBasicHttpProc = [];
+		
+//		failsJs = [
+//			"test452.scxml", // "JavaScript object function 'new testobject();' not supported yet."
+//		];
 		
 		// "Basic HTTP Processor now supported via dev server."
-		#if web
-		failsBasicHttpProc = [];
-		#else
-		failsBasicHttpProc = [
-			"test201.scxml",
-			"test509.scxml",
-			"test510.scxml",
-			"test513.scxml",
-			"test518.scxml",
-			"test519.scxml",
-			"test520.scxml",
-			"test522.scxml",
-			"test531.scxml",
-			"test532.scxml",
-			"test534.scxml",
-			"test567.scxml",
-		];
-		#end
+//		#if web
+//		failsBasicHttpProc = [];
+//		#else
+//		failsBasicHttpProc = [
+//			"test201.scxml",
+//			"test509.scxml",
+//			"test510.scxml",
+//			"test513.scxml",
+//			"test518.scxml",
+//			"test519.scxml",
+//			"test520.scxml",
+//			"test522.scxml",
+//			"test531.scxml",
+//			"test532.scxml",
+//			"test534.scxml",
+//			"test567.scxml",
+//		];
+//		#end
 		
 		// "XPath Data Model not yet implemented."
 		failsXPath = [
@@ -195,6 +202,8 @@ class Run {
 		
 		failsAll = failsJs.concat(failsBasicHttpProc).concat(failsXPath).concat(failsTodo);
 		
+		skipTests = [].concat(failsAll);
+		
 		// provides tmp jump option
 		from = args.length > 1 ? args[1] : null;
 		fromFound = false;
@@ -219,6 +228,11 @@ class Run {
 		}
 		
 		path = paths.shift();
+		
+		if( Lambda.has(skipTests, path) || path.substr(-4) == ".txt" ) {
+			doNext();
+			return;
+		}
 		
 		if( from != null ) {
 			if( !fromFound )
