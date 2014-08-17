@@ -691,7 +691,7 @@ the basic http tests.  In the case of python, we have to import the regexp modul
 <!-- returns true if _event/raw contains the var with the specified value -->
 <xsl:template match="//@conf:eventIdParamHasValue">
  <xsl:attribute name="cond"><xsl:analyze-string select="." regex="(\S+)(\s+)(\S+)">
-<xsl:matching-substring>_event.raw.search(/Var<xsl:value-of select="regex-group(1)"/>=<xsl:value-of select="regex-group(3)"/>/) != -1</xsl:matching-substring></xsl:analyze-string></xsl:attribute>
+<xsl:matching-substring>_event.raw.search('Var<xsl:value-of select="regex-group(1)"/>=<xsl:value-of select="regex-group(3)"/>') != -1</xsl:matching-substring></xsl:analyze-string></xsl:attribute>
 </xsl:template>
 
 <!-- returns true if _event/raw contains the param with the specified value -->
@@ -701,7 +701,7 @@ the basic http tests.  In the case of python, we have to import the regexp modul
 </xsl:template>
 
 <xsl:template match="//@conf:messageBodyEquals">
- <xsl:attribute name="cond">_event.raw.search(/<xsl:value-of select="."/>/) != -1</xsl:attribute>
+ <xsl:attribute name="cond">_event.raw.search('<xsl:value-of select="."/>') != -1</xsl:attribute>
 </xsl:template>
 
 
