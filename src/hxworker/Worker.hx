@@ -1,14 +1,11 @@
 package hxworker;
 
-#if flash
-import flash.system.WorkerDomain;
-import flash.system.MessageChannel;
-#end
-
 #if neko
 import neko.vm.Thread;
 #elseif cpp
 import cpp.vm.Thread;
+#elseif java
+import java.vm.Thread;
 #end
 
 class Worker {
@@ -18,30 +15,32 @@ class Worker {
 	public static inline var FROM_SUB = "fromSub";
 	#end
 	
+	public var type : String;
+	
 	#if js
-	public var inst : js.Worker;
+	var inst : js.html.Worker;
 	#elseif flash
-	public var inst : flash.system.Worker;
-	var channelIn : MessageChannel;
-	var channelOut : MessageChannel;
+	var inst : flash.system.Worker;
+	var channelIn : flash.system.MessageChannel;
+	var channelOut : flash.system.MessageChannel;
 	#else
 	public var inst : Dynamic;
-	var thread : Thread;
+	var running : Bool = true;
 	#end
 	
-	public var type : String;
-	public var onData : Dynamic -> Void;
-	public var onError : String -> Void;
+	var onData : Dynamic -> Void;
+	var onError : String -> Void;
 	
-	public function new( input : Dynamic, onData : Dynamic -> Void, onError : String -> Void ) {
+	public function new( input : Dynamic, onData : Dynamic -> Void, onError : String -> Void, ?type : String ) {
 		this.onData = onData;
 		this.onError = onError;
+		this.type = type;
 		#if js
-		inst = new js.Worker( input );
+		inst = new js.html.Worker( input );
 		inst.addEventListener( "message", function(e) { onData( e.data ); } );
 		inst.addEventListener( "error", function(e) { onError( e.message ); } );
 		#elseif flash
-		inst = WorkerDomain.current.createWorker( input );
+		inst = flash.system.WorkerDomain.current.createWorker( input );
 		channelOut = flash.system.Worker.current.createMessageChannel( inst );
 		channelIn = inst.createMessageChannel( flash.system.Worker.current );
 		inst.setSharedProperty( TO_SUB, channelOut );

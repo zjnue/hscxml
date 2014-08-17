@@ -1085,8 +1085,7 @@ class Interp extends Base {
 	}
 	
 	public static function main() {
-		var i = new Interp();
-		hxworker.WorkerScript.export(i);
+		new Interp().export();
 	}
 	
 	override public function handleOnMessage(data) {

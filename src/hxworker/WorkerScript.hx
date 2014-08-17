@@ -4,6 +4,8 @@ package hxworker;
 import neko.vm.Mutex;
 #elseif cpp
 import cpp.vm.Mutex;
+#elseif java
+import java.vm.Mutex;
 #end
 
 import hxworker.Worker;
@@ -17,7 +19,7 @@ class WorkerScript {
 	#if flash
 	var channelOut : flash.system.MessageChannel;
 	var channelIn : flash.system.MessageChannel;
-	#elseif (neko || cpp)
+	#elseif !js
 	var workersMutex : Mutex;
 	#end
 	
@@ -29,7 +31,7 @@ class WorkerScript {
 		channelIn = flash.system.Worker.current.getSharedProperty( Worker.TO_SUB );
 		channelOut = flash.system.Worker.current.getSharedProperty( Worker.FROM_SUB );
 		channelIn.addEventListener( flash.events.Event.CHANNEL_MESSAGE, onMessage );
-		#elseif (neko || cpp)
+		#elseif !js
 		workersMutex = new Mutex();
 		#end
 	}
@@ -45,7 +47,7 @@ class WorkerScript {
 		#end
 	}
 	function onError( e : Dynamic ) : Void {}
-	public function handleOnMessage( data : Dynamic ) : Void {}
+	function handleOnMessage( data : Dynamic ) : Void {}
 	// this call posts data from a child worker, to main (parent)
 	public function post( cmd : String, args : Array<Dynamic> ) : Void {
 		#if js
@@ -56,7 +58,7 @@ class WorkerScript {
 		//
 		#end
 	}
-	function handleWorkerMessage( data : Dynamic, inv_id : String ) {}
+	function handleWorkerMessage( data : Dynamic, wid : String ) {}
 	#if js
 	function postMessage( msg : Dynamic ) : Void {
 		untyped __js__("self.postMessage( msg )");
@@ -64,32 +66,33 @@ class WorkerScript {
 	#end
 	
 	function setWorker( id : String, worker : Worker ) {
-		#if (neko || cpp) workersMutex.acquire(); #end
+		#if !(js || flash) workersMutex.acquire(); #end
 		workers.set(id, worker);
-		#if (neko || cpp) workersMutex.release(); #end
+		#if !(js || flash) workersMutex.release(); #end
 	}
 	
 	function getWorker( id : String ) {
 		var worker = null;
-		#if (neko || cpp) workersMutex.acquire(); #end
+		#if !(js || flash) workersMutex.acquire(); #end
 		worker = workers.get(id);
-		#if (neko || cpp) workersMutex.release(); #end
+		#if !(js || flash) workersMutex.release(); #end
 		return worker;
 	}
 	
 	function hasWorker( id : String ) {
 		var has = false;
-		#if (neko || cpp) workersMutex.acquire(); #end
+		#if !(js || flash) workersMutex.acquire(); #end
 		has = workers.exists(id);
-		#if (neko || cpp) workersMutex.release(); #end
+		#if !(js || flash) workersMutex.release(); #end
 		return has;
 	}
 	
 	// TODO make sure all methods in Interp (our workerscript-to-be) are added here
 	// use a macro for this eventually
-	public static function export( script : WorkerScript ) {
+	public function export() {
 		#if js
 		
+		var script = this;
 		untyped __js__("self.onmessage = script.onMessage");
 		untyped __js__("self.onerror = script.onError");
 		untyped __js__("self.post = script.post");

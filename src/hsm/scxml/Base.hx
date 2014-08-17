@@ -70,6 +70,10 @@ class Base extends hxworker.WorkerScript {
 		#end
 	}
 	
+	override public function export() {
+		super.export();
+	}
+	
 	inline function initTimer() {
 		#if (js || flash)
 		timers = [];
