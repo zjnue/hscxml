@@ -41,15 +41,15 @@
 #-java java
 #-cmd cp java/Run.jar ./run.jar
 
---next
+#--next
 
 # example usage:
 #  run ecma
--cp ../src
--main Run
--lib hscript
--cpp cpp
--cmd cp cpp/Run ./run
+#-cp ../src
+#-main Run
+#-lib hscript
+#-cpp cpp
+#-cmd cp cpp/Run ./run
 
 --next
 
