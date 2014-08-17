@@ -17,3 +17,44 @@ and take on the appropriate licenses
 
 note, files where obtained with the following command, issued from the files/w3c folder:
 wget -m -N -l1 -nH --cut-dirs=2 http://www.w3.org/Voice/2013/scxml-irp/
+
+
+--- instructions ---
+
+
+prerequisites
+
+1. install Haxe
+(from https://github.com/HaxeFoundation/haxe under "Installing Haxe")
+
+2. install hscript
+haxelib install hscript
+
+3. download SaxonHE9-5-1-1J.zip and extract saxon9he.jar (extract manually if required)
+wget http://sourceforge.net/projects/saxon/files/Saxon-HE/9.5/SaxonHE9-5-1-1J.zip/download -O SaxonHE9-5-1-1J.zip
+unzip SaxonHE9-5-1-1J.zip saxon9he.jar
+
+4. compile build files
+haxe build.hxml (windows users: haxe build_win.hxml)
+
+5. copy txml files to flattened source folder
+neko copy.n
+
+6. convert txml files for given data model (java needs to be in path)
+neko convert.n ecma
+
+
+running the tests
+
+run the local development server:
+nekotools server
+
+running all tests for a given data model
+http://localhost:2000/?type=ecma
+
+specifying a start test (runs test specified and all tests thereafter)
+http://localhost:2000/?type=ecma&first=test192.scxml
+
+specifying a start test and number of tests to run
+http://localhost:2000/?type=ecma&first=test192.scxml&count=10
+
