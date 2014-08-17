@@ -9,6 +9,7 @@ class Run {
 	public static function main() {
 		if( args == null ) {
 			args = Sys.args();
+			#if web
 			if( args.length < 1 ) {
 				var params = haxe.web.Request.getParams();
 				if( params.keys().hasNext() ) {
@@ -24,7 +25,7 @@ class Run {
 				} else
 					throw "Not enough arguments specified. Usage:\nneko run.n [ecma|xpath|hscript]\n";
 			}
-			
+			#end
 			init();
 		}
 	}
@@ -33,6 +34,7 @@ class Run {
 	static var evt : Event;
 	static var isFirstRequest : Bool = true;
 	
+	#if web
 	static function checkPost() {
 		evt = null;
 		if( isFirstRequest ) {
@@ -61,8 +63,9 @@ class Run {
 					name = "HTTP.POST";
 				if( params.exists("httpResponse") && dec(params.get("httpResponse")) == "true" )
 					name = "HTTP.2.00";
+				#if neko
 				data.push({key:"method", value:neko.Web.getMethod()});
-				
+				#end
 				evt = new Event( name );
 				if( contentVal == null )
 					DataTools.copyFrom( evt.data, data );
@@ -76,9 +79,11 @@ class Run {
 		else if( sm != null && evt != null ) {
 			sm.postEvent( evt );
 		}
-		
+		#if neko
 		neko.Web.cacheModule(checkPost);
+		#end
 	}
+	#end
 	
 	static function log( msg : String ) {
 		Sys.stdout().writeString( msg + "\n" );
@@ -200,7 +205,17 @@ class Run {
 			//"test578.scxml",
 		];
 		
+		var failsCpp = [
+			"test277.scxml", // Bus error: 10
+			"test280.scxml", // Bus error: 10
+			"test561.scxml", // Bus error: 10
+		];
+		
 		failsAll = failsJs.concat(failsBasicHttpProc).concat(failsXPath).concat(failsTodo);
+		
+		#if cpp
+		failsAll = failsAll.concat(failsCpp);
+		#end
 		
 		skipTests = [].concat(failsAll);
 		

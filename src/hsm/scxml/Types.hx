@@ -12,6 +12,11 @@ import cpp.vm.Deque;
 import cpp.vm.Thread;
 import cpp.vm.Mutex;
 import cpp.vm.Lock;
+#elseif java
+import java.vm.Deque;
+import java.vm.Thread;
+import java.vm.Mutex;
+import java.vm.Lock;
 #end
 
 import haxe.Timer;

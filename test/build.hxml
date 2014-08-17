@@ -31,6 +31,26 @@
 -lib hscript
 -neko run.n
 
+#--next
+
+# example usage:
+#  java -jar run.jar ecma
+#-cp ../src
+#-main Run
+#-lib hscript
+#-java java
+#-cmd cp java/Run.jar ./run.jar
+
+--next
+
+# example usage:
+#  run ecma
+-cp ../src
+-main Run
+-lib hscript
+-cpp cpp
+-cmd cp cpp/Run ./run
+
 --next
 
 # example usage:

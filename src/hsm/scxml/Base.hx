@@ -12,6 +12,8 @@ import hxworker.Worker;
 import neko.vm.Thread;
 #elseif cpp
 import cpp.vm.Thread;
+#elseif java
+import java.vm.Thread;
 #end
 
 #if haxe3
