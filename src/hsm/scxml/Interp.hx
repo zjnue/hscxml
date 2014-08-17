@@ -732,8 +732,6 @@ class Interp extends Base {
 					raise( new Event( Event.ERROR_EXEC, null, sendid, evtType ) );
 					return;
 				}
-//				if( ioProcessorSupportsPost() && type == "http://www.w3.org/TR/scxml/#SCXMLEventProcessor" )
-//					type = "http://www.w3.org/TR/scxml/#BasicHTTPEventProcessor";
 
 				var delay = getAltProp( c, "delay", "delayexpr" );
 				if( delay != null && target == "_internal" )
@@ -751,8 +749,6 @@ class Interp extends Base {
 					else if( child.isTContent() ) content.push(child);
 				}
 				
-//				if( (content.length == 0 && event == null) || (content.length > 0 && event != null) )
-//					throw "Send must specify excatly one of 'event', 'eventexpr' or <content>.";
 				if( content.length > 0 && (namelist != null || params.length > 0) )
 					throw "Send must not specify 'namelist' or <param> with <content>.";
 				if( content.length > 1 )
@@ -808,16 +804,12 @@ class Interp extends Base {
 								cb = parentEventHandler;
 								
 							default:
-							
-								if( target != null && target.length > 2 ) {
-									
+								if( target != null && target.length > 2 )
 									if( target.indexOf("#_") == 0 ) {
 										var sub = target.substr(2);
 										if( hasWorker(sub) )
 											postToWorker( sub, "postEvent", [evt] );
 									}
-								
-								}
 						}
 						
 						sendEvent( evt, duration, cb );
