@@ -221,7 +221,7 @@ class Interp extends Base {
 		}
 	}
 	
-	function mainEventLoopNext( enabledTransitions : Set<Node>, macrostepDone : Bool ) {
+	function mainEventLoopNext( enabledTransitions : Set<Node>, macrostepDone : Bool ) : Void {
 		if( running && !macrostepDone ) {
 			enabledTransitions = selectEventlessTransitions();
 			if( enabledTransitions.isEmpty() ) {
