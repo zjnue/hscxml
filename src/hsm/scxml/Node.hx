@@ -98,7 +98,7 @@ class DataModel extends Node {
 
 class Data extends Node {
 	public var content:String;
-	public function new(p:Node) { super(p); content = ""; }
+	public function new(p:Node) { super(p); content = null; }
 }
 
 class Send extends Node {
@@ -107,7 +107,7 @@ class Send extends Node {
 
 class Content extends Node {
 	public var content:String;
-	public function new(p:Node) { super(p); content = ""; }
+	public function new(p:Node) { super(p); content = null; }
 }
 
 class Param extends Node {
@@ -132,10 +132,10 @@ class Exec extends Node {
 
 class Script extends Exec {
 	public var content:String;
-	public function new(p:Node) { super(p); content = ""; }
+	public function new(p:Node) { super(p); content = null; }
 }
 
 class Assign extends Exec {
 	public var content:String;
-	public function new(p:Node) { super(p); content = ""; }
+	public function new(p:Node) { super(p); content = null; }
 }

@@ -33,11 +33,10 @@ class Model {
 	var illegalExpr : Array<String>;
 	var illegalValues : Array<String>;
 	
-	public function new( doc : Node ) {
-		init(doc);
+	public function new() {
 	}
 	
-	function init( doc : Node ) {
+	public function init( doc : Node ) {
 		supportsProps = false;
 		supportsCond = false;
 		supportsLoc = false;
@@ -67,6 +66,10 @@ class Model {
 	
 	public function setIoProc( key : String, value : TEvtProc ) {
 		
+	}
+	
+	inline function encProcKey( key : String ) : String {
+		return BaseCode.encode( key, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789__" );
 	}
 	
 	public function getSessionId() {
@@ -123,7 +126,7 @@ class Model {
 	
 	public function getTypedDataStr( content : String ) : String {
 		if( content == null || content == "" )
-			return content;
+			return "";//content;
 		var isNum = Std.parseInt(content) != null;
 		if( !isNum ) isNum = !Math.isNaN( Std.parseFloat(content) );
 		if( isNum ) return content;
@@ -153,11 +156,11 @@ class NullModel extends Model {
 	
 	var h : Hash<Dynamic>;
 	
-	public function new( doc : Node ) {
-		super(doc);
+	public function new() {
+		super();
 	}
 	
-	override function init( doc : Node ) {
+	override public function init( doc : Node ) {
 		super.init(doc);
 		supportsCond = true;
 		h = new Hash();
@@ -188,8 +191,8 @@ class NullModel extends Model {
 
 class EcmaScriptModel extends HScriptModel {
 	
-	public function new( doc : Node ) {
-		super(doc);
+	public function new() {
+		super();
 	}
 	
 	override function eval( expr : String ) : Dynamic {
@@ -267,8 +270,8 @@ class EcmaScriptModel extends HScriptModel {
 }
 
 class XPathModel extends Model {
-	public function new( doc : Node ) {
-		super(doc);
+	public function new() {
+		super();
 	}
 }
 
@@ -277,11 +280,11 @@ class HScriptModel extends Model {
 	var hparse : hscript.Parser;
 	var hinterp : hscript.Interp;
 	
-	public function new( doc : Node ) {
-		super(doc);
+	public function new() {
+		super();
 	}
 	
-	override function init( doc : Node ) {
+	override public function init( doc : Node ) {
 		supportsProps = true;
 		supportsCond = true;
 		supportsLoc = true;
@@ -304,6 +307,8 @@ class HScriptModel extends Model {
 		hinterp.variables.set("Reflect", Reflect);
 		hinterp.variables.set("Lambda", Lambda);
 		hinterp.variables.set("_ioprocessors", {});
+		hinterp.variables.set("In", isInState);
+		hinterp.variables.set("trace", log);
 		
 		setIoProc( Const.IOPROC_SCXML, {location : "#_internal"} );
 		setIoProc( Const.IOPROC_SCXML_SHORT, {location : "#_internal"} );
@@ -318,12 +323,14 @@ class HScriptModel extends Model {
 	}
 	
 	override function set_isInState( value : String -> Bool ) {
-		hinterp.variables.set("In", value);
+		if( hinterp != null )
+			hinterp.variables.set("In", value);
 		return isInState = value;
 	}
 	
 	override function set_log( value : String -> Void ) {
-		hinterp.variables.set("trace", value);
+		if( hinterp != null )
+			hinterp.variables.set("trace", value);
 		return log = value;
 	}
 	
@@ -339,10 +346,6 @@ class HScriptModel extends Model {
 	
 	override public function setIoProc( key : String, value : TEvtProc ) {
 		Reflect.setField( hinterp.variables.get("_ioprocessors"), encProcKey(key), value );
-	}
-	
-	inline function encProcKey( key : String ) : String {
-		return BaseCode.encode( key, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789__" );
 	}
 	
 	override public function get( key : String ) : Dynamic {

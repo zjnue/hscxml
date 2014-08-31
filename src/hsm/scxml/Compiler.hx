@@ -51,9 +51,13 @@ class Compiler {
 	}
 	
 	function setContent( contentNode : {content:String}, xml : Xml  ) {
-		var buf = new StringBuf();
-		for( child in xml )
-			buf.add( child.toString() );
-		contentNode.content = DataTools.trim(buf.toString());
+		var content = null;
+		if( xml.iterator().hasNext() ) {
+			var buf = new StringBuf();
+			for( child in xml )
+				buf.add( child.toString() );
+			content = DataTools.trim(buf.toString());
+		}
+		contentNode.content = content;
 	}
 }

@@ -89,13 +89,13 @@ class Interp extends Base {
 		var model = d.exists("datamodel") ? d.get("datamodel") : "hscript";
 		switch( model ) {
 			case "null":
-				datamodel = new NullModel(d);
+				datamodel = new NullModel();
 			case "ecmascript":
-				datamodel = new EcmaScriptModel(d);
+				datamodel = new EcmaScriptModel();
 			case "xpath":
-				datamodel = new XPathModel(d);
+				datamodel = new XPathModel();
 			case "hscript":
-				datamodel = new HScriptModel(d);
+				datamodel = new HScriptModel();
 			default:
 		}
 		datamodel.log = log;
@@ -105,6 +105,8 @@ class Interp extends Base {
 					return true;
 			return false;
 		};
+		datamodel.init(d);
+		
 		var me = this;
 		binding = d.exists("binding") ? d.get("binding") : "early";
 		initializeDatamodel( datamodel, result.data, (binding != "early"), function() {
