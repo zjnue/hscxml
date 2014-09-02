@@ -167,6 +167,7 @@ class Run {
 			"test464.scxml",
 			"test465.scxml",
 			"test466.scxml",
+			"test467.scxml",
 			"test468.scxml",
 			"test469.scxml",
 			"test470.scxml",
