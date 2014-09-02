@@ -252,6 +252,17 @@ class EcmaScriptModel extends HScriptModel {
 			expr = 	r.matchedLeft() + "Lambda.array({iterator:function() return " + r.matched(1) + ".elementsNamed(" + r.matched(2) + ")})[" + r.matched(3) + "]" + r.matchedRight();
 		expr = expr.split("getAttribute").join("get");
 		
+		// for new testobject();
+		var r = ~/new ([a-zA-Z0-9\._]+)\(\);/;
+		while( r.match(expr) )
+			expr = 	r.matchedLeft() + r.matched(1) + "()" + r.matchedRight();
+		
+		// for function testobject() {
+    	// 		this.bar = 0;}
+		var r = ~/function ([a-zA-Z0-9\._]+)\(\)[\r\n\t ]*\{[\r\n\t ]*this.bar[\r\n\t ]*=[\r\n\t ]*0;\}/;
+		while( r.match(expr) )
+			expr = 	r.matchedLeft() + r.matched(1) + " = function() { return {bar:0}; }" + r.matchedRight();
+		
 		var program = hparse.parseString(expr);
 		var bytes = hscript.Bytes.encode(program);
 		program = hscript.Bytes.decode(bytes);
@@ -359,7 +370,12 @@ class HScriptModel extends Model {
 	}
 	
 	override public function exists( key : String ) : Bool {
-		return hinterp.variables.exists( key );
+		var out = false;
+		try {
+			var tmp = eval(key);
+			out = true;
+		} catch( e : Dynamic ) {}
+		return out;
 	}
 	
 	override public function remove( key : String ) {
