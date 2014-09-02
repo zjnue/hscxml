@@ -160,7 +160,7 @@
 <assert id="448" res="pass"></assert>
 <assert id="449" res="pass"></assert>
 <assert id="451" res="pass"></assert>
-<assert id="452" res="fail">interpretation issue</assert>
+<assert id="452" res="pass"></assert>
 <assert id="453" res="pass"></assert>
 <assert id="456" res="pass"></assert>
 <assert id="446" res="pass"></assert>
