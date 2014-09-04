@@ -323,8 +323,8 @@ class HScriptModel extends Model {
 		
 		setIoProc( Const.IOPROC_SCXML, {location : "#_internal"} );
 		setIoProc( Const.IOPROC_SCXML_SHORT, {location : "#_internal"} );
-		setIoProc( Const.IOPROC_BASICHTTP, {location : "http://localhost:2000"} );
-		setIoProc( Const.IOPROC_BASICHTTP_SHORT, {location : "http://localhost:2000"} );
+		setIoProc( Const.IOPROC_BASICHTTP, {location : "http://localhost:3000"} );
+		setIoProc( Const.IOPROC_BASICHTTP_SHORT, {location : "http://localhost:3000"} );
 		setIoProc( Const.IOPROC_DOM, {location : "#_internal"} );
 		setIoProc( Const.IOPROC_DOM_SHORT, {location : "#_internal"} );
 		

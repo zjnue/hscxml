@@ -43,6 +43,26 @@ class Event {
 		this.type = type;
 		this.raw = new RawEvent(this);
 	}
+	public function toObj() {
+		return {
+			name : name,
+			type : type,
+			sendid : sendid,
+			origin : origin,
+			origintype : origintype,
+			invokeid : invokeid,
+			data : data,
+			raw : raw.toString()
+		};
+	}
+	public static function fromObj( evtObj ) {
+		var evt = new Event( evtObj.name, evtObj.data, evtObj.sendid, evtObj.type );
+		evt.origin = evtObj.origin;
+		evt.origintype = evtObj.origintype;
+		evt.invokeid = evtObj.invokeid;
+		evt.raw = new RawEvent(evt);
+		return evt;
+	}
 	public function toString( sep : String = " = " ) {
 		return getString(sep);
 	}

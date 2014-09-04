@@ -113,3 +113,7 @@
 #-resource ecma/test191.scxml@scxmlStr
 
 -cmd rm Interp.swf
+
+-cmd cd server/basichttp
+--next build.hxml
+-cmd cd ../../

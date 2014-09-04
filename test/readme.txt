@@ -46,15 +46,15 @@ neko convert.n ecma
 
 running the tests
 
-run the local development server:
-nekotools server
+run the basichttp server:
+nekotools server -p 3000 -h localhost -d server/basichttp
 
 running all tests for a given data model
-http://localhost:2000/?type=ecma
+neko run.n ecma
 
 specifying a start test (runs test specified and all tests thereafter)
-http://localhost:2000/?type=ecma&first=test192.scxml
+neko run.n ecma test192.scxml
 
 specifying a start test and number of tests to run
-http://localhost:2000/?type=ecma&first=test192.scxml&count=10
+neko run.n ecma test192.scxml 10
 

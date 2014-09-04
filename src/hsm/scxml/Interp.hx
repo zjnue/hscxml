@@ -844,6 +844,21 @@ class Interp extends Base {
 						if( c.exists("httpResponse") )
 							h.setParameter("httpResponse", enc(c.get("httpResponse")));
 						
+						var me = this;
+						h.onData = function(data) {
+							log("basichttp: onData: data = " + data);
+							try {
+								var evtObj = haxe.Unserializer.run(data);
+								me.postEvent( Event.fromObj(evtObj) );
+							} catch( e : Dynamic ) { log("basichttp: onData error: " + Std.string(e)); }
+						};
+						h.onError = function(msg) {
+							log("basichttp: onError: msg = " + msg);
+						};
+						h.onStatus = function(status:Int) {
+							log("basichttp: onStatus: status = " + status);
+						};
+						
 						h.request(true);
 						
 					case Const.IOPROC_DOM, Const.IOPROC_DOM_SHORT:
