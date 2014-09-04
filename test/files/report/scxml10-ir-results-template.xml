@@ -222,7 +222,7 @@
 <assert id="501" res="pass"></assert>
 <assert id="509" res="pass"></assert>
 <assert id="510" res="pass"></assert>
-<assert id="513" res="not-impl"></assert>
+<assert id="513" res="pass"></assert>
 <assert id="518" res="pass"></assert>
 <assert id="519" res="pass"></assert>
 <assert id="520" res="pass"></assert>
