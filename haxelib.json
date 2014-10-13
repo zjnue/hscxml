@@ -1,0 +1,14 @@
+{
+  "name": "hscxml",
+  "license": "MIT",
+  "url": "https://github.com/zjnue/hscxml",
+  "tags": ["scxml","hsm","statecharts","cross"],
+  "description": "Haxe SCXML library",
+  "version": "0.0.1",
+  "releasenote": "initial",
+  "contributors": ["zjnue"],
+  "classPath" : "src/",
+  "dependencies": {
+    "hscript" : ""
+  }
+}
