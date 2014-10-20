@@ -167,7 +167,8 @@ class Interp extends Base {
 					else
 						val = datamodel.getTypedDataStr( cast(d, Data).content );
 					try {
-						datamodel.set(id, datamodel.doVal(val));
+						var v = datamodel.doVal(val);
+						datamodel.set(id, v);
 					} catch( e:Dynamic ) {
 						datamodel.set(id, null);
 						raise( new Event( Event.ERROR_EXEC ) );
