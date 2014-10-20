@@ -6,6 +6,15 @@ import hscript.Interp;
 import hsm.scxml.Node;
 import hsm.scxml.Types;
 
+#if flash
+import flash.xml.XML;
+import flash.xml.XMLList;
+import flash.xml.XMLNode;
+import flash.xml.XMLNodeType;
+import memorphic.xpath.XPathQuery;
+import memorphic.xpath.model.XPathContext;
+#end
+
 #if haxe3
 import haxe.crypto.BaseCode;
 private typedef Hash<T> = haxe.ds.StringMap<T>;
@@ -280,11 +289,23 @@ class EcmaScriptModel extends HScriptModel {
 	}
 }
 
+#if flash
+class XPathModel extends Model {
+	
+	var x : XML;
+	var context : XPathContext;
+	
+	public function new() {
+		super();
+	}
+}
+#else
 class XPathModel extends Model {
 	public function new() {
 		super();
 	}
 }
+#end
 
 class HScriptModel extends Model {
 
