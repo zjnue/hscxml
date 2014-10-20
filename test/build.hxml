@@ -94,7 +94,8 @@
 
 -main hsm.scxml.Interp
 -swf Interp.swf
--swf-version 11.7
+-swf-version 12
+-swf-lib swflib/xpath-as3.swf
 -lib hscript
 -cp ../src
 
@@ -104,8 +105,9 @@
 --next
 -main TestSwf
 -swf swf/TestSwf.swf
--swf-version 11.7
+-swf-version 12
 -swf-header 800:900:60:ffffff
+-swf-lib swflib/xpath-as3.swf
 -lib hscript
 -cp ../src
 #-resource ecma/test144.scxml@scxmlStr
