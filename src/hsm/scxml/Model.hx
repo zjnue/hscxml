@@ -344,10 +344,6 @@ class XPathModel extends Model {
 		return content;
 	}
 
-	public function normalizeKey( key : String ) {
-		return key.charAt(0) == "$" ? key.substr(1) : key;
-	}
-	
 	override public function get( key : String ) : Dynamic {
 		var out : Dynamic = null;
 		if( exists(key) )
@@ -515,12 +511,9 @@ class XPathModel extends Model {
 		return null;
 	}
 	
-	function getIdentifier( str : String ) {
+	inline function getIdentifier( str : String ) {
 		var r = ~/\$([a-zA-Z_]+[a-zA-Z0-9_]*)/;
-		if( r.match(str) ) {
-			return r.matched(1);
-		}
-		return null;
+		return r.match(str) ? r.matched(1) : null;
 	}
 	
 	override public function doVal( expr : String ) : Dynamic {
