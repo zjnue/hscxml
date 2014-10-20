@@ -886,9 +886,9 @@ class Interp extends Base {
 				if( !datamodel.supportsAssign )
 					return;
 				if( c.exists("expr") )
-					datamodel.doAssign( c.get("location"), c.get("expr") );
+					datamodel.doAssign( c.get("location"), c.get("expr"), c.get("type"), c.get("attr") );
 				else
-					datamodel.doAssign( c.get("location"), datamodel.getTypedDataStr( cast(c, Assign).content ) );
+					datamodel.doAssign( c.get("location"), datamodel.getTypedDataStr( cast(c, Assign).content ), c.get("type"), c.get("attr") );
 			case "if":
 				if( !datamodel.supportsCond )
 					return;

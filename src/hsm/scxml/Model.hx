@@ -113,7 +113,7 @@ class Model {
 		return null;
 	}
 	
-	public function doAssign( loc : String, val : String ) : Dynamic {
+	public function doAssign( loc : String, val : Dynamic, ?type : String, ?attr : String ) : Dynamic {
 		return null;
 	}
 	
@@ -443,7 +443,7 @@ class HScriptModel extends Model {
 		return eval(expr);
 	}
 	
-	override public function doAssign( loc : String, val : String ) : Dynamic {
+	override public function doAssign( loc : String, val : Dynamic, ?type : String, ?attr : String ) : Dynamic {
 		if( !exists(loc) )
 			throw "Trying to assign a value to an undeclared variable.";
 		if( Lambda.has(illegalValues, loc) )
