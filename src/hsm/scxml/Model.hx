@@ -298,6 +298,330 @@ class XPathModel extends Model {
 	public function new() {
 		super();
 	}
+	
+	static function __init__() {
+		XML.ignoreWhitespace = true;
+		XML.prettyPrinting = true;
+	}
+	
+	override public function init( doc : Node ) {
+		super.init(doc);
+		
+		supportsProps = true;
+		supportsCond = true;
+		supportsLoc = true;
+		supportsVal = true;
+		supportsAssign = true;
+		supportsScript = true;
+		
+		var _sessionId = getSessionId();
+		var _name = doc.exists("name") ? doc.get("name") : null;
+		
+		context = new XPathContext();
+		x = new XML("<datamodel></datamodel>");
+		set("_ioprocessors",
+			'<processor name="${Const.IOPROC_SCXML}"><location>#_internal</location></processor>
+			<processor name="${Const.IOPROC_SCXML_SHORT}"><location>#_internal</location></processor>
+			<processor name="${Const.IOPROC_BASICHTTP}"><location>http://localhost:2000</location></processor>
+			<processor name="${Const.IOPROC_BASICHTTP_SHORT}"><location>http://localhost:2000</location></processor>
+			<processor name="${Const.IOPROC_DOM}"><location>#_internal</location></processor>
+			<processor name="${Const.IOPROC_DOM_SHORT}"><location>#_internal</location></processor>'
+		);
+		set("_sessionid", _sessionId);
+		set("_name", _name);
+		untyped context.functions["In"] = xpIsInState;
+		
+		illegalExpr = [];
+		illegalLhs = [".."];
+		illegalValues = illegalExpr.concat(illegalLhs);
+	}
+	
+	function xpIsInState(context:XPathContext, state:String) {
+		return isInState(state);
+	}
+	
+	override public function getTypedDataStr( content : String ) : String {
+		return content;
+	}
+
+	public function normalizeKey( key : String ) {
+		return key.charAt(0) == "$" ? key.substr(1) : key;
+	}
+	
+	override public function get( key : String ) : Dynamic {
+		var out : Dynamic = null;
+		if( exists(key) )
+			out = untyped context.variables[key];
+		return fromXPathValue(out);
+	}
+
+	function fromXPathValue( value : Dynamic ) : Dynamic {
+		if( value == null || Std.is(value, Float) || Std.is(value, String) || Std.is(value, Bool) )
+			return value;
+		if( Std.is(value, XMLList) ) {
+			var arr = [];
+			var list = cast(value, XMLList);
+			var len = list.length();
+			for( i in 0...len )
+				arr.push( list[i] );
+			return arr.length == 1 ? arr[0] : arr;
+		}
+		return null;
+	}
+	
+	function getBool( val : Dynamic ) {
+		if( Std.is(val, Bool) )
+			return val;
+		else if( Std.is(val, Float) )
+			return val != 0;
+		else if( Std.is(val, String) )
+			return val != null;
+		else if( Std.is(val, XMLList) )
+			return cast(val, XMLList).length() != 0;
+		else
+			return false;
+	}
+	
+	override public function exists( key : String ) : Bool {
+		return context.variables.hasOwnProperty(key);
+	}
+
+	override public function setEvent( evt : Event ) {
+		var xmlStr = obj2XmlStr(evt.toObj(), 0);
+		set("_event", xmlStr);
+	}
+
+	function obj2XmlStr( obj : Dynamic, level : Int ) {
+		var str = "";
+		if (Std.is(obj, String) || Std.is(obj, Float) || Std.is(obj, Array)) {
+			str += Std.string(obj);
+		} else if( Std.is(obj, Hash) ) {
+			var tmp : Hash<Dynamic> = cast obj;
+			for( key in tmp.keys() ) {
+				var val = tmp.get(key);
+				if( level == 0 ) {
+					str += val == null ?
+						"<" + key + "/>" :
+						"<" + key + ">" + obj2XmlStr(val, level+1) + "</" + key + ">";
+				} else {
+					str += val == null ?
+						"<data id=\"" + key + "\"/>" :
+						"<data id=\"" + key + "\">" + obj2XmlStr(val, level+1) + "</data>";
+				}
+			}
+		} else if( Std.is(obj, {}) || Std.is(obj, Dynamic) ) {
+			for( field in Reflect.fields(obj) ) {
+				var val = Reflect.field(obj, field);
+				if( level == 0 ) {
+					str += val == null ?
+						"<" + field + "/>" :
+						"<" + field + ">" + obj2XmlStr(val, level+1) + "</" + field + ">";
+				} else {
+					str += val == null ?
+						"<data id=\"" + field + "\"/>" :
+						"<data id=\"" + field + "\">" + obj2XmlStr(val, level+1) + "</data>";
+				}
+			}
+		}
+		return str;
+	}
+
+	override public function set( key : String, val : Dynamic ) {
+		if( Std.is(val, XML) ) {
+			untyped context.variables[key] = val;
+			return;
+		}
+		var node : XML = null;
+		
+		if( exists(key) ) {
+			var tmp = untyped context.variables[key];
+			if( Std.is(tmp, XMLList) )
+				node = cast(tmp, XMLList)[0];
+		} else {
+			node = new XML('<data id="$key"/>');
+			x.appendChild(node);
+			var func = function(context:XPathContext, x:XML, key:String) {
+				var q = new XPathQuery("/datamodel/data[@id='" + key +"']", context);
+				return q.exec(x);
+			};
+			untyped context.variables[key] = func(context, x, key);
+		}
+		var children : XMLList = node.children();
+		var i = children.length();
+		while( --i >= 0 )
+			untyped __delete__(children, Reflect.fields(children)[i]);
+		if( val == null )
+			return;
+		
+		try {
+			if( Std.is(val, XML) )
+				node.appendChild( val );
+			else if( Std.is(val, XMLList) ) {
+				var tmpl = cast(val, XMLList);
+				for( i in 0...tmpl.length() )
+					node.appendChild( tmpl[i] );
+			} else
+				node.appendChild( new XML(Std.string(val)) );
+		} catch( e : Dynamic ) {
+			var xmlStr = "<p>" + Std.string(val) + "</p>";
+			var xml = new XML(xmlStr);
+			var children = xml.children();
+			for( i in 0...children.length() )
+				node.appendChild( children[i] );
+		}
+	}
+	
+	override public function hasIoProc( key : String ) {
+		return doCond("/datamodel/data[@id='_ioprocessors']/processor[@name='" + key + "']");
+	}
+	
+	function eval( expr : String ) : Dynamic {
+		var val : Dynamic = null;
+		try {
+			var query = new XPathQuery(expr, context);
+			val = query.exec(x);
+		} catch( e : Dynamic ) {
+			val = expr;
+		}
+		return val;
+	}
+	
+	override public function doCond( expr : String ) : Bool {
+		var out = false;
+		try {
+			var val = eval(expr);
+			out = getBool(val);
+		} catch( e : Dynamic ) {
+			return false;
+		}
+		return out;
+	}
+	
+	override public function isLegalVar( value : String ) {
+		return !Lambda.has(illegalValues, value.split("'").join("").split("\"").join(""));
+	}
+	
+	override public function doLoc( loc : String ) : Dynamic {
+		try {
+			var result = eval(loc);
+			return fromXPathValue(result);
+		} catch( e : Dynamic ) {
+			var id = getIdentifier(loc);
+			if( id != null && !exists(id)) {
+				set(id, null);
+				return doLoc(loc);
+			}
+		}
+		return null;
+	}
+	
+	function getIdentifier( str : String ) {
+		var r = ~/\$([a-zA-Z_]+[a-zA-Z0-9_]*)/;
+		if( r.match(str) ) {
+			return r.matched(1);
+		}
+		return null;
+	}
+	
+	override public function doVal( expr : String ) : Dynamic {
+		return expr == null ? null : fromXPathValue( eval(expr) );
+	}
+	
+	function doLocLocal( loc : String ) : Dynamic {
+		try {
+			return eval(loc);
+		} catch( e : Dynamic ) {
+			var id = getIdentifier(loc);
+			if( id != null && !exists(id)) {
+				set(id, null);
+				return doLocLocal(loc);
+			}
+		}
+		return null;
+	}
+	
+	inline function doValLocal( expr : String ) : Dynamic {
+		return expr == null ? null : eval(expr);
+	}
+	
+	override public function doAssign( loc : String, val : Dynamic, ?type : String, ?attr : String ) : Dynamic {
+		var tmp : Dynamic = doLocLocal(loc);
+		var list : XMLList = null;
+		if( Std.is(tmp, XML) ) {
+			list = new XML("<p>" + tmp.toXMLString() + "</p>").elements();
+		} else if( Std.is(tmp, XMLList) ) {
+			list = cast tmp;
+		}
+		var value : Dynamic = null;
+		try {
+			value = doValLocal(val);
+		} catch( e : Dynamic ) {
+			value = new XML(Std.string(val));
+		}
+		var len = list.length();
+		if( Std.is(tmp, XML) && type == "addattribute" ) {
+			doAssignInner( tmp, val, value, type, attr );
+			return null;
+		}
+		for( i in 0...len )
+			if( !doAssignInner( list[i], val, value, type, attr ) )
+				return null;
+		return null;
+	}
+	
+	function doAssignInner( el : XML, val : Dynamic, value : Dynamic, ?type : String, ?attr : String ) {
+		switch( el.nodeKind() ) {
+			case "attribute":
+				var pre = value;
+				try {
+					value = new XML(value);
+				} catch( e : Dynamic ) {
+					value = pre;
+				}
+				if( Std.is(value, XML) && value.hasComplexContent() )
+					throw "bad attribute value";
+				
+				var p = el.parent();
+				var atts = p.attributes();
+				for( i in 0...atts.length() ) {
+					if( atts[i] == el ) {
+						atts[i] = new XML(Std.string(val));
+						break;
+					}
+				}
+			
+			case "element":
+				if( type == null ) {
+					var children : XMLList = el.children();
+					var i = children.length();
+					while( --i >= 0 )
+						untyped __delete__(children, Reflect.fields(children)[i]);
+				}
+				// make copy: see test470
+				if( Std.is(value, XMLList) )
+					value = value.copy();
+				if( Std.is(value, String) )
+					value = new XML(value);
+				if( type == null )
+					el.appendChild(value);
+				else {
+					switch( type ) {
+						case "firstchild": el.prependChild(value);
+						case "lastchild": el.appendChild(value);
+						case "nextsibling": el.parent().insertChildAfter(el, value);
+						case "previoussibling": el.parent().insertChildBefore(el, value);
+						case "replace": el.parent().replace(el.childIndex(), value);
+						case "delete": el.parent().replace(el.childIndex(), "");
+						case "addattribute": Reflect.setField(el, "@"+attr, value);
+					}
+				}
+		}
+		return true;
+	}
+	
+	override public function toString() {
+		return "[XPathModel: " + Std.string(x.toXMLString()) + "]";
+	}
 }
 #else
 class XPathModel extends Model {
