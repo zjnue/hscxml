@@ -540,11 +540,11 @@ class XPathModel extends Model {
 	override public function doAssign( loc : String, val : Dynamic, ?type : String, ?attr : String ) : Dynamic {
 		var tmp : Dynamic = doLocLocal(loc);
 		var list : XMLList = null;
-		if( Std.is(tmp, XML) ) {
+		if( Std.is(tmp, XML) )
 			list = new XML("<p>" + tmp.toXMLString() + "</p>").elements();
-		} else if( Std.is(tmp, XMLList) ) {
+		else if( Std.is(tmp, XMLList) )
 			list = cast tmp;
-		}
+		
 		var value : Dynamic = null;
 		try {
 			value = doValLocal(val);
@@ -593,7 +593,7 @@ class XPathModel extends Model {
 				// make copy: see test470
 				if( Std.is(value, XMLList) )
 					value = value.copy();
-				if( Std.is(value, String) )
+				else if( Std.is(value, String) )
 					value = new XML(value);
 				if( type == null )
 					el.appendChild(value);
