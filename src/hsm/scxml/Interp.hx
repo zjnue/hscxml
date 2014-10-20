@@ -1089,7 +1089,7 @@ class Interp extends Base {
 		var h = new haxe.Http( path + file );
 		h.onData = function(data) { 
 			log("getFileContent: data = " + data);
-			dataCb(data);
+			dataCb( DataTools.trim(data) );
 		}
 		h.onError = function(msg) {
 			log("getFileContent: msg = " + msg);
