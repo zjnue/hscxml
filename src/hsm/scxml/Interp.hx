@@ -948,7 +948,7 @@ class Interp extends Base {
 				var index = c.exists("index") ? c.get("index") : null;
 				var indexWasDefined = index != null && datamodel.exists(index);
 				var indexPrevVal = indexWasDefined ? datamodel.get(index) : null;
-				var count = 0;
+				var count = Std.is(datamodel, XPathModel) ? 1 : 0;
 				
 				for( e in arr ) {
 					if( item != null )
