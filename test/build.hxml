@@ -89,6 +89,7 @@
 #testing dom events
 #-resource js/testdom001.scxml@scxmlStr
 #-resource js/testdom002.scxml@scxmlStr
+-resource js/testdom003.scxml@scxmlStr
 
 --next
 

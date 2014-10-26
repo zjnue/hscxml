@@ -26,7 +26,7 @@
 		}, false);
 		
 		node.addEventListener('setcontent', function(event) {
-			alert('setcontent: event.detail = ' + event.detail);
+			alert('setcontent: event.type = ' + event.type + ' event.bubbles = ' + event.bubbles + ' event.cancelable = ' + event.cancelable + ' event.detail = ' + event.detail);
 			node.innerHTML = event.detail;
 		}, false);
 	
