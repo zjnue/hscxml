@@ -512,7 +512,7 @@ is the second argument -->
 
 <!-- returns true if all the required fields of _event are bound -->
 <xsl:template match="//@conf:eventFieldsAreBound">
-	<xsl:attribute name="cond">Reflect.hasField(_event, 'name') &amp;&amp; Reflect.hasField(_event, 'type') &amp;&amp; Reflect.hasField(_event, 'sendid') &amp;&amp; Reflect.hasField(_event, 'origin') &amp;&amp; Reflect.hasField(_event, 'invokeid') &amp;&amp; Reflect.hasField(_event, 'data')</xsl:attribute>
+	<xsl:attribute name="cond">Reflect.hasField(_event, 'name') &amp;&amp; Reflect.hasField(_event, 'type') &amp;&amp; Reflect.hasField(_event, 'sendid') &amp;&amp; Reflect.hasField(_event, 'origin') &amp;&amp; Reflect.hasField(_event, 'origintype') &amp;&amp; Reflect.hasField(_event, 'invokeid') &amp;&amp; Reflect.hasField(_event, 'data')</xsl:attribute>
 </xsl:template>
 
 <!-- returns true if  _event.data contains the specified item -->
