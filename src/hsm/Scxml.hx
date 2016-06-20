@@ -21,6 +21,14 @@ import hsm.scxml.Base;
 import sys.FileSystem;
 #end
 
+#if js
+#if (haxe_ver >= 3.300)
+import js.jquery.JQuery;
+#else
+import js.JQuery;
+#end
+#end
+
 #if flash
 @:file("Interp.swf") class InterpByteArray extends flash.utils.ByteArray {}
 #end
@@ -173,7 +181,7 @@ class Scxml {
 		var event : js.CustomEvent = null;
 		
 		try {
-			nodes = new js.JQuery(target).get();
+			nodes = new JQuery(target).get();
 			if( nodes.length == 0 ) {
 				log("sendDomEvent target not found: " + target);
 				postToWorker( "sendDomEventFailed", [fromInvokeId] );

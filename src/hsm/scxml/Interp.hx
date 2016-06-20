@@ -1110,7 +1110,7 @@ class Interp extends Base {
 		new Interp().export();
 	}
 	
-	override public function handleOnMessage(data) {
+	override public function handleOnMessage( data : Dynamic ) {
 		var msg = hxworker.Worker.uncompress( data );
 		switch( msg.cmd ) {
 			case "postEvent": postEvent( cast(msg.args[0], Event) );
